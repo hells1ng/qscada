@@ -1,0 +1,34 @@
+
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:             qscada
+# Required-Start:	$remote_fs $syslog      
+# Required-Stop:        $remote_fs $syslog
+# Default-Start:        2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:    Scada
+### END INIT INFO
+
+
+
+        #######################################################
+        # . /etc/rc.d/init.d/functions  # uncomment/modify for your killproc
+        case "$1" in
+            start)
+                echo "Starting scada."
+                echo 0000 | sudo -S /home/pi/qscada > /dev/null 2 > /dev/null &
+            ;;
+            stop)
+                echo -n "Shutting down scada."
+#                killproc -TERM /home/pi/qscada
+		killall scada
+            ;;
+            *)
+                echo "Usage: $0 {start|stop}"
+                exit 1
+        esac
+        exit 0
+        #######################################################
+
+
