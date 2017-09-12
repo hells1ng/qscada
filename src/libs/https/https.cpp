@@ -31,42 +31,13 @@ const char *HttpsDriver::SERVERADDR = "https://tomatto.ddns.net:444";
 
 const string HttpsDriver::GET_SENSOR_PERIOD = "GET_SENSOR_PERIOD";
 const string HttpsDriver::EMPTY_STRING = "EMPTY";
-//"HTTPS://81.177.142.88/00.php";
 
 
-string Sql_driver::systime()
-{
-    time_t t;
-    struct tm *t_m;
-    t = time(NULL);
-    t_m = localtime(&t);
-    string pretime;
-    ostringstream oss;
-    oss << t_m->tm_year + 1900;
-    if ((t_m->tm_mon + 1) < 10) oss << "0";
-    oss << t_m->tm_mon + 1;
-    if ((t_m->tm_mday) < 10) oss << "0";
-    oss << t_m->tm_mday << " ";
-    if ((t_m->tm_hour) < 10) oss << "0";
-    oss << t_m->tm_hour << ":";
-    if ((t_m->tm_min) < 10) oss << "0";
-    oss << t_m->tm_min << ":";
-    if ((t_m->tm_sec) < 10) oss << "0";
-    oss << t_m->tm_sec;
-
-    //pretime = "&datetime=";
-    //pretime.append( oss.str() );
-
-    pretime = oss.str();
-
-//    cout << "Time = " << pretime << endl;
-    return pretime;
-}
 /*--------------------------------------*/
 /*EXPLODING STRING BY DEL SYMPOL(DELIM)*/
-/* This funtion crete Vector with substring from Str srting by custom DEL*/
+/* This funtion crete Vector with substring from Str srting by custom DELIM*/
 /*--------------------------------------*/
-vector<string> Sql_driver::explode_string (string str, char delim)
+vector<string> HttpsDriver::explode_string (string str, const char* delim)
 {
     //size_t prev = 0;
     //size_t next;
@@ -74,180 +45,34 @@ vector<string> Sql_driver::explode_string (string str, char delim)
     string item;
     vector<string> arr;
 
-    while (getline(ss, item, delim)) {
+    while (getline(ss, item, *delim)) {
         arr.push_back(item);
     }
     return arr;
 }
 
-/*------------------------*/
-/*  DATA PREPARATION------*/
-/*here we build string with all nessesary markers--> id,value,flag, datetime etc.*/
-/*------------------------*/
-string Sql_driver::Preparedata(string data)
-{
-    string postmsg;
-    vector <string> arr = explode_string(data, '|');
-    /*
-     *  arr[0] - id, arr[1] - value, arr[2] - flag
-     */
-    //postmsg = "id=" + arr[0] + "&value=" + arr[1] + "&value_flag=" + arr[2] + "&error_flag=0" + systime();
-    //postmsg = data + "|" + "0" + "|" + systime();
-
-    postmsg = arr[0] + "|" + arr[1] + "|" + systime() + "|" + arr[2] + "|" + "0";
-/*
-    postmsg = "{\"insert_1\": {\"to_do\": \"insert_signal_value\", \"target\": {\"sensor_value\": \"" + arr[0] +
-                "\", \"value_signal\": \"" + arr[1] + "\", \"datetime_signal\": \"" + systime() +
-                "\", \"error_flag\": \"0\", \"value_flag\": \"" + arr[2] + "\"}}}";
-*/
-    return postmsg;
-}
-
-
-
-int Sql_driver::toData(string str)
-{
-    MYSQL *con = mysql_init(NULL);
-    char qurr[4096];
-    sprintf(qurr,"insert into data(string)VALUES('%s')", str.c_str());
-    if (mysql_real_connect(con, "localhost", "root", "0000",  "Safe", 0, NULL, 0) == NULL){
-        fprintf(stderr, "%s\n", mysql_error(con));
-        cout << "Couldn't connect to SQL: " << stderr << endl;
-    }
-    else {
-        mysql_query(con, qurr);
-    }
-    mysql_close(con);
-    return 0;
-}
-/*--------------------------------------------------------*/
-Sql_driver::Sql_driver()
-{
-}
-
-Sql_driver::~Sql_driver()
-{
-}
-
-string Sql_driver::fromData(int datasize)
-{
-    MYSQL_RES *result;
-    MYSQL_ROW row;
-    MYSQL *con = mysql_init(NULL);
-    string name(HttpsDriver::EMPTY_STRING);
-    std::string size_ = std::to_string(datasize);
-
-    if (mysql_real_connect(con, "localhost", "root", "0000",  "Safe", 0, NULL, 0) == NULL)
-    {
-        fprintf(stderr, "%s\n", mysql_error(con));
-        cout << "Couldn't connect to SQL: " << stderr << endl;
-    }
-    else
-    {
-        string query = string("SELECT * FROM data limit ") + size_;
-        mysql_query(con, query.c_str());
-        result = mysql_store_result(con);
-
-        if (mysql_num_rows(result))
-        {
-            row = mysql_fetch_row(result);
-            name = row[0];
-            while ((row = mysql_fetch_row(result)) != NULL)
-                name = name + "/" + row[0];
-
-            size_ = std::to_string(mysql_num_rows(result));
-            query = string("DELETE FROM data limit ") + size_;
-
-            if (mysql_query(con, query.c_str()))
-                cout << "DELETED" << endl;
-        }
-        else
-            name = HttpsDriver::EMPTY_STRING;
-
-        mysql_free_result(result);
-    }
-
-    mysql_close(con);
-
-    return name;
-}
-
-vector<string> Sql_driver::fromPost()
-{
-    vector<string> arr;
-    MYSQL_RES *result;
-    MYSQL *con = mysql_init(NULL);
-    MYSQL_ROW row;
-
-    if (mysql_real_connect(con, "localhost", "root", "0000", "Safe", 0, NULL, 0) == NULL) {
-        fprintf(stderr, "%s\n", mysql_error(con));
-        cout << "connection to SQL is lost Sql_driver::fromPost" << endl;
-        mysql_close(con);
-        return arr;
-    }
-    else {
-        mysql_query(con, "SELECT id,guid,value,status FROM post where status=0");
-        result = mysql_use_result(con);
-
-        if((row = mysql_fetch_row(result)) != NULL) {
-            arr.push_back(row[1]); //guid
-            arr.push_back(row[2]); //value
-            arr.push_back(row[3]); //status
-
-            cout << "FROM Post: Guid = " << arr[0] << " Value = " << arr[1] << " Status = " << arr[2] << endl;
-        }
-        mysql_free_result(result);//for next mysql_query
-        mysql_close(con);
-    }
-    return arr;
-}
-
-void Sql_driver::toPost(string guid, bool status)
-{
-    MYSQL *con = mysql_init(NULL);
-    char qurr[200];
-
-    if (mysql_real_connect(con, "localhost", "root", "0000", "Safe", 0, NULL, 0) == NULL) {
-        fprintf(stderr, "%s\n", mysql_error(con));
-        cout << "connection to SQL is lost Sql_driver::toPost" << endl;
-        mysql_close(con);
-        //return;
-    }
-    else {
-        if (status) {
-            cout << "WRITED SUCCESS from Post base" << endl;
-            sprintf(qurr,"UPDATE post set status=1 where guid='%s'\n", guid.c_str());
-        }
-        else {
-            cout << "Updated with ERROR from Post base" << endl;
-            sprintf(qurr,"UPDATE post set status=2 where guid='%s'\n", guid.c_str());
-        }
-        mysql_query(con, qurr);
-        mysql_close(con);
-    }
-}
 
 /* Функция возвращает из строки, состоящей из элементов,
  * соединенных через разделитель, вектор этих элементов
  */
-vector<string> HttpsDriver::splitString(const string &fullstr,
-                                  const string &delimiter) {
-    vector<string> elements;
-    string::size_type lastpos = fullstr.find_first_not_of(delimiter, 0);
-    string::size_type pos = fullstr.find_first_of(delimiter, lastpos);
-    string substring("");
+//vector<string> HttpsDriver::splitString(const string &fullstr,
+//                                  const string &delimiter) {
+//    vector<string> elements;
+//    string::size_type lastpos = fullstr.find_first_not_of(delimiter, 0);
+//    string::size_type pos = fullstr.find_first_of(delimiter, lastpos);
+//    string substring("");
 
-    while ((string::npos != pos) || (string::npos != lastpos)) {
+//    while ((string::npos != pos) || (string::npos != lastpos)) {
 
-        substring = fullstr.substr(lastpos, pos - lastpos);
-        elements.push_back(substring);
-        substring = "";
+//        substring = fullstr.substr(lastpos, pos - lastpos);
+//        elements.push_back(substring);
+//        substring = "";
 
-        lastpos = fullstr.find_first_not_of(delimiter, pos);
-        pos = fullstr.find_first_of(delimiter, lastpos);
-    }
-    return elements;
-}
+//        lastpos = fullstr.find_first_not_of(delimiter, pos);
+//        pos = fullstr.find_first_of(delimiter, lastpos);
+//    }
+//    return elements;
+//}
 
 QtJson::JsonObject HttpsDriver::get_interval_json() {
     /*  data = {\"to_do\": \"show_system_interval\", \"token\":\"\", \"target\": \"\",\"filter\":\"\", \"fields\":\"\"}";
@@ -265,11 +90,12 @@ QtJson::JsonObject HttpsDriver::get_interval_json() {
 
 /*from_data_table_to_json string*/
 
-QtJson::JsonObject Sql_driver::from_data_table_to_json(string data) {
-    vector <string> arr = explode_string(data, '|');
+QtJson::JsonObject HttpsDriver::from_data_table_to_json(string data) {
 
+    vector <string> arr = explode_string(data, "|");
 
     QtJson::JsonObject target, insert;
+
     target["sensor_secret"] = arr[0].c_str();
     target["value_signal"]  = arr[1].c_str();
     target["datetime_signal"] = arr[2].c_str();
@@ -281,19 +107,13 @@ QtJson::JsonObject Sql_driver::from_data_table_to_json(string data) {
     insert["target"] = target;
     insert["filter"] = "";
     insert["fields"] = "";
-//    QByteArray in = QtJson::serialize(insert);
-//    qDebug() << "JSONinsert= " << in.data();
+
     return insert;
 
-//    QtJson::JsonObject json;
-//    string ins = "insert_" + std::to_string(number);
-//    json[ins.c_str()] = insert;
-//    QByteArray ret = QtJson::serialize(json);
-//    qDebug() << "JSONstr = " << ret.data();
-//    return ret.data();
 }
 
-size_t CurlWriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp) {
+size_t CurlWriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
+{
   size_t realsize = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)userp;
 
@@ -312,27 +132,24 @@ size_t CurlWriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *
 }
 
 int HttpsDriver::Send(string data) {
+
     if (data == EMPTY_STRING) return 1;
 
-    int ret = 0;
-    Sql_driver SQL_dr;
-    vector<string> datas;
-    string request_str;
-    QtJson::JsonObject json, param;
+    int                 ret = 0;
+    vector<string>      datas;
+    string              request_str;
+    QtJson::JsonObject  json, param;
 
-    if (data == GET_SENSOR_PERIOD)
-    {
+    if (data == GET_SENSOR_PERIOD) {
         string ins = "check_interval";
         json[ins.c_str()] = get_interval_json();
-    }
-    else
-    {
-        datas = splitString(data, "/");
+    } else {
+        datas = explode_string(data, "/");
 
         for (uint i = 0; i < datas.size(); i++)
         {
             string ins = "insert_" + std::to_string(i);
-            json[ins.c_str()] = SQL_dr.from_data_table_to_json(datas[i]);
+            json[ins.c_str()] = from_data_table_to_json(datas[i]);
         }
     }
 
@@ -351,7 +168,7 @@ int HttpsDriver::Send(string data) {
 QString HttpsDriver::process_response(string const &data, string const &response, vector<string> &datas) {
     vector<string> str;
     QtJson::JsonObject result;
-    Sql_driver SQL_dr;
+    SqlDriver SQL_dr;
 
     if (data == GET_SENSOR_PERIOD)
     {
@@ -380,8 +197,8 @@ QString HttpsDriver::process_response(string const &data, string const &response
         {
             for (uint i = 0; i < datas.size(); i++)
             {
-                str = splitString(datas[i], "|");
-                SQL_dr.toData(str[0] + "|" + str[1] + "|" + str[2] + "|" + str[3] + "|" + "1");
+                str = explode_string(datas[i], "|");
+                SQL_dr.toDataTable(QString::fromStdString(str[0] + "|" + str[1] + "|" + str[2] + "|" + str[3] + "|" + "1"));
             }
         }
         else    //get answer from server
@@ -402,8 +219,8 @@ QString HttpsDriver::process_response(string const &data, string const &response
                 QtJson::JsonObject nested = result[ins.c_str()].toMap();
                 if (nested["results"] != "true")
                 {
-                    str = splitString(datas[i], "|");
-                    SQL_dr.toData(str[0] + "|" + str[1] + "|" + str[2] + "|" + str[3] + "|" + "2");
+                    str = explode_string(datas[i], "|");
+                    SQL_dr.toDataTable(QString::fromStdString(str[0] + "|" + str[1] + "|" + str[2] + "|" + str[3] + "|" + "2"));
                 }
                 //                qDebug() << "errors:" << nested["errors"].toInt();
                 //                qDebug() << "results:" << nested["results"].toBool();

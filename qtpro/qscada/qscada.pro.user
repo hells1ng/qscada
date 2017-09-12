@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 3.0.1, 2017-09-05T16:32:35. -->
+<!-- Written by QtCreator 3.0.1, 2017-09-12T17:01:35. -->
 <qtcreator>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -199,22 +199,32 @@
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedFiles">
        <value type="QString">/home/hells1ng/raspi/projects/pi/qscada/qtpro/build-qscada-Rpi_QT-Debug/qscada</value>
        <value type="QString">/home/hells1ng/raspi/projects/pi/qscada/qtpro/build-qscada-Rpi_QT-Debug/qscada</value>
+       <value type="QString">/home/hells1ng/raspi/projects/pi/qscada/qtpro/build-qscada-Rpi_QT-Debug/qscada</value>
+       <value type="QString">/home/hells1ng/raspi/projects/pi/qscada/qtpro/build-qscada-Rpi_QT-Debug/qscada</value>
       </valuelist>
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedHosts">
-       <value type="QString">192.168.88.252</value>
+       <value type="QString">192.168.88.249</value>
+       <value type="QString">192.168.100.100</value>
        <value type="QString">192.168.1.34</value>
+       <value type="QString">192.168.88.252</value>
       </valuelist>
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedRemotePaths">
+       <value type="QString">/home/pi</value>
+       <value type="QString">/home/pi</value>
        <value type="QString">/home/pi</value>
        <value type="QString">/home/pi</value>
       </valuelist>
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedSysroots">
        <value type="QString">/home/hells1ng/raspi/sysroot</value>
        <value type="QString">/home/hells1ng/raspi/sysroot</value>
+       <value type="QString">/home/hells1ng/raspi/sysroot</value>
+       <value type="QString">/home/hells1ng/raspi/sysroot</value>
       </valuelist>
       <valuelist type="QVariantList" key="Qt4ProjectManager.MaemoRunConfiguration.LastDeployedTimes">
-       <value type="QDateTime">2017-09-05T16:12:36</value>
+       <value type="QDateTime">2017-09-11T17:47:37</value>
+       <value type="QDateTime">2017-09-12T17:00:08</value>
        <value type="QDateTime">2017-07-27T14:59:33</value>
+       <value type="QDateTime">2017-09-08T16:48:24</value>
       </valuelist>
       <value type="bool" key="RemoteLinux.GenericDirectUploadStep.IgnoreMissingFiles">false</value>
       <value type="bool" key="RemoteLinux.GenericDirectUploadStep.Incremental">true</value>

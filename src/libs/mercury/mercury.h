@@ -11,10 +11,10 @@
 #include <sstream>
 #include <fcntl.h>
 #include <termios.h>
-#include "../https/https.h"
 #include "../../defines.h"
 #include "../id/id.h"
 #include "../network/networkclass.h"
+#include "../sqldriver/sqldriver.h"
 #include <boost/thread/mutex.hpp>
 #include <QMutex>
 

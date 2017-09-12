@@ -740,8 +740,8 @@ std::string MercuryClass::str_id = "";
 
 void MercuryClass::send_data()
 {
-    Sql_driver SQL;
-    SQL.toData( SQL.Preparedata(data) );
+    SqlDriver SQL;
+    SQL.toDataTable(QString::fromStdString(data));
 }
 
 std::string MercuryClass::makeId(std::string line_, int addr_, int pin_)

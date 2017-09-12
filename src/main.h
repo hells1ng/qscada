@@ -57,17 +57,17 @@ void mercury_thread()
     //Net1.write();
 }
 
-void FromPost()
+void FromPost()//TODO: interface func SqlDriver with Post table
 {
     //cout << "       FROM_POST_THREAD " << endl;
-    Sql_driver Sql_post;
+    SqlDriver Sql_post;
     vector <string> arr;
 
-    arr = Sql_post.fromPost();// guid, value, status=0
+//    arr = Sql_post.fromPost();// guid, value, status=0
     if ((arr.size() == 3)) {
         bool res = (write_Owen_data(&Modbus, OwenVector, &Guid, arr[0], stoi(arr[1])) == 1);
         // true - success, false = error
-        Sql_post.toPost(arr[0], res); // guid, status
+//        Sql_post.toPost(arr[0], res); // guid, status
     }
 }
 
@@ -75,11 +75,11 @@ void sendToServer()
 {
    // cout << "sendToServer_THREAD " << endl;
 
-    Sql_driver SQL_data;
+    SqlDriver sqlDriver;
     HttpsDriver   httpsDriver;
     //SQL_data.fromData(4);
 
-    httpsDriver.Send( SQL_data.fromData(10) );
+    httpsDriver.Send( sqlDriver.fromDataTable(10).toStdString() );
 }
 
 void getSensorIntervalFromServer()

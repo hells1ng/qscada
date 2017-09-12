@@ -26,13 +26,13 @@ std::string OwenClass::makeId(std::string line_, int addr_, int pin_)
     sprintf(a, "%d",addr_);
     sprintf(p, "%d",pin_);
     return line_ + ":" + a + ":" + p;
-};
+}
 
 void OwenClass::send_data()
 {
-    Sql_driver SQL;
-    SQL.toData( SQL.Preparedata(data) );
-};
+    SqlDriver SQL;
+    SQL.toDataTable(QString::fromStdString(data));
+}
 
 /* Функция возвращает из строки, состоящей из элементов,
  * соединенных через разделитель, вектор этих элементов

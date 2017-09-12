@@ -20,6 +20,7 @@
 #include <QtCore/QtCore>
 #include "../../defines.h"
 #include "../json/json.h"
+#include "../sqldriver/sqldriver.h"
 
 using namespace std;
 
@@ -28,11 +29,12 @@ class HttpsDriver
 public:
     HttpsDriver();
     ~HttpsDriver();
-    vector<string> splitString(const string &fullstr, const string &delimiter);
+//    vector<string> splitString(const string &fullstr, const string &delimiter);
     int Send(string);
 
     static const string GET_SENSOR_PERIOD;
     static const string EMPTY_STRING;
+    vector<string> explode_string(string str, const char *delim);
 
 protected:
     static const char *pPassphrase;
@@ -47,26 +49,10 @@ protected:
 
 private:
     QtJson::JsonObject get_interval_json();
+    QtJson::JsonObject from_data_table_to_json(string data);
     string curl_send(string const &str);
     QString process_response(string const &data, string const &response, vector<string> &datas);
 
 };
-
-class Sql_driver
-{
-public:
-    Sql_driver();
-    ~Sql_driver();
-    string systime();
-    string fromData(int datasize);  // from "data" base
-    int toData(string); // to "data" base
-    vector<string> explode_string(string str, char delim);
-    string Preparedata(string data);
-    QtJson::JsonObject from_data_table_to_json(string data);
-    vector<string> fromPost();
-    void toPost(string guid, bool status);
-};
-
-
 
 #endif // HttpsDriver_H
