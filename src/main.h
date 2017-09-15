@@ -35,7 +35,7 @@ void owen_thread()
     //cout << "   OWEN_THREAD " << endl;
     for (unsigned int i = 0; i < OwenVector.size(); i++) {
         Owen_ptr = OwenVector[i];
-        Owen_ptr->read_data(&Modbus, &Guid);
+        Owen_ptr->read_data(&Modbus, &Guid);//TODO sqlDriver.toDataTable(Owen_ptr->read_data(&Modbus, &Guid);)
     }
 
     /*
@@ -48,11 +48,18 @@ void owen_thread()
 
     //system("free -m");
 }
+SqlDriver sqlDriver;
 
 void mercury_thread()
 {
     //cout << "           MERCURY_THREAD " << endl;
-    Mercury_44.read_data(&Can, &Guid);
+
+//    Mercury_44.read_data(&Can, &Guid);//TODO sqlDriver.toDataTable(Mercury_44.read_data(&Can, &Guid);
+
+//    sqlDriver.toDataTable(sqlDriver.prepare_data(QString::fromStdString(Mercury_44.read_data(&Can, &Guid))));
+
+//    sqlDriver.push(sqlDriver.prepare_data(QString::fromStdString(Mercury_44.read_data(&Can, &Guid))));
+    sqlDriver.push(Mercury_44.read_data(&Can, &Guid));
 
     //Net1.write();
 }
@@ -71,21 +78,29 @@ void FromPost()//TODO: interface func SqlDriver with Post table
     }
 }
 
+HttpsDriver   httpsDriver;
+
 void sendToServer()
 {
-   // cout << "sendToServer_THREAD " << endl;
 
-    SqlDriver sqlDriver;
-    HttpsDriver   httpsDriver;
-    //SQL_data.fromData(4);
+    Data sendData = sqlDriver.pop(4);
 
-    httpsDriver.Send( sqlDriver.fromDataTable(10).toStdString() );
+    httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &sendData);
+
+    sqlDriver.toDataTable(sendData);
+
+    Data dataFromTable = sqlDriver.fromDataTable(1);
+    foreach (const QStringList &qsl, dataFromTable) {
+        qDebug() << "fromDataTable = " << qsl;
+    }
+
+    //TODO do fromDataTable when pop() is empty
 }
 
 void getSensorIntervalFromServer()
 {
     HttpsDriver   httpsDriver;
-    httpsDriver.Send( HttpsDriver::GET_SENSOR_PERIOD );
+//    httpsDriver.Send( HttpsDriver::GET_SENSOR_PERIOD );
 }
 
 void initOwenVector()

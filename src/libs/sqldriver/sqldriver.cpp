@@ -5,15 +5,26 @@
  * https://habrahabr.ru/post/128836/
  * http://doc.qt.io/qt-5/sql-connecting.html
  */
-
+qint64 SqlDriver::numOfConnections = 0;
 SqlDriver::SqlDriver(QObject *parent) :
     QObject(parent)
-{    
-    db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setHostName("localhost");
-    db.setDatabaseName("Safe");
-    db.setUserName("root");
-    db.setPassword("0000");
+{
+//    numOfConnections++;
+    if(QSqlDatabase::contains(QSqlDatabase::defaultConnection)) {
+        db = QSqlDatabase::database();
+    } else {
+//        QSqlDatabase defDB = QSqlDatabase::addDatabase("QMYSQL", QString::number(numOfConnections));
+//        db = QSqlDatabase::database(QString::number(numOfConnections));
+//        db = QSqlDatabase::addDatabase("QMYSQL");
+//        db.setDatabaseName("Safe");
+        db = QSqlDatabase::addDatabase("QSQLITE");
+        db.setDatabaseName("/home/pi/qscada_db");
+    }
+//    db.setHostName("localhost");
+//    db.setUserName("root");
+//    db.setPassword("0000");
+
+//    qDebug() << QString::number(numOfConnections) << endl;
 
 //    TestSqlDriver();
 }
@@ -21,17 +32,55 @@ SqlDriver::SqlDriver(QObject *parent) :
 SqlDriver::~SqlDriver()
 {
 }
+void SqlDriver::push(Data data)
+{
+//    foreach (const QStringList &qsl, data) {
+//        qDebug() << "Push = " << qsl;
+//    }
+//    QStringList *qsl = data.data();
+//    qDebug() << qsl->size() ;
+
+    for(int i = 0; i < data.size(); i++) {
+
+        if (data[i].size() != DATA_NUM_OF_ELEM_START) {
+            qFatal("SqlDriver::push() -> too few args in QstringList");
+
+        } else {
+            data[i].append(get_systime());
+            data[i].append(QString::number(DATA_ERROR_FLAG0));
+        }
+        queue.enqueue(data[i]);
+    }
+}
+
+
+Data SqlDriver::pop(const quint8 size)
+{
+    Data retData;
+    QStringList ret;
+
+    quint8 i = 0;
+
+    while (!queue.empty() && (i < size)) {
+       ret = queue.dequeue();
+       qDebug() << "Pop = " << ret;
+       retData.append(ret);
+       i++;
+    }
+    return retData;
+}
 
 void SqlDriver::TestSqlDriver()
 {
-    qDebug() << "SqlDriver.get_systime() = "    << get_systime() << endl;
-    qDebug() << "SqlDriver.prepare_data(guid|value|flag) = "
-             << prepare_data(QString("guid|value|flag")) << endl;
+//    qDebug() << "SqlDriver.get_systime() = "    << get_systime() << endl;
+//    qDebug() << "SqlDriver.prepare_data(guid|value|flag) = "
+//             << prepare_data(QString("guid|value|flag")) << endl;
 //    qDebug() << "SqlDriver.prepare_value() = "
 //             << prepare_data(QString("guid|value")) << endl;
-    toDataTable("guid|value|flag");
-    qDebug() << "SqlDriver.fromDataTable(3) = "
-             << fromDataTable(3) << endl;
+//    toDataTable("guid|value|flag");
+//    qDebug() << "SqlDriver.fromDataTable(3) = "
+//             << fromDataTable(3) << endl;
+
 }
 
 /*need get time like 20170905 14:56:30*/
@@ -40,50 +89,51 @@ QString SqlDriver::get_systime()
     return QDateTime::currentDateTime().toString("yyyyMMdd hh:mm:ss");
 }
 
-QString SqlDriver::prepare_data(const QString& str)
+
+void SqlDriver::toDataTable(const Data& data)
 {
-    QString delim("|");
-    QString ret;
-    QStringList qsl = str.split(delim);
-
-    if (qsl.size() != 3)
-        qFatal("SqlDriver::prepare_data() -> too few args in Qstring");
-
-    ret = qsl[0] + delim + qsl[1] + delim + get_systime() + delim + qsl[2] + delim + QString::number(0);
-
-    return ret;
-}
-
-void SqlDriver::toDataTable(const QString& data)
-{
+//    foreach (const QStringList &qsl, data) {
+//        qDebug() << "toDataTable = " << qsl;
+//    }
     bool ok = db.open();
     if (!ok) {
         qWarning() << "Cannot connect to " << db.databaseName() << endl;
         return;
     } else {
-        QSqlQuery query;
-        query.prepare("INSERT INTO data (string)"
-                      "VALUES (:data);");
-        query.bindValue(":data", prepare_data(data));
+        for (int i = 0; i < data.size(); i++) {
+            QStringList slist = data.at(i);
+            if (slist.at(DATA_POS_ERRORFLAG) != QString::number(DATA_ERROR_FLAG0)) {
 
-        bool b = query.exec();
-        if (!b)
-            qWarning() << "Cannot write to " << db.databaseName() << endl;
+                QSqlQuery query;
+                query.prepare("INSERT INTO Data (guid,value,value_flag,time,error_flag)"
+                              "VALUES (:guid,:value,:value_flag,:time,:error_flag);");
+
+                query.bindValue(":guid",        slist.at(DATA_POS_GUID));
+                query.bindValue(":value",       slist.at(DATA_POS_VALUE));
+                query.bindValue(":value_flag",  slist.at(DATA_POS_VALUEFLAG));
+                query.bindValue(":time",        slist.at(DATA_POS_TIME));
+                query.bindValue(":error_flag",  slist.at(DATA_POS_ERRORFLAG));
+
+                bool b = query.exec();
+                if (!b) {
+                    qWarning() << "Cannot write to " << db.databaseName() << endl;
+//                    qWarning() << "Error =  " << query.e << endl;
+                }
+            }
+        }
 
         db.close();
         return;
     }
 }
 
-QString SqlDriver::fromDataTable(int data_size)
+Data SqlDriver::fromDataTable(quint16 data_size)
 {
-    QString retstr(QString::fromStdString(HttpsDriver::EMPTY_STRING));
-    QString delim("/");
+    Data retData;
 
     bool ok = db.open();
     if (!ok) {
-        qWarning() << "Cannot connect to " << db.databaseName() << endl;
-        return retstr;
+        qWarning() << "fromDataTable: Cannot connect to " << db.databaseName() << endl;
     } else {
         QString query_str = "SELECT * FROM data LIMIT " + QString::number(data_size);
         QSqlQuery query;
@@ -93,22 +143,47 @@ QString SqlDriver::fromDataTable(int data_size)
             qWarning() << "Cannot read from " << db.databaseName() << endl;
 
         else if (query.size()) {
-            retstr.clear();
+
+            QVector<QString> post_id_vector;
 
             while (query.next()) {
-                 retstr = retstr + query.value(0).toString() + delim;
+
+                QStringList qsl;
+                const quint8 offset = 1;//post_id on 1
+                qsl.append(query.value(offset + DATA_POS_GUID).toString());
+                qsl.append(query.value(offset + DATA_POS_VALUE).toString());
+                qsl.append(query.value(offset + DATA_POS_VALUEFLAG).toString());
+                qsl.append(query.value(offset + DATA_POS_TIME).toString());
+                qsl.append(query.value(offset + DATA_POS_ERRORFLAG).toString());
+
+                retData.append(qsl);
+                post_id_vector.append(query.value(0).toString());
             }
 
-            query_str = "DELETE FROM data LIMIT " + QString::number(data_size);
+            query_str = "DELETE FROM data WHERE ";
+            QString s_for_del;
 
-            bool c = query.exec(query_str);
-            if (!c)
-                qWarning() << "Cannot delete from " << db.databaseName() << endl;
+            if (!retData.isEmpty())  {
+                s_for_del = "post_id=" + post_id_vector.at(0);
+                for (int i = 1; i < post_id_vector.size(); i++) {
+                    s_for_del = s_for_del + " OR " + "post_id=" + post_id_vector[i];
+                }
+
+                query_str = query_str + s_for_del;
+
+                bool c = query.exec(query_str);
+                qDebug()<< query.lastQuery();
+
+                if (!c) {
+                    qWarning() << "Cannot delete from " << db.databaseName() << endl;
+                    qDebug() << "SqLite error:" << query.lastError().text();
+                }
+            }
         }
 
         db.close();
-        return retstr;
     }
+    return retData;
 }
 
 /*

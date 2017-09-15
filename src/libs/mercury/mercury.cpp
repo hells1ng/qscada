@@ -740,8 +740,12 @@ std::string MercuryClass::str_id = "";
 
 void MercuryClass::send_data()
 {
-    SqlDriver SQL;
-    SQL.toDataTable(QString::fromStdString(data));
+//    SqlDriver SQL;
+//    QString qs = SQL.prepare_data(QString::fromStdString(data));
+//    SQL.toDataTable(qs);
+
+//    SQL.toDataTable(SQL.prepare_data(QString::fromStdString(data)));
+//    return data;
 }
 
 std::string MercuryClass::makeId(std::string line_, int addr_, int pin_)
@@ -752,8 +756,10 @@ std::string MercuryClass::makeId(std::string line_, int addr_, int pin_)
     return line_+":"+a+":"+p;
 }
 
-void MercuryClass::read_data(CanClass* can, GuidClass* guid)
+Data MercuryClass::read_data(CanClass* can, GuidClass* guid)
 {
+    QStringList qsl1, qsl2;
+    Data retData;
     //open_connection();
     if ( can->isConnected() ) {
         switch(checkChannel(can, address)) {
@@ -844,21 +850,36 @@ void MercuryClass::read_data(CanClass* can, GuidClass* guid)
     */
 
             if ((o.PRT[0].ap > 0.00) && (o.PRT[1].ap > 0.00)) {
-                data = data + "|" + str_data[21] + "|1"; //day tariff [12]
-                if (PRINT_RESULTS)
-                    std::cout << data << std::endl;
-                if (SENDING /*&&(isFirstReading||(o.PRT[0].ap!=o_prev.PRT[0].ap))*/)
-                    send_data();  //SEND MERCURY DATA!!!!!!!
+//                data = data + "|" + str_data[21] + "|1"; //day tariff [12]
+//                if (PRINT_RESULTS)
+//                    std::cout << data << std::endl;
+//                if (SENDING /*&&(isFirstReading||(o.PRT[0].ap!=o_prev.PRT[0].ap))*/)
+//                    send_data();  //SEND MERCURY DATA!!!!!!!
 
-                //std::cout<<"DAY: o.PRT[0].ap = "<<o.PRT[0].ap <<"o_prev.PRT[0].ap ="<< o_prev.PRT[0].ap<<std::endl;
-                data = "";
-                data = data + (*guid)[str_id] + "|" + str_data[22] + "|2";//night tariff [16]
-                if (PRINT_RESULTS)
-                    std::cout << data << std::endl;
-                if (SENDING /*&&(isFirstReading||(o.PRT[1].ap!=o_prev.PRT[1].ap))*/)
-                    send_data();  //SEND MERCURY DATA!!!!!!!
+//                std::cout<<"DAY: o.PRT[0].ap = "<<o.PRT[0].ap <<"o_prev.PRT[0].ap ="<< o_prev.PRT[0].ap<<std::endl;
+//                data = "";
+//                data = data + "/" + (*guid)[str_id] + "|" + str_data[22] + "|2";//night tariff [16]
+//                if (PRINT_RESULTS)
+//                    std::cout << data << std::endl;
+//                if (SENDING /*&&(isFirstReading||(o.PRT[1].ap!=o_prev.PRT[1].ap))*/)
+//                    send_data();  //SEND MERCURY DATA!!!!!!!
 
-                //std::cout<<"NIGHT o.PRT[1].ap = "<<o.PRT[1].ap <<"o_prev.PRT[1].ap ="<< o_prev.PRT[1].ap<<std::endl;
+//                std::cout<<"NIGHT o.PRT[1].ap = "<<o.PRT[1].ap <<"o_prev.PRT[1].ap ="<< o_prev.PRT[1].ap<<std::endl;
+
+                qsl1.append(QString::fromStdString((*guid)[str_id]));
+                qsl1.append(QString::fromStdString(str_data[21]));
+                qsl1.append(QString::number(DATA_VALUE_FLAG1));
+
+                retData.append(qsl1);
+
+                qsl2.append(QString::fromStdString((*guid)[str_id]));
+                qsl2.append(QString::fromStdString(str_data[22]));
+                qsl2.append(QString::number(DATA_VALUE_FLAG2));
+
+                retData.append(qsl2);
+
+//                qDebug() << "mercury_1 = " << retData[0]
+//                         << "mercury_2 = " << retData[1] ;
 
                 connection_error = 0;
                 isFirstReading = false;
@@ -875,5 +896,19 @@ void MercuryClass::read_data(CanClass* can, GuidClass* guid)
     */
     //
     can->closeCan();
+
+    qsl1.append(QString("wrong_guid"));
+    qsl1.append(QString::fromStdString("34.0"));
+    qsl1.append(QString::number(DATA_VALUE_FLAG1));
+
+    retData.append(qsl1);
+
+    qsl2.append(QString::fromStdString((*guid)[str_id]));
+    qsl2.append(QString::fromStdString("15.0"));
+    qsl2.append(QString::number(DATA_VALUE_FLAG2));
+
+    retData.append(qsl2);
+
+    return retData;
 }
 

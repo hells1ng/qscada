@@ -14,7 +14,6 @@
 #include <map>
 
 #include <curl/curl.h>
-#include <mysql/mysql.h>
 #include <time.h>
 
 #include <QtCore/QtCore>
@@ -30,11 +29,13 @@ public:
     HttpsDriver();
     ~HttpsDriver();
 //    vector<string> splitString(const string &fullstr, const string &delimiter);
-    int Send(string);
+    void Send(const quint8 cmd, Data *data);
 
-    static const string GET_SENSOR_PERIOD;
-    static const string EMPTY_STRING;
     vector<string> explode_string(string str, const char *delim);
+    enum {
+        HTTPS_CMD_POST_SENSOR_VALUE,
+        HTTPS_CMD_GET_SENSOR_PERIOD
+    };
 
 protected:
     static const char *pPassphrase;
@@ -49,9 +50,9 @@ protected:
 
 private:
     QtJson::JsonObject get_interval_json();
-    QtJson::JsonObject from_data_table_to_json(string data);
+    QtJson::JsonObject from_data_to_json(QStringList data);
     string curl_send(string const &str);
-    QString process_response(string const &data, string const &response, vector<string> &datas);
+    void process_response(const quint8 cmd, Data *data, string const &response/* , vector<string> &datas*/);
 
 };
 

@@ -274,7 +274,7 @@ public:
     ~MercuryClass() {
     }
 
-    void read_data(CanClass* can, GuidClass* guid);
+    Data read_data(CanClass* can, GuidClass* guid);
     void send_data();
     string makeId(string line_, int addr_, int pin_);
 

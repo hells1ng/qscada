@@ -31,7 +31,7 @@ std::string OwenClass::makeId(std::string line_, int addr_, int pin_)
 void OwenClass::send_data()
 {
     SqlDriver SQL;
-    SQL.toDataTable(QString::fromStdString(data));
+//    SQL.toDataTable(SQL.prepare_data(QString::fromStdString(data))); // TODO
 }
 
 /* Функция возвращает из строки, состоящей из элементов,

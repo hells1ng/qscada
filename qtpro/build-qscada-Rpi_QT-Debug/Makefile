@@ -36,7 +36,7 @@ DISTNAME      = qscada1.0.0
 DISTDIR = /home/hells1ng/raspi/projects/pi/qscada/qtpro/build-qscada-Rpi_QT-Debug/.tmp/qscada1.0.0
 LINK          = /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-g++
 LFLAGS        = -Wl,-rpath-link,/home/hells1ng/raspi/sysroot/opt/vc/lib -Wl,-rpath-link,/home/hells1ng/raspi/sysroot/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/hells1ng/raspi/sysroot/lib/arm-linux-gnueabihf -mfloat-abi=hard --sysroot=/home/hells1ng/raspi/sysroot -Wl,-rpath,/home/hells1ng/raspi/qt5pi/lib
-LIBS          = $(SUBLIBS) -lcurl -lssl -lcrypto -lmysqlclient -lboost_system -lboost_thread -lboost_date_time -L/home/hells1ng/raspi/qt5pi/lib -lQt5Network -lQt5Sql -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -lcurl -lssl -lcrypto -lboost_system -lboost_thread -lboost_date_time -lmysqlclient_r -L/home/hells1ng/raspi/qt5pi/lib -lQt5Network -lQt5Sql -lQt5Core -lpthread 
 AR            = /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf-ar cqs
 RANLIB        = 
 SED           = sed
@@ -812,6 +812,10 @@ moc_sqldriver.cpp: /home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/Q
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtcoreversion.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSql \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsql.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlDatabase \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqldatabase.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlQuery \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqlquery.h \
 		../../src/libs/sqldriver/sqldriver.h
 	/home/hells1ng/raspi/qt5/bin/moc $(DEFINES) -I/home/hells1ng/raspi/qt5/mkspecs/devices/linux-rasp-pi2-g++ -I/home/hells1ng/raspi/projects/pi/qscada/qtpro/qscada -I/home/hells1ng/raspi/sysroot/opt/vc/include -I/home/hells1ng/raspi/sysroot/opt/vc/include/interface/vcos -I/home/hells1ng/raspi/sysroot/opt/vc/include/interface/vcos/pthreads -I/home/hells1ng/raspi/sysroot/opt/vc/include/interface/vmcs_host/linux -I/home/hells1ng/raspi/sysroot/usr/local/include -I/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include -I/home/hells1ng/raspi/qt5pi/include -I/home/hells1ng/raspi/qt5pi/include/QtNetwork -I/home/hells1ng/raspi/qt5pi/include/QtSql -I/home/hells1ng/raspi/qt5pi/include/QtCore -I. -I/home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/include/c++/4.8.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/include/c++/4.8.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/include/c++/4.8.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/lib/gcc/arm-linux-gnueabihf/4.8.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/lib/gcc/arm-linux-gnueabihf/4.8.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf ../../src/libs/sqldriver/sqldriver.h -o moc_sqldriver.cpp
 
@@ -1395,7 +1399,7 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/thread/pthread/timespec.hpp \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/thread/pthread/pthread_mutex_scoped_lock.hpp \
 		../../src/libs/owen/owen.h \
-		../../src/libs/https/https.h \
+		../../src/libs/sqldriver/sqldriver.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QtCore \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QtCoreDepends \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractanimation.h \
@@ -1583,10 +1587,12 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qversionnumber.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qxmlstream.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtcoreversion.h \
-		../../src/defines.h \
-		../../src/libs/json/json.h \
-		/home/hells1ng/raspi/qt5pi/include/QtCore/QVariant \
-		/home/hells1ng/raspi/qt5pi/include/QtCore/QString \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSql \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsql.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlDatabase \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqldatabase.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlQuery \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqlquery.h \
 		../../src/libs/id/id.h \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/bimap.hpp \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/bimap/bimap.hpp \
@@ -2075,6 +2081,7 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qsslkey.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qsslsocket.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qtnetworkversion.h \
+		../../src/defines.h \
 		../../src/libs/mercury/mercury.h \
 		/home/hells1ng/raspi/qt5pi/include/QtCore/QMutex \
 		../../src/libs/threadmanager/threadmanager.h \
@@ -2331,10 +2338,11 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/thread/shared_mutex.hpp \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/thread/pthread/shared_mutex.hpp \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/thread/win32/shared_mutex.hpp \
+		../../src/libs/https/https.h \
+		../../src/libs/json/json.h \
+		/home/hells1ng/raspi/qt5pi/include/QtCore/QVariant \
+		/home/hells1ng/raspi/qt5pi/include/QtCore/QString \
 		../../src/libs/pulsar/pulsarclass.h \
-		../../src/libs/sqldriver/sqldriver.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSql \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsql.h \
 		../../src/main.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../src/main.cpp
 
@@ -2529,7 +2537,14 @@ https.o: ../../src/libs/https/https.cpp ../../src/libs/https/https.h \
 		../../src/defines.h \
 		../../src/libs/json/json.h \
 		/home/hells1ng/raspi/qt5pi/include/QtCore/QVariant \
-		/home/hells1ng/raspi/qt5pi/include/QtCore/QString
+		/home/hells1ng/raspi/qt5pi/include/QtCore/QString \
+		../../src/libs/sqldriver/sqldriver.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSql \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsql.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlDatabase \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqldatabase.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlQuery \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqlquery.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o https.o ../../src/libs/https/https.cpp
 
 id.o: ../../src/libs/id/id.cpp ../../src/defines.h \
@@ -3353,198 +3368,7 @@ id.o: ../../src/libs/id/id.cpp ../../src/defines.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o id.o ../../src/libs/id/id.cpp
 
 mercury.o: ../../src/libs/mercury/mercury.cpp ../../src/libs/mercury/mercury.h \
-		../../src/libs/https/https.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QtCore \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QtCoreDepends \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractanimation.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobject.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobjectdefs.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qnamespace.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qglobal.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qconfig.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfeatures.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsystemdetection.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qprocessordetection.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcompilerdetection.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtypeinfo.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtypetraits.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qisenum.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsysinfo.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlogging.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qflags.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbasicatomic.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_bootstrap.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qgenericatomic.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_cxx11.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_gcc.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_msvc.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_armv7.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_armv6.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_armv5.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_ia64.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_x86.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_unix.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qglobalstatic.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmutex.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qnumeric.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qversiontagging.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobjectdefs_impl.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstring.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qchar.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbytearray.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qrefcount.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qarraydata.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstringbuilder.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlist.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qalgorithms.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qiterator.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qhashfunctions.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpair.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbytearraylist.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstringlist.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qregexp.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstringmatcher.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcoreevent.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qscopedpointer.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmetatype.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qvarlengtharray.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcontainerfwd.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobject_impl.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qanimationgroup.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qparallelanimationgroup.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpauseanimation.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpropertyanimation.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qvariantanimation.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qeasingcurve.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qvector.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpoint.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qvariant.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmap.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdebug.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qhash.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtextstream.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qiodevice.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlocale.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qshareddata.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qset.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcontiguouscache.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsequentialanimationgroup.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtextcodec.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qendian.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlibraryinfo.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdatetime.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbuffer.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdatastream.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdir.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfileinfo.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfile.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfiledevice.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdiriterator.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfileselector.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QObject \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QStringList \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfilesystemwatcher.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlockfile.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qloggingcategory.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qprocess.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qresource.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsavefile.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsettings.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstandardpaths.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstorageinfo.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtemporarydir.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QScopedPointer \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtemporaryfile.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qurl.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qurlquery.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractitemmodel.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractproxymodel.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qidentityproxymodel.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qitemselectionmodel.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsortfilterproxymodel.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstringlistmodel.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qjsonarray.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qjsonvalue.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qjsondocument.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qjsonobject.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstracteventdispatcher.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qeventloop.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractnativeeventfilter.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbasictimer.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcoreapplication.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmath.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmetaobject.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmimedata.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobjectcleanuphandler.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpointer.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsharedpointer.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsharedpointer_impl.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsharedmemory.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsignalmapper.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsocketnotifier.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsystemsemaphore.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtimer.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtranslator.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qwineventnotifier.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmimedatabase.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmimetype.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfactoryinterface.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlibrary.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qplugin.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpluginloader.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/quuid.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractstate.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstracttransition.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qeventtransition.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfinalstate.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qhistorystate.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsignaltransition.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstate.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstatemachine.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qexception.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfuture.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfutureinterface.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qrunnable.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qresultstore.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfuturesynchronizer.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfuturewatcher.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qreadwritelock.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsemaphore.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qthread.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qthreadpool.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qthreadstorage.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qwaitcondition.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qarraydataops.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qarraydatapointer.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbitarray.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbytearraymatcher.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcache.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcollator.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcommandlineoption.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcommandlineparser.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcryptographichash.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qelapsedtimer.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qline.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlinkedlist.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmargins.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmessageauthenticationcode.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qqueue.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qrect.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsize.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qregularexpression.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qscopedvaluerollback.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstack.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtextboundaryfinder.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtimeline.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtimezone.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qversionnumber.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qxmlstream.h \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtcoreversion.h \
 		../../src/defines.h \
-		../../src/libs/json/json.h \
-		/home/hells1ng/raspi/qt5pi/include/QtCore/QVariant \
-		/home/hells1ng/raspi/qt5pi/include/QtCore/QString \
 		../../src/libs/id/id.h \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/config.hpp \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/config/user.hpp \
@@ -4363,8 +4187,195 @@ mercury.o: ../../src/libs/mercury/mercury.cpp ../../src/libs/mercury/mercury.h \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/bimap/support/iterator_type_by.hpp \
 		../../src/libs/network/networkclass.h \
 		/home/hells1ng/raspi/qt5pi/include/QtCore/QObject \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobject.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobjectdefs.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qnamespace.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qglobal.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qconfig.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfeatures.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsystemdetection.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qprocessordetection.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcompilerdetection.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtypeinfo.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtypetraits.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qisenum.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsysinfo.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlogging.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qflags.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbasicatomic.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_bootstrap.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qgenericatomic.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_cxx11.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_gcc.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_msvc.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_armv7.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_armv6.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_armv5.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_ia64.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_x86.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qatomic_unix.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qglobalstatic.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmutex.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qnumeric.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qversiontagging.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobjectdefs_impl.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstring.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qchar.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbytearray.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qrefcount.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qarraydata.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstringbuilder.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlist.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qalgorithms.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qiterator.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qhashfunctions.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpair.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbytearraylist.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstringlist.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qregexp.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstringmatcher.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcoreevent.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qscopedpointer.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmetatype.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qvarlengtharray.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcontainerfwd.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobject_impl.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/QtNetwork \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtNetwork/QtNetworkDepends \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QtCore \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QtCoreDepends \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractanimation.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qanimationgroup.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qparallelanimationgroup.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpauseanimation.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpropertyanimation.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qvariantanimation.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qeasingcurve.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qvector.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpoint.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qvariant.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmap.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdebug.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qhash.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtextstream.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qiodevice.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlocale.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qshareddata.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qset.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcontiguouscache.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsequentialanimationgroup.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtextcodec.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qendian.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlibraryinfo.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdatetime.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbuffer.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdatastream.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdir.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfileinfo.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfile.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfiledevice.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qdiriterator.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfileselector.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QObject \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QStringList \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfilesystemwatcher.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlockfile.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qloggingcategory.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qprocess.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qresource.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsavefile.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsettings.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstandardpaths.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstorageinfo.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtemporarydir.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QScopedPointer \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtemporaryfile.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qurl.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qurlquery.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractitemmodel.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractproxymodel.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qidentityproxymodel.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qitemselectionmodel.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsortfilterproxymodel.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstringlistmodel.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qjsonarray.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qjsonvalue.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qjsondocument.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qjsonobject.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstracteventdispatcher.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qeventloop.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractnativeeventfilter.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbasictimer.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcoreapplication.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmath.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmetaobject.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmimedata.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qobjectcleanuphandler.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpointer.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsharedpointer.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsharedpointer_impl.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsharedmemory.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsignalmapper.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsocketnotifier.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsystemsemaphore.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtimer.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtranslator.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qwineventnotifier.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmimedatabase.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmimetype.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfactoryinterface.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlibrary.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qplugin.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qpluginloader.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/quuid.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractstate.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstracttransition.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qeventtransition.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfinalstate.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qhistorystate.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsignaltransition.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstate.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstatemachine.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qexception.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfuture.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfutureinterface.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qrunnable.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qresultstore.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfuturesynchronizer.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qfuturewatcher.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qreadwritelock.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsemaphore.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qthread.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qthreadpool.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qthreadstorage.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qwaitcondition.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qarraydataops.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qarraydatapointer.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbitarray.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qbytearraymatcher.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcache.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcollator.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcommandlineoption.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcommandlineparser.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qcryptographichash.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qelapsedtimer.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qline.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qlinkedlist.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmargins.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qmessageauthenticationcode.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qqueue.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qrect.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qsize.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qregularexpression.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qscopedvaluerollback.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qstack.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtextboundaryfinder.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtimeline.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtimezone.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qversionnumber.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qxmlstream.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtcoreversion.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qabstractnetworkcache.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtNetwork/qnetworkrequest.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QSharedDataPointer \
@@ -4425,6 +4436,13 @@ mercury.o: ../../src/libs/mercury/mercury.cpp ../../src/libs/mercury/mercury.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qsslkey.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qsslsocket.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qtnetworkversion.h \
+		../../src/libs/sqldriver/sqldriver.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSql \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsql.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlDatabase \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqldatabase.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlQuery \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqlquery.h \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/thread/mutex.hpp \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/thread/detail/platform.hpp \
 		/home/hells1ng/raspi/sysroot/usr/local/include/boost/config/requires_threads.hpp \
@@ -5198,7 +5216,7 @@ modbus.o: ../../src/libs/modbus/modbus.c ../../src/libs/modbus/config.h \
 	$(CC) -c $(CFLAGS) $(INCPATH) -o modbus.o ../../src/libs/modbus/modbus.c
 
 owen.o: ../../src/libs/owen/owen.cpp ../../src/libs/owen/owen.h \
-		../../src/libs/https/https.h \
+		../../src/libs/sqldriver/sqldriver.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QtCore \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/QtCoreDepends \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qabstractanimation.h \
@@ -5386,10 +5404,12 @@ owen.o: ../../src/libs/owen/owen.cpp ../../src/libs/owen/owen.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qversionnumber.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qxmlstream.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtcoreversion.h \
-		../../src/defines.h \
-		../../src/libs/json/json.h \
-		/home/hells1ng/raspi/qt5pi/include/QtCore/QVariant \
-		/home/hells1ng/raspi/qt5pi/include/QtCore/QString \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSql \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsql.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlDatabase \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqldatabase.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlQuery \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqlquery.h \
 		../../src/libs/modbus/ModbusClass.h \
 		../../src/libs/modbus/modbus.h \
 		../../src/libs/modbus/modbus-version.h \
@@ -6443,7 +6463,8 @@ owen.o: ../../src/libs/owen/owen.cpp ../../src/libs/owen/owen.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qsslerror.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qsslkey.h \
 		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qsslsocket.h \
-		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qtnetworkversion.h
+		/home/hells1ng/raspi/qt5pi/include/QtNetwork/qtnetworkversion.h \
+		../../src/defines.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o owen.o ../../src/libs/owen/owen.cpp
 
 threadmanager.o: ../../src/libs/threadmanager/threadmanager.cpp ../../src/libs/threadmanager/threadmanager.h \
@@ -8202,7 +8223,16 @@ sqldriver.o: ../../src/libs/sqldriver/sqldriver.cpp ../../src/libs/sqldriver/sql
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qxmlstream.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtCore/qtcoreversion.h \
 		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSql \
-		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsql.h
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsql.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlDatabase \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqldatabase.h \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/QSqlQuery \
+		/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/QtSql/qsqlquery.h \
+		../../src/libs/https/https.h \
+		../../src/defines.h \
+		../../src/libs/json/json.h \
+		/home/hells1ng/raspi/qt5pi/include/QtCore/QVariant \
+		/home/hells1ng/raspi/qt5pi/include/QtCore/QString
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sqldriver.o ../../src/libs/sqldriver/sqldriver.cpp
 
 moc_networkclass.o: moc_networkclass.cpp 

@@ -5,7 +5,9 @@
 #include <QtSql/QSql>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
+#include <QtSql/QSqlError>
 
+#include "../../defines.h"
 
 class SqlDriver : public QObject
 {
@@ -14,11 +16,12 @@ public:
     explicit SqlDriver(QObject *parent = 0);
     ~SqlDriver();
 
-    QString     prepare_data(const QString &str);
+    void        toDataTable(const Data &data);
 
-    void        toDataTable(const QString &data);
+    Data     fromDataTable(quint16 data_size);
 
-    QString     fromDataTable(int data_size);
+    void push(Data data);
+    Data pop(const quint8 size);
 
 signals:
 
@@ -26,9 +29,11 @@ public slots:
 
 private:
     QSqlDatabase db;
+    QQueue<QStringList> queue;
 
     QString     get_systime();
     void        TestSqlDriver();
+    static qint64  numOfConnections;
 
 };
 

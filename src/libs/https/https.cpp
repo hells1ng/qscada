@@ -29,9 +29,6 @@ const char *HttpsDriver::pCAType = "PEM";
 
 const char *HttpsDriver::SERVERADDR = "https://tomatto.ddns.net:444";
 
-const string HttpsDriver::GET_SENSOR_PERIOD = "GET_SENSOR_PERIOD";
-const string HttpsDriver::EMPTY_STRING = "EMPTY";
-
 
 /*--------------------------------------*/
 /*EXPLODING STRING BY DEL SYMPOL(DELIM)*/
@@ -90,17 +87,23 @@ QtJson::JsonObject HttpsDriver::get_interval_json() {
 
 /*from_data_table_to_json string*/
 
-QtJson::JsonObject HttpsDriver::from_data_table_to_json(string data) {
+QtJson::JsonObject HttpsDriver::from_data_to_json(QStringList data) {
 
-    vector <string> arr = explode_string(data, "|");
+//    vector <string> arr = explode_string(data, "|");
 
     QtJson::JsonObject target, insert;
 
-    target["sensor_secret"] = arr[0].c_str();
-    target["value_signal"]  = arr[1].c_str();
-    target["datetime_signal"] = arr[2].c_str();
-    target["value_flag"] = arr[3].c_str();
-    target["error_flag"] = arr[4].c_str();
+//    target["sensor_secret"] = arr[0].c_str();
+//    target["value_signal"]  = arr[1].c_str();
+//    target["datetime_signal"] = arr[2].c_str();
+//    target["value_flag"] = arr[3].c_str();
+//    target["error_flag"] = arr[4].c_str();
+
+    target["sensor_secret"]     = data.at(DATA_POS_GUID).toStdString().c_str();
+    target["value_signal"]      = data.at(DATA_POS_VALUE).toStdString().c_str();
+    target["datetime_signal"]   = data.at(DATA_POS_TIME).toStdString().c_str();
+    target["value_flag"]        = data.at(DATA_POS_VALUEFLAG).toStdString().c_str();
+    target["error_flag"]        = data.at(DATA_POS_ERRORFLAG).toStdString().c_str();
 
     insert["to_do"] = "insert_signal_value";
     insert["token"] = "";
@@ -131,102 +134,101 @@ size_t CurlWriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *
   return realsize;
 }
 
-int HttpsDriver::Send(string data) {
+void HttpsDriver::Send(const quint8 cmd, Data *data) {
 
-    if (data == EMPTY_STRING) return 1;
+//    if ((data == EMPTY_STRING) || (data.size() == 0)) return 1;
+    if (data->isEmpty())
+         return;
 
-    int                 ret = 0;
-    vector<string>      datas;
-    string              request_str;
-    QtJson::JsonObject  json, param;
+    QtJson::JsonObject  json;
 
-    if (data == GET_SENSOR_PERIOD) {
+    if (cmd == HTTPS_CMD_GET_SENSOR_PERIOD) {
+
         string ins = "check_interval";
         json[ins.c_str()] = get_interval_json();
-    } else {
-        datas = explode_string(data, "/");
 
-        for (uint i = 0; i < datas.size(); i++)
-        {
+    } else if (cmd == HTTPS_CMD_POST_SENSOR_VALUE){
+
+        quint8 i = 0;
+        foreach (const QStringList &qsl, *data) {
             string ins = "insert_" + std::to_string(i);
-            json[ins.c_str()] = from_data_table_to_json(datas[i]);
+            json[ins.c_str()] = from_data_to_json(qsl);
+            i++;
         }
     }
 
+    QtJson::JsonObject param;
     param["parameters"] = json;
 
-    request_str = QtJson::serialize(param).data();
+    string response_str = curl_send( QtJson::serialize(param).data() );
 
-    string response_str = curl_send(request_str);
+    process_response(cmd, data, response_str);
 
-    process_response(data, response_str, datas);
-
-    return ret;
 }
 
 
-QString HttpsDriver::process_response(string const &data, string const &response, vector<string> &datas) {
+void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &response/*, vector<string> &datas*/)
+{
     vector<string> str;
     QtJson::JsonObject result;
-    SqlDriver SQL_dr;
+    static SqlDriver SQL_dr;
+    QStringList qsl;
 
-    if (data == GET_SENSOR_PERIOD)
-    {
-        if (response == EMPTY_STRING)   //no connection
-        {
-            return QString::fromStdString(EMPTY_STRING);
-        }
-        else
-        {
+    if (cmd == HTTPS_CMD_GET_SENSOR_PERIOD) { // TODO this section if
+
+        if (response.empty()) {   //no connection
+
+//            return QString::fromStdString(EMPTY_STRING);
+//            return qsl;
+            return;
+        } else {
             bool ok;
             result = QtJson::parse(QString::fromStdString(response), ok).toMap();
             if(!ok)
-                qFatal("An error occurred during parsing");
+                qFatal("An error occurred during parsing response from server");
 
             string ins = "check_interval";
             QtJson::JsonObject nested = result[ins.c_str()].toMap();
             //            qDebug() << "value_option:" << nested["value_option"].toInt();
             //            qDebug() << "results:" << nested["results"].toInt();
 
-            return nested["results"].toString();
+//            return nested["results"].toString();
+            qsl.append(nested["results"].toString());
+//            return qsl;
+            return;
         }
-    }
-    else
-    {
-        if (response == EMPTY_STRING)   //no connection
-        {
-            for (uint i = 0; i < datas.size(); i++)
-            {
-                str = explode_string(datas[i], "|");
-                SQL_dr.toDataTable(QString::fromStdString(str[0] + "|" + str[1] + "|" + str[2] + "|" + str[3] + "|" + "1"));
+
+    } else if (cmd == HTTPS_CMD_POST_SENSOR_VALUE) {
+
+        if (response.empty()) {  //no connection
+
+            for (uint i = 0; i < data->size(); i++) {
+                /*Update Error flag*/
+                QStringList slist = data->at(i);
+                slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG1));
+                data->replace(i, slist);
             }
-        }
-        else    //get answer from server
-        {
+
+        } else {   //get answer from server
             bool ok;
             result = QtJson::parse(QString::fromStdString(response), ok).toMap();
-            if(!ok)
-                qFatal("An error occurred during parsing");
 
-            for (uint i = 0; i < datas.size(); i++)
-            {
-                //                found = retdata[i].find(findstring);//Ищем SUCCESS
-                //                if (found == std::string::npos) {
-                //                    str = splitString(senddata[i], "|");
-                //                    SQL_dr.toData(str[0] + "|" + str[1] + "|" + str[2] + "|" + str[3] + "|" + "2");
-                //                }
+            if(!ok)
+                qFatal("An error occurred during parsing response from server");
+
+            for (uint i = 0; i < data->size(); i++) {
+
                 string ins = "insert_" + std::to_string(i);
                 QtJson::JsonObject nested = result[ins.c_str()].toMap();
-                if (nested["results"] != "true")
-                {
-                    str = explode_string(datas[i], "|");
-                    SQL_dr.toDataTable(QString::fromStdString(str[0] + "|" + str[1] + "|" + str[2] + "|" + str[3] + "|" + "2"));
+
+                if (nested["results"] != "true") {
+                    /*Update Error flag*/
+                    QStringList slist = data->at(i);
+                    slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG2));
+                    data->replace(i, slist);
                 }
-                //                qDebug() << "errors:" << nested["errors"].toInt();
-                //                qDebug() << "results:" << nested["results"].toBool();
             }
         }
-        return QString::fromStdString(EMPTY_STRING);
     }
 }
 
@@ -289,20 +291,17 @@ string HttpsDriver::curl_send(string const &str) {
 
         res = curl_easy_perform(curl);
 
-        string ret(chunk.memory, chunk.size);
-        retstr = ret;
+        string retFromServer(chunk.memory, chunk.size);
 
         if (res == CURLE_OK) //если соединение успешно
         {
-            qDebug() << "cURL returns : " << QString::fromStdString(ret) << endl;;
+            retstr = retFromServer;
+            qDebug() << "cURL returns : " << QString::fromStdString(retFromServer) << endl;;
         }
         else // если не было соединения
         {
-            retstr = EMPTY_STRING;
-//            fprintf(stderr, "curl_easy_perform() failed: %s OR received not SUCCESS\n", curl_easy_strerror(res));
-//            cout << stderr << endl;
+            retstr = "";
             qDebug() << "cURL connection Failed!" << endl;
-
         }
     }
     curl_easy_cleanup(curl);

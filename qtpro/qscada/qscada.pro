@@ -58,5 +58,5 @@ HEADERS += \
     ../../src/libs/pulsar/pulsarclass.h \
     ../../src/libs/sqldriver/sqldriver.h
 INCLUDEPATH += ../../../../../sysroot/usr/local/include/
-LIBS += -lcurl -lssl -lcrypto -lpthread -lmysqlclient -lboost_system -lboost_thread -lboost_date_time
+LIBS += -lcurl -lssl -lcrypto -lpthread -lboost_system -lboost_thread -lboost_date_time -lmysqlclient_r
 INCLUDEPATH += /home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/
