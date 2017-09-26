@@ -1,15 +1,94 @@
 #include "threadmanager.h"
 
-ThreadManager::ThreadManager()
-{
 
+ThreadManager::ThreadManager(QObject *parent) :
+    QObject(parent),
+    Modbus(USB1, 115200, 'N', 8, 1, "192.168.88.100", 4006, ModbusClass::TCP),
+    Can(USB0, 9600, 'N', 8, 1, "192.168.88.100", 4007, CanClass::TCP),
+    Owen_16D_1(1, 16, "RS485"),
+    Owen_8A_11(11, 8, "RS485"),
+    Owen_8AC_41(41, 8, "RS485"),
+    NL_8R_2(2, 8, "RS485"),
+    Mercury_44(44, "CAN")
+//    Pulse(11223344)
+{
+    print_map(Guid.Map.left, " with ", std::cout);
+
+            /*Init OvenVector*/
+    OwenVector.push_back(&Owen_16D_1);
+    //OwenVector.push_back(&Owen_8A_11);
+    //OwenVector.push_back(&Owen_8AC_41); // 8AC pogib
+    //OwenVector.push_back(&Owen_KM_56);
+    //OwenVector.push_back(&UNO_61);
+    //OwenVector.push_back(&NL_8R_2);
+
+    timer1 = new QTimer();
+    timer1->setInterval(1000);
+    connect(timer1, SIGNAL(timeout()), this, SLOT(mercury_thread()));
+    timer1->start();
+
+    timer2 = new QTimer();
+    timer2->setInterval(1000);
+    connect(timer2, SIGNAL(timeout()), this, SLOT(sendToServer()));
+    timer2->start();
 }
 
 ThreadManager::~ThreadManager()
 {
-    threads.join_all();
+    delete timer1;
+    delete timer2;
 }
 
+void ThreadManager::owen_thread()
+{
+    for (unsigned int i = 0; i < OwenVector.size(); i++) {
+        Owen_ptr = OwenVector[i];
+        Owen_ptr->read_data(&Modbus, &Guid);//TODO sqlDriver.toDataTable(Owen_ptr->read_data(&Modbus, &Guid);)
+    }
+}
+
+void ThreadManager::mercury_thread()
+{
+    timer1->setInterval(2000);
+
+//    QElapsedTimer timer;
+//    timer.start();
+
+    sqlDriver.push(Mercury_44.read_data(&Can, &Guid));
+
+//    qDebug() << "The slow operation took" << timer.elapsed() << "milliseconds";
+
+}
+
+void ThreadManager::sendToServer()
+{
+    timer2->setInterval(1000);
+
+    Data sendData = sqlDriver.pop(10);
+
+    httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &sendData);
+
+    sqlDriver.toDataTable(sendData);
+
+    Data dataFromTable = sqlDriver.fromDataTable(50);
+//    foreach (const QStringList &qsl, dataFromTable) {
+//        qDebug() << "fromDataTable = " << qsl;
+//    }
+
+    httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &dataFromTable);
+
+    sqlDriver.toDataTable(dataFromTable);
+
+
+    //TODO do fromDataTable when pop() is empty
+}
+
+void ThreadManager::getSensorIntervalFromServer()
+{
+//    httpsDriver.Send( HttpsDriver::GET_SENSOR_PERIOD );
+}
+
+/*
 void doEvery(const string& every, boost::function<void()> f, const string& taskname)
 {
     using namespace boost::posix_time;
@@ -86,3 +165,4 @@ void ThreadManager::startAll()
 {
     threads.join_all();
 }
+*/

@@ -6,7 +6,7 @@
  *  ln -s /usr/local/lib/libboost_date_time.so.1.62.0 /usr/lib/libboost_date_time.so.1.62.0
  */
 int write_Owen_data(ModbusClass* modbus, vector<OwenClass*> ovector, GuidClass* guidMap , string guidforwrite, int valueforwrite)
-{
+{ //TODO реализовать запись в тредменегере
     int ret_ = 0;
     OwenClass *owenptr = ovector[0];
 
@@ -29,41 +29,6 @@ int write_Owen_data(ModbusClass* modbus, vector<OwenClass*> ovector, GuidClass* 
     return ret_;
 };
 
-
-void owen_thread()
-{
-    //cout << "   OWEN_THREAD " << endl;
-    for (unsigned int i = 0; i < OwenVector.size(); i++) {
-        Owen_ptr = OwenVector[i];
-        Owen_ptr->read_data(&Modbus, &Guid);//TODO sqlDriver.toDataTable(Owen_ptr->read_data(&Modbus, &Guid);)
-    }
-
-    /*
-    Owen_16D_1.read_data(&Modbus, &Guid);
-    Owen_8AC_41.read_data(&Modbus, &Guid);
-    NL_8R_2.read_data(&Modbus, &Guid);
-    */
-
-    //Owen_ptr->print_results();
-
-    //system("free -m");
-}
-SqlDriver sqlDriver;
-
-void mercury_thread()
-{
-    //cout << "           MERCURY_THREAD " << endl;
-
-//    Mercury_44.read_data(&Can, &Guid);//TODO sqlDriver.toDataTable(Mercury_44.read_data(&Can, &Guid);
-
-//    sqlDriver.toDataTable(sqlDriver.prepare_data(QString::fromStdString(Mercury_44.read_data(&Can, &Guid))));
-
-//    sqlDriver.push(sqlDriver.prepare_data(QString::fromStdString(Mercury_44.read_data(&Can, &Guid))));
-    sqlDriver.push(Mercury_44.read_data(&Can, &Guid));
-
-    //Net1.write();
-}
-
 void FromPost()//TODO: interface func SqlDriver with Post table
 {
     //cout << "       FROM_POST_THREAD " << endl;
@@ -72,74 +37,10 @@ void FromPost()//TODO: interface func SqlDriver with Post table
 
 //    arr = Sql_post.fromPost();// guid, value, status=0
     if ((arr.size() == 3)) {
-        bool res = (write_Owen_data(&Modbus, OwenVector, &Guid, arr[0], stoi(arr[1])) == 1);
+//        bool res = (write_Owen_data(&Modbus, OwenVector, &Guid, arr[0], stoi(arr[1])) == 1);
         // true - success, false = error
 //        Sql_post.toPost(arr[0], res); // guid, status
     }
 }
 
-HttpsDriver   httpsDriver;
-
-void sendToServer()
-{
-
-    Data sendData = sqlDriver.pop(4);
-
-    httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &sendData);
-
-    sqlDriver.toDataTable(sendData);
-
-    Data dataFromTable = sqlDriver.fromDataTable(1);
-    foreach (const QStringList &qsl, dataFromTable) {
-        qDebug() << "fromDataTable = " << qsl;
-    }
-
-    //TODO do fromDataTable when pop() is empty
-}
-
-void getSensorIntervalFromServer()
-{
-    HttpsDriver   httpsDriver;
-//    httpsDriver.Send( HttpsDriver::GET_SENSOR_PERIOD );
-}
-
-void initOwenVector()
-{
-    if (SIM_MODE) {
-        for (int i = 100;i <= 202; i++) {
-            if (i <= 135) {
-                OwenClass_SimDI* SimDi = new OwenClass_SimDI(i, 16, "RS485");
-                OwenVector.push_back(SimDi);
-            }
-            else {
-                OwenClass_SimAI* SimAi = new OwenClass_SimAI(i, 16, "RS485");
-                OwenVector.push_back(SimAi);
-            }
-        }
-    }
-    else {
-        OwenVector.push_back(&Owen_16D_1);
-        //OwenVector.push_back(&Owen_8A_11);
-        //OwenVector.push_back(&Owen_8AC_41); // 8AC pogib
-        //OwenVector.push_back(&Owen_KM_56);
-        //OwenVector.push_back(&UNO_61);
-        //OwenVector.push_back(&NL_8R_2);
-    }
-}
-
-void print1()
-{
-    cout << " print1" << endl;
-}
-
-void scripts() //TODO test
-{
-    DI = Owen_16D_1.data_16D.bits;
-    cout << "DI.0 = " << (int)DI[0] << endl;
-    if ((int)DI[0] == 1)
-        write_Owen_data(&Modbus, OwenVector, &Guid, "5f1b3f0977c94b8fbb5811d5baecdb5a", 1);
-    else if ((int)DI[0] == 0)
-        write_Owen_data(&Modbus, OwenVector, &Guid, "5f1b3f0977c94b8fbb5811d5baecdb5a", 0);
-    //cout << "DI.1 = " << (int)DI[1] << endl;
-}
 #endif //MAIN_H

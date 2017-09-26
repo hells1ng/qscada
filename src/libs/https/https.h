@@ -1,5 +1,6 @@
 #ifndef HTTPS_H
 #define HTTPS_H
+
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
@@ -36,7 +37,7 @@ public:
         HTTPS_CMD_POST_SENSOR_VALUE,
         HTTPS_CMD_GET_SENSOR_PERIOD
     };
-
+    const char* HTTP_RESPONSE_ERROR_DUPLICATE = "1011";
 protected:
     static const char *pPassphrase;
     static const char *pCertFile;

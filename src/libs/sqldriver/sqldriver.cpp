@@ -6,6 +6,7 @@
  * http://doc.qt.io/qt-5/sql-connecting.html
  */
 qint64 SqlDriver::numOfConnections = 0;
+
 SqlDriver::SqlDriver(QObject *parent) :
     QObject(parent)
 {
@@ -63,7 +64,7 @@ Data SqlDriver::pop(const quint8 size)
 
     while (!queue.empty() && (i < size)) {
        ret = queue.dequeue();
-       qDebug() << "Pop = " << ret;
+//       qDebug() << "Pop = " << ret;
        retData.append(ret);
        i++;
     }
@@ -172,7 +173,7 @@ Data SqlDriver::fromDataTable(quint16 data_size)
                 query_str = query_str + s_for_del;
 
                 bool c = query.exec(query_str);
-                qDebug()<< query.lastQuery();
+//                qDebug()<< query.lastQuery();
 
                 if (!c) {
                     qWarning() << "Cannot delete from " << db.databaseName() << endl;

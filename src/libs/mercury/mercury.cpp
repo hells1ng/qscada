@@ -878,8 +878,8 @@ Data MercuryClass::read_data(CanClass* can, GuidClass* guid)
 
                 retData.append(qsl2);
 
-//                qDebug() << "mercury_1 = " << retData[0]
-//                         << "mercury_2 = " << retData[1] ;
+                qDebug() << "mercury_1 = " << retData[0]
+                         << "mercury_2 = " << retData[1] ;
 
                 connection_error = 0;
                 isFirstReading = false;
@@ -897,17 +897,17 @@ Data MercuryClass::read_data(CanClass* can, GuidClass* guid)
     //
     can->closeCan();
 
-    qsl1.append(QString("wrong_guid"));
-    qsl1.append(QString::fromStdString("34.0"));
-    qsl1.append(QString::number(DATA_VALUE_FLAG1));
+//    qsl1.append(QString("wrong_guid"));
+//    qsl1.append(QString::fromStdString("34.0"));
+//    qsl1.append(QString::number(DATA_VALUE_FLAG1));
 
-    retData.append(qsl1);
+//    retData.append(qsl1);
 
-    qsl2.append(QString::fromStdString((*guid)[str_id]));
-    qsl2.append(QString::fromStdString("15.0"));
-    qsl2.append(QString::number(DATA_VALUE_FLAG2));
+//    qsl2.append(QString::fromStdString((*guid)[str_id]));
+//    qsl2.append(QString::fromStdString("15.0"));
+//    qsl2.append(QString::number(DATA_VALUE_FLAG2));
 
-    retData.append(qsl2);
+//    retData.append(qsl2);
 
     return retData;
 }

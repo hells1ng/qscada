@@ -207,6 +207,10 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
                 QStringList slist = data->at(i);
                 slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG1));
                 data->replace(i, slist);
+
+//                foreach (const QStringList &qsl, *data) {
+//                    qDebug() << "Https::Send -> no connect" << qsl;
+//                }
             }
 
         } else {   //get answer from server
@@ -220,13 +224,24 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
 
                 string ins = "insert_" + std::to_string(i);
                 QtJson::JsonObject nested = result[ins.c_str()].toMap();
+                QtJson::JsonObject errors = nested["errors"].toMap();
 
                 if (nested["results"] != "true") {
                     /*Update Error flag*/
-                    QStringList slist = data->at(i);
-                    slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG2));
-                    data->replace(i, slist);
+                    if (errors["code"] == HTTP_RESPONSE_ERROR_DUPLICATE) {
+                        data->remove(i);
+//                        qDebug() << "Deleted duplicate request!" << endl;
+                    }
+                    else {
+                        QStringList slist = data->at(i);
+                        slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG2));
+                        data->replace(i, slist);
+                    }
                 }
+
+//                foreach (const QStringList &qsl, *data) {
+//                    qDebug() << "Https::Send -> get answer" << qsl;
+//                }
             }
         }
     }
