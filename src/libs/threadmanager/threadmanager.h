@@ -1,11 +1,5 @@
 #ifndef THREADMANAGER_H_INCLUDED
 #define THREADMANAGER_H_INCLUDED
-//#include <iostream>
-//#include <boost/function.hpp>
-//#include "boost/date_time/posix_time/posix_time.hpp"
-//#include <boost/thread/thread.hpp>
-//#include <boost/date_time/date.hpp>
-//#include <boost/date_time/gregorian/gregorian.hpp>
 
 #include <QtCore/QtCore>
 #include <QtCore/QTimer>
@@ -13,12 +7,6 @@
 #include "../../includes.h"
 #include "../../libs/https/https.h"
 
-/*
-using namespace std;
-void doEvery(const string& every, boost::function<void()> f, const string& taskname);
-void doAtAndEvery(const string& when, const string& interval,
-                  boost::function<void()> f, const string& taskname);
-*/
 class ThreadManager : public QObject
 {
     Q_OBJECT
@@ -27,7 +15,8 @@ public:
     explicit ThreadManager(QObject *parent = 0);
     ~ThreadManager();
 
-    GuidClass       Guid;
+    GuidClass       Guid_Mercury_1;
+    GuidClass       Guid_Owen_1;
     ModbusClass     Modbus;
     CanClass        Can;
 
@@ -40,7 +29,7 @@ public:
     vector<OwenClass*>  OwenVector;
     OwenClass*          Owen_ptr;
     //------------------Mercury MODULES---------------------------------------//
-    MercuryClass    Mercury_44;
+    MercuryClass    Mercury_1;
     //------------------Pulsar---------------------------------------//
 //    PulsarClass Pulse;
     //------------------SQL---------------------------//
@@ -48,21 +37,35 @@ public:
     //------------------HTTPS-------------------------//
     HttpsDriver     httpsDriver;
 
-//    void addTaskEvery(const string& every, boost::function<void()> f, const string& taskname = "no_name");
-//    void addTaskAtAndEvery(const string& when, const string& interval,
-//                           boost::function<void()> f, const string& taskname = "no_name");
-//    void startAll();
-
 private:
-    QTimer *timer1;
-    QTimer *timer2;
-    QTimer *timer3;
-    QTimer *timer4;
+    QThread *thread1;
+    QThread *thread2;
+    QThread *thread3;
+    QThread *thread4;
 
-public slots:
+    void doEvery(std::function<void()> myFunction, qint64 interval);
+
     void owen_thread();
     void mercury_thread();
     void sendToServer();
+    void deb();
+
+
+public slots:
+
+    void mercury_slot() {
+        doEvery(std::bind(&ThreadManager::mercury_thread, this), 2000);
+    }
+    void owen_slot() {
+        doEvery(std::bind(&ThreadManager::owen_thread, this), 2000);
+    }
+    void send_slot() {
+        doEvery(std::bind(&ThreadManager::sendToServer, this), 1000);
+    }
+    void debug_slot() {
+        doEvery(std::bind(&ThreadManager::deb, this), 1000);
+    }
+
     void getSensorIntervalFromServer();
 
 };

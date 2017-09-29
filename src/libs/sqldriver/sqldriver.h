@@ -8,6 +8,7 @@
 #include <QtSql/QSqlError>
 
 #include "../../defines.h"
+#include "../../libs/id/id.h"
 
 class SqlDriver : public QObject
 {
@@ -16,9 +17,11 @@ public:
     explicit SqlDriver(QObject *parent = 0);
     ~SqlDriver();
 
-    void        toDataTable(const Data &data);
+    void toDataTable(const Data &data);
 
-    Data     fromDataTable(quint16 data_size);
+    Data fromDataTable(quint16 data_size);
+
+    Data fromGuidTable(const QString& table);
 
     void push(Data data);
     Data pop(const quint8 size);

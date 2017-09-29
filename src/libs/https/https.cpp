@@ -49,28 +49,6 @@ vector<string> HttpsDriver::explode_string (string str, const char* delim)
 }
 
 
-/* Функция возвращает из строки, состоящей из элементов,
- * соединенных через разделитель, вектор этих элементов
- */
-//vector<string> HttpsDriver::splitString(const string &fullstr,
-//                                  const string &delimiter) {
-//    vector<string> elements;
-//    string::size_type lastpos = fullstr.find_first_not_of(delimiter, 0);
-//    string::size_type pos = fullstr.find_first_of(delimiter, lastpos);
-//    string substring("");
-
-//    while ((string::npos != pos) || (string::npos != lastpos)) {
-
-//        substring = fullstr.substr(lastpos, pos - lastpos);
-//        elements.push_back(substring);
-//        substring = "";
-
-//        lastpos = fullstr.find_first_not_of(delimiter, pos);
-//        pos = fullstr.find_first_of(delimiter, lastpos);
-//    }
-//    return elements;
-//}
-
 QtJson::JsonObject HttpsDriver::get_interval_json() {
     /*  data = {\"to_do\": \"show_system_interval\", \"token\":\"\", \"target\": \"\",\"filter\":\"\", \"fields\":\"\"}";
     */
@@ -202,7 +180,7 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
 
         if (response.empty()) {  //no connection
 
-            for (uint i = 0; i < data->size(); i++) {
+            for (int i = 0; i < data->size(); i++) {
                 /*Update Error flag*/
                 QStringList slist = data->at(i);
                 slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG1));
@@ -220,7 +198,7 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
             if(!ok)
                 qFatal("An error occurred during parsing response from server");
 
-            for (uint i = 0; i < data->size(); i++) {
+            for (int i = 0; i < data->size(); i++) {
 
                 string ins = "insert_" + std::to_string(i);
                 QtJson::JsonObject nested = result[ins.c_str()].toMap();
@@ -228,7 +206,8 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
 
                 if (nested["results"] != "true") {
                     /*Update Error flag*/
-                    if (errors["code"] == HTTP_RESPONSE_ERROR_DUPLICATE) {
+                    if ((errors["code"] == HTTP_RESPONSE_ERROR_DUPLICATE) ||
+                        (errors["code"] == HTTP_RESPONSE_ERROR_WRONGSECRET)) {
                         data->remove(i);
 //                        qDebug() << "Deleted duplicate request!" << endl;
                     }

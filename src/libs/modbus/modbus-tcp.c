@@ -152,7 +152,7 @@ static int _modbus_tcp_build_response_basis(sft_t *sft, uint8_t *rsp)
 }
 
 
-static int _modbus_tcp_prepare_response_tid(const uint8_t *req, int *req_length)
+static int _modbus_tcp_prepare_response_tid(const uint8_t *req, int __attribute__((unused)) *req_length)
 {
     return (req[0] << 8) + req[1];
 }
@@ -185,13 +185,13 @@ static ssize_t _modbus_tcp_recv(modbus_t *ctx, uint8_t *rsp, int rsp_length) {
     return recv(ctx->s, (char *)rsp, rsp_length, 0);
 }
 
-static int _modbus_tcp_check_integrity(modbus_t *ctx, uint8_t *msg, const int msg_length)
+static int _modbus_tcp_check_integrity(modbus_t __attribute__((unused)) *ctx, uint8_t __attribute__((unused)) *msg, const int msg_length)
 {
     return msg_length;
 }
 
 static int _modbus_tcp_pre_check_confirmation(modbus_t *ctx, const uint8_t *req,
-                                              const uint8_t *rsp, int rsp_length)
+                                              const uint8_t *rsp, int __attribute__((unused)) rsp_length)
 {
     /* Check transaction ID */
     if (req[0] != rsp[0] || req[1] != rsp[1]) {
@@ -711,7 +711,7 @@ int modbus_tcp_pi_accept(modbus_t *ctx, int *s)
     return ctx->s;
 }
 
-static int _modbus_tcp_select(modbus_t *ctx, fd_set *rset, struct timeval *tv, int length_to_read)
+static int _modbus_tcp_select(modbus_t *ctx, fd_set *rset, struct timeval *tv, int __attribute__((unused)) length_to_read)
 {
     int s_rc;
     while ((s_rc = select(ctx->s+1, rset, NULL, NULL, tv)) == -1) {

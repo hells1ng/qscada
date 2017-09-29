@@ -49,6 +49,9 @@ void MercuryClass::printPackage(byte *data, int size_, int isin)
 // -- Returns 0 if timed out.
 int MercuryClass::nb_read_impl(int fd, byte* buf, int sz)
 {
+    //TODO need sz?
+    sz++;
+
     fd_set set;
     struct timeval timeout;
 
@@ -154,7 +157,7 @@ int MercuryClass::checkResult_4x4b(byte* buf, int len)
 int MercuryClass::checkChannel(CanClass* can, int address)
 {
     // Command initialisation
-    TestCmd testCmd = { testCmd.address = address, testCmd.command = 0x00 };
+    TestCmd testCmd = { testCmd.address = address, testCmd.command = 0x00, 0x00 };
     testCmd.CRC = ModRTU_CRC((byte*)&testCmd, sizeof(testCmd) - sizeof(UInt16));
 
     // Send Req and Get responce
@@ -172,10 +175,11 @@ int MercuryClass::checkChannel(CanClass* can, int address)
 int MercuryClass::initConnection(CanClass* can, int address)
 {
     InitCmd initCmd = {
-        /*initCmd.address =*/ address,
+        /*initCmd.address =*/ (unsigned char)address,
         /*initCmd.command =*/ 0x01,
         /*initCmd.accessLevel=*/ 0x01,
-        {0x01,0x01,0x01,0x01,0x01,0x01}
+        {0x01,0x01,0x01,0x01,0x01,0x01},
+        0x00
     };
     //initCmd.password[6] = 0x01;//{0x01,0x01,0x01,0x01,0x01,0x01};
     initCmd.CRC = ModRTU_CRC((byte*)&initCmd, sizeof(initCmd) - sizeof(UInt16));
@@ -189,7 +193,7 @@ int MercuryClass::initConnection(CanClass* can, int address)
 // -- Close connection
 int MercuryClass::closeConnection(CanClass* can, int address)
 {
-    ByeCmd byeCmd = { byeCmd.address = address, byeCmd.command = 0x02 };
+    ByeCmd byeCmd = { byeCmd.address = address, byeCmd.command = 0x02, 0x00};
     byeCmd.CRC = ModRTU_CRC((byte*)&byeCmd, sizeof(byeCmd) - sizeof(UInt16));
 
     // Send Req and Get responce
@@ -222,7 +226,8 @@ int MercuryClass::getU(CanClass* can, int address, P3V* U)
         getUCmd.address = address,
         getUCmd.command = 0x08,
         getUCmd.paramId = 0x16,
-        getUCmd.BWRI = 0x11
+        getUCmd.BWRI = 0x11,
+        0x00
     };
     getUCmd.CRC = ModRTU_CRC((byte*)&getUCmd, sizeof(getUCmd) - sizeof(UInt16));
     printPackage((byte*)&getUCmd, sizeof(getUCmd), OUT);
@@ -253,7 +258,8 @@ int MercuryClass::getI(CanClass* can, int address, P3V* I)
         getICmd.address = address,
         getICmd.command = 0x08,
         getICmd.paramId = 0x16,
-        getICmd.BWRI = 0x21
+        getICmd.BWRI = 0x21,
+        0x00
     };
     getICmd.CRC = ModRTU_CRC((byte*)&getICmd, sizeof(getICmd) - sizeof(UInt16));
     printPackage((byte*)&getICmd, sizeof(getICmd), OUT);
@@ -284,7 +290,8 @@ int MercuryClass::getCosF(CanClass* can, int address, P3VS* C)
         getCosCmd.address = address,
         getCosCmd.command = 0x08,
         getCosCmd.paramId = 0x16,
-        getCosCmd.BWRI = 0x30
+        getCosCmd.BWRI = 0x30,
+        0x00
     };
     getCosCmd.CRC = ModRTU_CRC((byte*)&getCosCmd, sizeof(getCosCmd) - sizeof(UInt16));
     printPackage((byte*)&getCosCmd, sizeof(getCosCmd), OUT);
@@ -316,7 +323,8 @@ int MercuryClass::getF(CanClass* can, int address, float *f)
         getFCmd.address = address,
         getFCmd.command = 0x08,
         getFCmd.paramId = 0x16,
-        getFCmd.BWRI = 0x40
+        getFCmd.BWRI = 0x40,
+        0x00
     };
     getFCmd.CRC = ModRTU_CRC((byte*)&getFCmd, sizeof(getFCmd) - sizeof(UInt16));
     printPackage((byte*)&getFCmd, sizeof(getFCmd), OUT);
@@ -345,7 +353,8 @@ int MercuryClass::getA(CanClass* can, int address, P3V* A)
         getACmd.address = address,
         getACmd.command = 0x08,
         getACmd.paramId = 0x16,
-        getACmd.BWRI = 0x51
+        getACmd.BWRI = 0x51,
+        0x00
     };
     getACmd.CRC = ModRTU_CRC((byte*)&getACmd, sizeof(getACmd) - sizeof(UInt16));
     printPackage((byte*)&getACmd, sizeof(getACmd), OUT);
@@ -376,7 +385,8 @@ int MercuryClass::getP(CanClass* can, int address, P3VS* P)
         getPCmd.address = address,
         getPCmd.command = 0x08,
         getPCmd.paramId = 0x16,
-        getPCmd.BWRI = 0x00
+        getPCmd.BWRI = 0x00,
+        0x00
     };
     getPCmd.CRC = ModRTU_CRC((byte*)&getPCmd, sizeof(getPCmd) - sizeof(UInt16));
     printPackage((byte*)&getPCmd, sizeof(getPCmd), OUT);
@@ -408,7 +418,8 @@ int MercuryClass::getS(CanClass* can, int address, P3VS* S)
         getSCmd.address = address,
         getSCmd.command = 0x08,
         getSCmd.paramId = 0x16,
-        getSCmd.BWRI = 0x08
+        getSCmd.BWRI = 0x08,
+        0x00
     };
     getSCmd.CRC = ModRTU_CRC((byte*)&getSCmd, sizeof(getSCmd) - sizeof(UInt16));
     printPackage((byte*)&getSCmd, sizeof(getSCmd), OUT);
@@ -443,7 +454,8 @@ int MercuryClass::getW(CanClass* can,int address, PWV* W, int periodId, int mont
         getWCmd.address = address,
         getWCmd.command = 0x05,
         getWCmd.paramId = (periodId << 4) | (month & 0xF),
-        getWCmd.BWRI = tariffNo
+        getWCmd.BWRI = tariffNo,
+        0x00
     };
     getWCmd.CRC = ModRTU_CRC((byte*)&getWCmd, sizeof(getWCmd) - sizeof(UInt16));
 
@@ -560,7 +572,7 @@ void MercuryClass::printOutput(int format, OutputBlock o, int header)
 
 CanClass::CanClass(const char *device,  unsigned int baud_, char parity_,
                    unsigned int data_bit_, unsigned int stop_bit_, const char *ip, int port, int mode_) :
-    com_port(device), net(ip, port), stop_bit(stop_bit_), parity(parity_), mode(mode_)
+    com_port(device), stop_bit(stop_bit_), parity(parity_), net(ip, port), mode(mode_)
 
 {
     mutex = new QMutex();
@@ -643,7 +655,7 @@ bool CanClass::isConnected()
     case RTU:
         fd = open(com_port, O_RDWR | O_NOCTTY | O_NDELAY);
         if (fd < 0) {
-            cout << "Connection to CAN failed" << endl;
+            std::cout << "Connection to CAN failed" << std::endl;
             //exitFailure(com_port);
             return false;
         }
@@ -738,26 +750,13 @@ std::string MercuryClass::data = "";
 std::string MercuryClass::str_id = "";
 
 
-void MercuryClass::send_data()
-{
-//    SqlDriver SQL;
-//    QString qs = SQL.prepare_data(QString::fromStdString(data));
-//    SQL.toDataTable(qs);
-
-//    SQL.toDataTable(SQL.prepare_data(QString::fromStdString(data)));
-//    return data;
-}
-
-std::string MercuryClass::makeId(std::string line_, int addr_, int pin_)
-{
-    char a[4],p[4];
-    sprintf(a, "%d",addr_);
-    sprintf(p, "%d",pin_);
-    return line_+":"+a+":"+p;
-}
 
 Data MercuryClass::read_data(CanClass* can, GuidClass* guid)
 {
+    connection_error = 0;
+    address = guid->get_address().toInt();
+//    qDebug() << "Mercury address = " << address;
+
     QStringList qsl1, qsl2;
     Data retData;
     //open_connection();
@@ -810,14 +809,15 @@ Data MercuryClass::read_data(CanClass* can, GuidClass* guid)
 
         default :
             exitFailure("Power meter communication channel test failed.");
+            connection_error = 1;
         }
+//TODO секция старая, закомментить
+//        str_id = makeId(str_line, address, 0);
 
-        str_id = makeId(str_line, address, 0);
-
-        if (((*guid)[str_id] != "no_guid") && (connection_error == 0)) {
+        if (/*((*guid)[str_id] != "no_guid") && */(connection_error == 0)) {
             //sprintf(str_data[0], "%d", PM_ADDRESS);
             data = "";
-            data = data + (*guid)[str_id];
+//            data = data + (*guid)[str_id];
             sprintf(str_data[1], "%.2f", o.U.p1);//Voltage 1(V)
             sprintf(str_data[2], "%.2f", o.U.p2);//Voltage 2(V)
             sprintf(str_data[3], "%.2f", o.U.p3);//Voltage 3(V)
@@ -866,20 +866,20 @@ Data MercuryClass::read_data(CanClass* can, GuidClass* guid)
 
 //                std::cout<<"NIGHT o.PRT[1].ap = "<<o.PRT[1].ap <<"o_prev.PRT[1].ap ="<< o_prev.PRT[1].ap<<std::endl;
 
-                qsl1.append(QString::fromStdString((*guid)[str_id]));
+                qsl1.append(guid->get_guid());
                 qsl1.append(QString::fromStdString(str_data[21]));
                 qsl1.append(QString::number(DATA_VALUE_FLAG1));
 
                 retData.append(qsl1);
 
-                qsl2.append(QString::fromStdString((*guid)[str_id]));
+                qsl2.append(guid->get_guid());
                 qsl2.append(QString::fromStdString(str_data[22]));
                 qsl2.append(QString::number(DATA_VALUE_FLAG2));
 
                 retData.append(qsl2);
 
-                qDebug() << "mercury_1 = " << retData[0]
-                         << "mercury_2 = " << retData[1] ;
+//                qDebug() << "mercury_1 = " << retData[0]
+//                         << "mercury_2 = " << retData[1] ;
 
                 connection_error = 0;
                 isFirstReading = false;
@@ -908,6 +908,9 @@ Data MercuryClass::read_data(CanClass* can, GuidClass* guid)
 //    qsl2.append(QString::number(DATA_VALUE_FLAG2));
 
 //    retData.append(qsl2);
+
+    qDebug() << "Mercury with Address = " << address
+             << " Values : " << retData << endl;
 
     return retData;
 }

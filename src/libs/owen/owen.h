@@ -67,16 +67,12 @@ protected:
 public:
 
     static string str_id;
-    string str_line;
     bool isFirstReading;
     static float real[reg_size];
     static int nb_fail;
     uint8_t address;
     uint8_t arr_size;
-    void print_results();
-    void clear_fail() {
-        nb_fail = 0;
-    };
+    string str_line;
     OwenClass();
     OwenClass(uint8_t address_ = 16, uint8_t arr_size_ = 16, const string str_line_="") :
                address(address_), arr_size(arr_size_), str_line(str_line_) {
@@ -86,13 +82,21 @@ public:
     ~OwenClass() {
         counter--;
     }
-    virtual void read_data(ModbusClass* modbus, GuidClass* guid) {
-    };
-    void send_data();
-    vector<string> find_guid_parameters(GuidClass* guid, string lookingguid);
-    virtual int write_data(ModbusClass* modbus, vector<string> stringguidforwrite, int valueforwrite);
-    string makeId(string line_, int addr_, int pin_);
-    vector<string> splitString(const string &fullstr, const string &delimiter);
+    /* Prototype of read_data func */
+    virtual Data read_data(ModbusClass* , GuidClass* ) {
+        Data ret;
+        return ret;
+    }
+
+    virtual int write_data(ModbusClass*, vector<string>, int) {
+        return 0;
+    }
+
+    void print_results();
+
+    void clear_fail() {
+        nb_fail = 0;
+    }
 };
 
 class OwenClass_16D : public OwenClass
@@ -115,7 +119,7 @@ public:
     uint8_t tab_rp_bits[nb_BITS];
     uint8_t tab_rp_bits_prev[nb_BITS];
     uint16_t tab_rp_registers_prev[nb_BITS];
-    void read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid);
 };
 
 class OwenClass_8A : public OwenClass
@@ -128,7 +132,7 @@ public:
         counter--;
     }
     float real_prev[8];
-    void read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid);
 };
 
 class OwenClass_8AC : public OwenClass
@@ -141,7 +145,7 @@ public:
         counter--;
     }
     float real_prev[8];
-    void read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid);
 };
 
 class OwenClass_KM : public OwenClass
@@ -153,7 +157,7 @@ public:
     ~OwenClass_KM() {
         counter--;
         }
-    void read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid);
 };
 
 class OwenClass_SimDI : public OwenClass
@@ -169,7 +173,7 @@ public:
         counter--;
     }
     uint8_t tab_rp_bits[nb_BITS];
-    void read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid);
 };
 
 class OwenClass_SimAI : public OwenClass
@@ -181,7 +185,7 @@ public:
     ~OwenClass_SimAI() {
         counter--;
     }
-    void read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid);
 };
 
 class OwenClass_NL_8R : public OwenClass
@@ -195,7 +199,7 @@ public:
     }
     uint8_t tab_rp_bits[nb_8R];
     uint8_t tab_rp_bits_prev[nb_8R];
-    void read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid);
     int write_data(ModbusClass* modbus, vector<string> stringguidforwrite, int valueforwrite);
 };
 #endif // OWENCLASS_H_INCLUDED

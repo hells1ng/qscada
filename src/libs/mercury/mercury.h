@@ -15,8 +15,8 @@
 #include "../id/id.h"
 #include "../network/networkclass.h"
 #include "../sqldriver/sqldriver.h"
-#include <boost/thread/mutex.hpp>
-#include <QMutex>
+//#include <boost/thread/mutex.hpp>
+#include <QtCore/QMutex>
 
 #define UInt16		uint16_t
 #define byte		unsigned char
@@ -254,9 +254,9 @@ class MercuryClass {
 public:
 
     static string str_id;
-    string str_line;
     bool isFirstReading;
     int address, connection_error;
+    string str_line;
     static char str_data[STR_DATA_LINE][STR_DATA_COLUMNS];
     static std::string data;
     int format, header ;//delete fd
@@ -275,8 +275,6 @@ public:
     }
 
     Data read_data(CanClass* can, GuidClass* guid);
-    void send_data();
-    string makeId(string line_, int addr_, int pin_);
 
     // -- Abnormal termination
     static void exitFailure(const char* msg);

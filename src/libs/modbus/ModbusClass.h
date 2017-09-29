@@ -2,7 +2,7 @@
 #define MODBUSCLASS_H
 #include <iostream>
 #include "modbus.h"
-#include <boost/thread/mutex.hpp>
+#include <QtCore/QMutex>
 
 using namespace std;
 
@@ -26,7 +26,7 @@ public:
     void lock();
     void unlock();
 private:
-    boost::mutex mtx_;
+    QMutex *mtx_;
 };
 
 #endif // HTTPS_H

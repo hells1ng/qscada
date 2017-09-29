@@ -157,7 +157,7 @@ static int _modbus_set_slave(modbus_t *ctx, int slave)
     return (crc_hi << 8 | crc_lo);
 }
 
- int _modbus_rtu_prepare_response_tid(const uint8_t *req, int *req_length)
+ int _modbus_rtu_prepare_response_tid(const uint8_t __attribute__((unused)) *req, int *req_length)
 {
     (*req_length) -= _MODBUS_RTU_CHECKSUM_LENGTH;
     /* No TID */
@@ -344,7 +344,7 @@ static ssize_t _modbus_rtu_recv(modbus_t *ctx, uint8_t *rsp, int rsp_length)
 static int _modbus_rtu_flush(modbus_t *);
 
 static int _modbus_rtu_pre_check_confirmation(modbus_t *ctx, const uint8_t *req,
-                                              const uint8_t *rsp, int rsp_length)
+                                              const uint8_t *rsp, int __attribute__((unused)) rsp_length)
 {
     /* Check responding slave is the slave we requested (except for broacast
      * request) */
@@ -1073,7 +1073,7 @@ static int _modbus_rtu_flush(modbus_t *ctx)
 }
 
 static int _modbus_rtu_select(modbus_t *ctx, fd_set *rset,
-                       struct timeval *tv, int length_to_read)
+                       struct timeval *tv, int __attribute__((unused)) length_to_read)
 {
     int s_rc;
 #if defined(_WIN32)

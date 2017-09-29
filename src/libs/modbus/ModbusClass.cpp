@@ -1,5 +1,5 @@
 #include "ModbusClass.h"
-
+#include <QtCore/QDebug>
 void ModbusClass::initialize(const char *device, int baud, char parity,
                              int data_bit, int stop_bit)
 {
@@ -10,6 +10,8 @@ ModbusClass::ModbusClass(const char *device, int baud, char parity,
                                 int data_bit, int stop_bit,
                                 const char *ip, int port, int mode_)
 {
+    mtx_ = new QMutex();
+
     mode = mode_;
     switch (mode) {
     case RTU:
@@ -22,6 +24,13 @@ ModbusClass::ModbusClass(const char *device, int baud, char parity,
     default:
         break;
     }
+    struct timeval response_timeout;
+
+    /* Define a new timeout! Default timeout is 500ms*/
+    response_timeout.tv_sec = 1;
+    response_timeout.tv_usec = 0;
+    modbus_set_response_timeout(ctx, response_timeout.tv_sec, response_timeout.tv_usec);
+
 
 //    modbus_set_debug(ctx, TRUE);
 }
@@ -33,12 +42,12 @@ ModbusClass::~ModbusClass()
 
 void ModbusClass::lock()
 {
-    mtx_.lock();
+    mtx_->lock();
 }
 
 void ModbusClass::unlock()
 {
-    mtx_.unlock();
+    mtx_->unlock();
 }
 
 bool ModbusClass::isConnected()

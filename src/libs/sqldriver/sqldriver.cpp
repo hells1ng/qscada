@@ -187,6 +187,39 @@ Data SqlDriver::fromDataTable(quint16 data_size)
     return retData;
 }
 
+Data SqlDriver::fromGuidTable(const QString& table)
+{
+    Data retData;
+
+    bool ok = db.open();
+    if (!ok) {
+        qWarning() << "fromGuidTable: Cannot connect to " << db.databaseName() << endl;
+    } else {
+        QString query_str = "SELECT * FROM " + table;
+        QSqlQuery query;
+
+        bool b = query.exec(query_str);
+        if (!b) {
+            qWarning() << "fromGuidTable: Cannot read from DB:" << db.databaseName()
+                       << " and Table: " << table << endl;
+            qFatal("Exit");
+        }
+
+        else if (query.size()) {
+
+            while (query.next()) {
+
+                QStringList qsl;
+                qsl.append(query.value(GuidClass::POS_GUID).toString());
+                qsl.append(query.value(GuidClass::POS_ADDRESS).toString());
+                retData.append(qsl);
+            }
+        }
+        db.close();
+    }
+    return retData;
+}
+
 /*
 vector<string> Sql_driver::fromPost()
 {

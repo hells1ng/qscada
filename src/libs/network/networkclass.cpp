@@ -1,5 +1,7 @@
 #include "networkclass.h"
-#include <QDebug>
+
+#include <QtCore/QDebug>
+#include <QtNetwork/QTcpSocket>
 
 //NetworkClass::NetworkClass(QObject *parent) :
 //    QObject(parent)

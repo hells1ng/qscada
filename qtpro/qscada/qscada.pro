@@ -14,6 +14,10 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
+#CONFIG += warn_off
+#QMAKE_CXXFLAGS += -Wno-unused-parameter
+#CXXFLAGS += -Wno-unused-parameter
+
 SOURCES += \
     ../../src/main.cpp \
     ../../src/libs/https/https.cpp \
@@ -39,7 +43,6 @@ HEADERS += \
     ../../src/main.h \
     ../../src/libs/https/https.h \
     ../../src/libs/id/id.h \
-    ../../src/libs/id/init_map.h \
     ../../src/libs/id/init_sensorvector.h \
     ../../src/libs/mercury/mercury.h \
     ../../src/libs/modbus/config.h \
@@ -58,5 +61,6 @@ HEADERS += \
     ../../src/libs/pulsar/pulsarclass.h \
     ../../src/libs/sqldriver/sqldriver.h
 INCLUDEPATH += ../../../../../sysroot/usr/local/include/
-LIBS += -lcurl -lssl -lcrypto -lpthread -lboost_system -lboost_thread -lboost_date_time -lmysqlclient_r
+LIBS += -lcurl -lssl -lcrypto
 INCLUDEPATH += /home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/
+

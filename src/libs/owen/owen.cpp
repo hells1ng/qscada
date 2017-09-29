@@ -20,61 +20,15 @@ void OwenClass::print_results()
         printf("SUCCESS\n");
 }
 
-std::string OwenClass::makeId(std::string line_, int addr_, int pin_)
+
+Data OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
 {
-    char a[4], p[4];
-    sprintf(a, "%d",addr_);
-    sprintf(p, "%d",pin_);
-    return line_ + ":" + a + ":" + p;
-}
 
-void OwenClass::send_data()
-{
-    SqlDriver SQL;
-//    SQL.toDataTable(SQL.prepare_data(QString::fromStdString(data))); // TODO
-}
+    Data retData;
+    QStringList qsl;
 
-/* Функция возвращает из строки, состоящей из элементов,
- * соединенных через разделитель, вектор этих элементов
- */
-vector<string> OwenClass::splitString(const string &fullstr,
-                                      const string &delimiter)
-{
-    vector<string> elements;
-    string::size_type lastpos = fullstr.find_first_not_of(delimiter, 0);
-    string::size_type pos = fullstr.find_first_of(delimiter, lastpos);
-    string substring("");
+    address = guid->get_address().toInt();
 
-    while ((string::npos != pos) || (string::npos != lastpos)) {
-
-        substring = fullstr.substr(lastpos, pos-lastpos);
-        elements.push_back(substring);
-        substring = "";
-
-        lastpos = fullstr.find_first_not_of(delimiter, pos);
-        pos = fullstr.find_first_of(delimiter, lastpos);
-    }
-    return elements;
-}
-
-vector<string> OwenClass::find_guid_parameters(GuidClass* guid, string lookingguid)
-{
-    vector<string> returnstring;
-
-    if ((*guid)(lookingguid) != "no_id") {
-        returnstring = splitString((*guid)(lookingguid), ":");//line:addr:pin
-        returnstring.push_back(lookingguid);//guid
-    }
-    return returnstring;
-};
-
-int OwenClass::write_data(ModbusClass* modbus, vector<string> stringguidforwrite, int valueforwrite)
-{
-    return 0;
-};
-
-void OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
-{
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
         usleep(DELAY_PRE_SEND);
@@ -89,21 +43,30 @@ void OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
                 for (int i = 0; i < nb_BITS; i++) {
                     tab_rp_bits[i] = (tab_rp_registers[j] & (1 << i)) ? 1 : 0;
 
-                    str_id = makeId(str_line, address, i+1);
+//                    str_id = makeId(str_line, address, i+1);
 
-                    if ((*guid)[str_id] != "no_guid") {
-                        sprintf(str_data[1], "%d", tab_rp_bits[i]);
-                        data = "";
-                        data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
+//                    if ((*guid)[str_id] != "no_guid") {
+//                        sprintf(str_data[1], "%d", tab_rp_bits[i]);
+//                        data = "";
+//                        data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
 
-                        if (PRINT_RESULTS)
-                            std::cout << data << std::endl;
-                        if (SENDING && (isFirstReading || (tab_rp_bits[i] != tab_rp_bits_prev[i])))
-                            send_data();
+//                        if (PRINT_RESULTS)
+//                            std::cout << data << std::endl;
+//                        if (SENDING && (isFirstReading || (tab_rp_bits[i] != tab_rp_bits_prev[i])))
+//                            send_data();
 
-                        tab_rp_bits_prev[i] = tab_rp_bits[i];
-                        data_16D.bits[i] = tab_rp_bits_prev[i]; //TODO test
+//                        tab_rp_bits_prev[i] = tab_rp_bits[i];
+//                        data_16D.bits[i] = tab_rp_bits_prev[i]; //TODO test
+//                    }
+                    bool ok = false;
+                    qsl.append(guid->get_subguid(QString::number(i), &ok));
+                    if (ok) {
+                    qsl.append(QString::number(tab_rp_bits[i]));
+                    qsl.append(QString::number(DATA_VALUE_FLAG1));
+
+                    retData.append(qsl);
                     }
+                    qsl.clear();
                 }
             }
         }
@@ -118,29 +81,48 @@ void OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
         else {
             for (int j = 0; j < nb_DI2; j++) {
 
-                str_id = makeId(str_line, address, j+1+16);
+//                str_id = makeId(str_line, address, j+1+16);
 
-                if ((*guid)[str_id] != "no_guid") {
+//                if ((*guid)[str_id] != "no_guid") {
                     sprintf(str_data[1], "%.2f", (float)tab_rp_registers[j]/100 + 0.75);	// 0.75 - для счетчика воды
-                    data = "";
-                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
-                    if (PRINT_RESULTS)
-                        std::cout << data << std::endl;
-                    if (SENDING && (isFirstReading || (tab_rp_registers[j] != tab_rp_registers_prev[j])))
-                        send_data();
-                    //if (SENDING&&(isFirstReading||(tab_rp_registers[j]!=tab_rp_registers_prev[j]))) send_data(mq_id);
-                    tab_rp_registers_prev[j] = tab_rp_registers[j];
-                    data_16D.regs[j] = tab_rp_registers_prev[j]; //TODO test
+//                    data = "";
+//                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
+//                    if (PRINT_RESULTS)
+//                        std::cout << data << std::endl;
+//                    if (SENDING && (isFirstReading || (tab_rp_registers[j] != tab_rp_registers_prev[j])))
+//                        send_data();
+//                    //if (SENDING&&(isFirstReading||(tab_rp_registers[j]!=tab_rp_registers_prev[j]))) send_data(mq_id);
+//                    tab_rp_registers_prev[j] = tab_rp_registers[j];
+//                    data_16D.regs[j] = tab_rp_registers_prev[j]; //TODO test
+//                }
+                    bool ok = false;
+                qsl.append(guid->get_subguid(QString::number(j + 16), &ok));
+                if (ok) {
+                qsl.append(QString::fromStdString(str_data[1]));
+                qsl.append(QString::number(DATA_VALUE_FLAG1));
+
+                retData.append(qsl);
                 }
+                qsl.clear();
             }
         }
         isFirstReading = false;
     }
     modbus->close();
-};
 
-void OwenClass_8A::read_data(ModbusClass* modbus, GuidClass* guid)
+    qDebug() << "OwenClass_16D with Address = " << address
+             << " Values : " << retData << endl;
+
+    return retData;
+}
+
+Data OwenClass_8A::read_data(ModbusClass* modbus, GuidClass* guid)
 {
+    Data retData;
+    QStringList qsl;
+
+    address = guid->get_address().toInt();
+
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
         usleep(DELAY_PRE_SEND * 2);
@@ -168,27 +150,43 @@ void OwenClass_8A::read_data(ModbusClass* modbus, GuidClass* guid)
 
             for (int i = 0; i < 8; i++) {
 
-                str_id = makeId(str_line, address, i+1);
+//                str_id = makeId(str_line, address, i+1);
 
-                if ((*guid)[str_id] != "no_guid") {
+//                if ((*guid)[str_id] != "no_guid") {
                     sprintf(str_data[1], "%.2f", real[i]);
-                    data = "";
-                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
-                    if (PRINT_RESULTS)
-                        std::cout << data << std::endl;
-                    if (SENDING && (isFirstReading/*||(abs(real[i]-real_prev[i])>DELTA)*/))
-                        send_data();
-                    real_prev[i] = real[i];
+//                    data = "";
+//                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
+//                    if (PRINT_RESULTS)
+//                        std::cout << data << std::endl;
+//                    if (SENDING && (isFirstReading/*||(abs(real[i]-real_prev[i])>DELTA)*/))
+//                        send_data();
+//                    real_prev[i] = real[i];
+//                }
+                    bool ok = false;
+                qsl.append(guid->get_subguid(QString::number(i), &ok));
+                if (ok) {
+                qsl.append(QString::fromStdString(str_data[1]));
+                qsl.append(QString::number(DATA_VALUE_FLAG1));
+
+                retData.append(qsl);
                 }
+                qsl.clear();
             }
         }
         isFirstReading = false;
     }
     modbus->close();
-};
 
-void OwenClass_8AC::read_data(ModbusClass* modbus, GuidClass* guid)
+    qDebug() << "OwenClass_8A with Address = " << address
+             << " Values : " << retData << endl;
+
+    return retData;
+}
+
+Data OwenClass_8AC::read_data(ModbusClass* modbus, GuidClass* guid)
 {
+    address = guid->get_address().toInt();
+
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
         usleep(DELAY_PRE_SEND);
@@ -206,51 +204,57 @@ void OwenClass_8AC::read_data(ModbusClass* modbus, GuidClass* guid)
                 else
                     real[j] = static_cast<float>(0xFFFF - tab_rp_registers[j])/(-100);
 
-                str_id = makeId(str_line, address, j+1);
+//                str_id = makeId(str_line, address, j+1);
 
-                if ((*guid)[str_id] != "no_guid") {
-                    sprintf(str_data[1], "%.2f", real[j]);
-                    data = "";
-                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
+//                if ((*guid)[str_id] != "no_guid") {
+//                    sprintf(str_data[1], "%.2f", real[j]);
+//                    data = "";
+//                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
 
-                    if (PRINT_RESULTS)
-                        std::cout << data << std::endl;
+//                    if (PRINT_RESULTS)
+//                        std::cout << data << std::endl;
 
-                    float deltax = real[j] - real_prev[j];
-                    bool needupdate;
+//                    float deltax = real[j] - real_prev[j];
+//                    bool needupdate;
 
-                    if (deltax >= 0) {
-                        if (deltax - DELTA > 0)
-                            needupdate = true;
-                        else
-                            needupdate = false;
-                    }
-                    else {
-                        if (deltax + DELTA < 0)
-                            needupdate = true;
-                        else
-                            needupdate = false;
-                    }
+//                    if (deltax >= 0) {
+//                        if (deltax - DELTA > 0)
+//                            needupdate = true;
+//                        else
+//                            needupdate = false;
+//                    }
+//                    else {
+//                        if (deltax + DELTA < 0)
+//                            needupdate = true;
+//                        else
+//                            needupdate = false;
+//                    }
 
-                    if (SENDING && (isFirstReading || needupdate))
-                        send_data();
-                    if (isFirstReading) {
-                        real_prev[j] = real[j];
-                    }//update previous data in firstReading and deltax > DELTA
-                    else if (needupdate) {
-                        real_prev[j] = real[j];
-                    }
-                }
+//                    if (SENDING && (isFirstReading || needupdate))
+//                        send_data();
+//                    if (isFirstReading) {
+//                        real_prev[j] = real[j];
+//                    }//update previous data in firstReading and deltax > DELTA
+//                    else if (needupdate) {
+//                        real_prev[j] = real[j];
+//                    }
+//                }
             }
         }
         isFirstReading = false;
     }
     modbus->close();
-};
+
+    //TODO realize return
+    Data retData;
+    return retData;
+}
 
         //TODO: previous values and data for sending
-void OwenClass_KM::read_data(ModbusClass* modbus, GuidClass* guid)
+Data OwenClass_KM::read_data(ModbusClass* modbus, GuidClass* guid)
 {
+    address = guid->get_address().toInt();
+
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
         usleep(DELAY_PRE_SEND);
@@ -338,9 +342,9 @@ void OwenClass_KM::read_data(ModbusClass* modbus, GuidClass* guid)
                     }
                 }
             }
-            str_id = makeId(str_line, address, 0);
+//            str_id = makeId(str_line, address, 0);
             data = "";
-            data = data + (*guid)[str_id];
+//            data = data + (*guid)[str_id];
             for (int i = 0; i < 12; i++) {
                 sprintf(str_data[i+1], "%.2f", real[i]);
                 data = data + "|" + str_data[i+1];
@@ -348,15 +352,21 @@ void OwenClass_KM::read_data(ModbusClass* modbus, GuidClass* guid)
             data = data + "|";//+"\r\n";
             if (PRINT_RESULTS)
                 std::cout << data << std::endl;
-            if (SENDING)
-                send_data(); //id/KtU/KtI/U/I/N/Na/Nr/Km/f/E/Ea/Er/
+//            if (SENDING)
+//                send_data(); //id/KtU/KtI/U/I/N/Na/Nr/Km/f/E/Ea/Er/
         }
     }
     modbus->close();
-};
 
-void OwenClass_SimDI::read_data(ModbusClass* modbus, GuidClass* guid)
+    //TODO realize return
+    Data retData;
+    return retData;
+}
+
+Data OwenClass_SimDI::read_data(ModbusClass* modbus, GuidClass* guid)
 {
+    address = guid->get_address().toInt();
+
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
         usleep(DELAY_PRE_SEND);
@@ -370,25 +380,31 @@ void OwenClass_SimDI::read_data(ModbusClass* modbus, GuidClass* guid)
 
             for (int j = 0; j < nb_SimDI; j++) {
 
-                str_id = makeId(str_line, address, j+1);
+//                str_id = makeId(str_line, address, j+1);
 
-                if ((*guid)[str_id] != "no_guid") {
-                    sprintf(str_data[1], "%d", tab_rp_bits[j]);
-                    data = "";
-                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
-                    if (PRINT_RESULTS)
-                        std::cout<<data<<std::endl;
-                    if (SENDING)
-                        send_data();
-                }
+//                if ((*guid)[str_id] != "no_guid") {
+//                    sprintf(str_data[1], "%d", tab_rp_bits[j]);
+//                    data = "";
+//                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
+//                    if (PRINT_RESULTS)
+//                        std::cout<<data<<std::endl;
+//                    if (SENDING)
+//                        send_data();
+//                }
             }
         }
     }
     modbus->close();
-};
 
-void OwenClass_SimAI::read_data(ModbusClass* modbus, GuidClass* guid)
+    //TODO realize return
+    Data retData;
+    return retData;
+}
+
+Data OwenClass_SimAI::read_data(ModbusClass* modbus, GuidClass* guid)
 {
+    address = guid->get_address().toInt();
+
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
         usleep(DELAY_PRE_SEND);
@@ -401,25 +417,31 @@ void OwenClass_SimAI::read_data(ModbusClass* modbus, GuidClass* guid)
         else {
             for (int j = 0; j < nb_SimAI; j++) {
 
-                str_id = makeId(str_line, address, j+1);
+//                str_id = makeId(str_line, address, j+1);
 
-                if ((*guid)[str_id] != "no_guid") {
-                    sprintf(str_data[1], "%d", tab_rp_registers[j]);
-                    data = "";
-                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
-                    if (PRINT_RESULTS)
-                        std::cout << data << std::endl;
-                    if (SENDING)
-                        send_data();
-                }
+//                if ((*guid)[str_id] != "no_guid") {
+//                    sprintf(str_data[1], "%d", tab_rp_registers[j]);
+//                    data = "";
+//                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
+//                    if (PRINT_RESULTS)
+//                        std::cout << data << std::endl;
+//                    if (SENDING)
+//                        send_data();
+//                }
             }
         }
     }
     modbus->close();
-};
 
-void OwenClass_NL_8R::read_data(ModbusClass* modbus, GuidClass* guid)
+    //TODO realize return
+    Data retData;
+    return retData;
+}
+
+Data OwenClass_NL_8R::read_data(ModbusClass* modbus, GuidClass* guid)
 {
+    address = guid->get_address().toInt();
+
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
         usleep(DELAY_PRE_SEND);
@@ -432,24 +454,28 @@ void OwenClass_NL_8R::read_data(ModbusClass* modbus, GuidClass* guid)
         else {
             for (int j = 0; j < nb_8R; j++) {
 
-                str_id = makeId(str_line, address, j+1);
+//                str_id = makeId(str_line, address, j+1);
 
-                if ((*guid)[str_id] != "no_guid") {
-                    sprintf(str_data[1], "%d", tab_rp_bits[j]);
-                    data = "";
-                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
-                    if (PRINT_RESULTS)
-                        std::cout << data << std::endl;
-                    if (SENDING && (isFirstReading || (tab_rp_bits[j] != tab_rp_bits_prev[j])))
-                        send_data();
-                    tab_rp_bits_prev[j] = tab_rp_bits[j];
-                }
+//                if ((*guid)[str_id] != "no_guid") {
+//                    sprintf(str_data[1], "%d", tab_rp_bits[j]);
+//                    data = "";
+//                    data = data + (*guid)[str_id] + "|" + str_data[1] + "|0";//+"\r\n";
+//                    if (PRINT_RESULTS)
+//                        std::cout << data << std::endl;
+//                    if (SENDING && (isFirstReading || (tab_rp_bits[j] != tab_rp_bits_prev[j])))
+//                        send_data();
+//                    tab_rp_bits_prev[j] = tab_rp_bits[j];
+//                }
             }
         }
         isFirstReading = false;
     }
     modbus->close();
-};
+
+    //TODO realize return
+    Data retData;
+    return retData;
+}
 
 int OwenClass_NL_8R::write_data(ModbusClass* modbus, vector<string> stringguidforwrite, int valueforwrite)
 {
@@ -461,4 +487,4 @@ int OwenClass_NL_8R::write_data(ModbusClass* modbus, vector<string> stringguidfo
     }
     modbus->close();
     return ret;
-};
+}

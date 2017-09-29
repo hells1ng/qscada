@@ -29,15 +29,17 @@ class HttpsDriver
 public:
     HttpsDriver();
     ~HttpsDriver();
-//    vector<string> splitString(const string &fullstr, const string &delimiter);
-    void Send(const quint8 cmd, Data *data);
 
-    vector<string> explode_string(string str, const char *delim);
     enum {
         HTTPS_CMD_POST_SENSOR_VALUE,
         HTTPS_CMD_GET_SENSOR_PERIOD
     };
     const char* HTTP_RESPONSE_ERROR_DUPLICATE = "1011";
+    const char* HTTP_RESPONSE_ERROR_WRONGSECRET = "1010";
+
+    void Send(const quint8 cmd, Data *data);
+    vector<string> explode_string(string str, const char *delim);
+
 protected:
     static const char *pPassphrase;
     static const char *pCertFile;
@@ -50,10 +52,11 @@ protected:
 //    const char *pKeyType="PEM";
 
 private:
-    QtJson::JsonObject get_interval_json();
-    QtJson::JsonObject from_data_to_json(QStringList data);
-    string curl_send(string const &str);
-    void process_response(const quint8 cmd, Data *data, string const &response/* , vector<string> &datas*/);
+    QtJson::JsonObject  get_interval_json();
+    QtJson::JsonObject  from_data_to_json(QStringList data);
+
+    string  curl_send(string const &str);
+    void    process_response(const quint8 cmd, Data *data, string const &response/* , vector<string> &datas*/);
 
 };
 

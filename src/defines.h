@@ -29,7 +29,6 @@ enum {
     DATA_POS_TIME           = 3,
     DATA_POS_ERRORFLAG    = 4,
     DATA_NUM_OF_ELEM_START = 3
-
 };
 
 #endif // DEFINES_H_INCLUDED

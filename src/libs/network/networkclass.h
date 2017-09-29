@@ -1,13 +1,12 @@
 #ifndef NETWORKCLASS_H
 #define NETWORKCLASS_H
 
-#include <QObject>
-#include <QtNetwork>
-
+#include <QtCore/QtCore>
 
 class NetworkClass : public QThread/*QObject*/
 {
     Q_OBJECT
+
 public:
     explicit NetworkClass(QThread *parent = 0);
 
