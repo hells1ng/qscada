@@ -10,6 +10,8 @@ qint64 SqlDriver::numOfConnections = 0;
 SqlDriver::SqlDriver(QObject *parent) :
     QObject(parent)
 {
+    mutex = new QMutex();
+
 //    numOfConnections++;
     if(QSqlDatabase::contains(QSqlDatabase::defaultConnection)) {
         db = QSqlDatabase::database();
@@ -19,7 +21,7 @@ SqlDriver::SqlDriver(QObject *parent) :
 //        db = QSqlDatabase::addDatabase("QMYSQL");
 //        db.setDatabaseName("Safe");
         db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName("/home/pi/qscada_db");
+        db.setDatabaseName("qscada_db");
     }
 //    db.setHostName("localhost");
 //    db.setUserName("root");
@@ -50,7 +52,9 @@ void SqlDriver::push(Data data)
             data[i].append(get_systime());
             data[i].append(QString::number(DATA_ERROR_FLAG0));
         }
+        mutex->lock();
         queue.enqueue(data[i]);
+        mutex->unlock();
     }
 }
 
@@ -104,6 +108,8 @@ void SqlDriver::toDataTable(const Data& data)
         for (int i = 0; i < data.size(); i++) {
             QStringList slist = data.at(i);
             if (slist.at(DATA_POS_ERRORFLAG) != QString::number(DATA_ERROR_FLAG0)) {
+
+//                qDebug() << "Write to data Table " << slist << endl;
 
                 QSqlQuery query;
                 query.prepare("INSERT INTO Data (guid,value,value_flag,time,error_flag)"
@@ -187,7 +193,7 @@ Data SqlDriver::fromDataTable(quint16 data_size)
     return retData;
 }
 
-Data SqlDriver::fromGuidTable(const QString& table)
+Data SqlDriver::fromGuidTable(const QString& table, const QString& key)
 {
     Data retData;
 
@@ -195,7 +201,11 @@ Data SqlDriver::fromGuidTable(const QString& table)
     if (!ok) {
         qWarning() << "fromGuidTable: Cannot connect to " << db.databaseName() << endl;
     } else {
+
         QString query_str = "SELECT * FROM " + table;
+        if (key != "")
+            query_str = "SELECT * FROM " + table + " WHERE key=" + key;
+
         QSqlQuery query;
 
         bool b = query.exec(query_str);
@@ -210,8 +220,11 @@ Data SqlDriver::fromGuidTable(const QString& table)
             while (query.next()) {
 
                 QStringList qsl;
+
+                qsl.append(query.value(GuidClass::POS_KEY).toString());
                 qsl.append(query.value(GuidClass::POS_GUID).toString());
                 qsl.append(query.value(GuidClass::POS_ADDRESS).toString());
+
                 retData.append(qsl);
             }
         }

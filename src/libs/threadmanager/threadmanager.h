@@ -6,6 +6,7 @@
 #include <QtCore/QDebug>
 #include "../../includes.h"
 #include "../../libs/https/https.h"
+#include "../../libs/pulsar/pulsarclass.h"
 
 class ThreadManager : public QObject
 {
@@ -14,11 +15,13 @@ class ThreadManager : public QObject
 public:
     explicit ThreadManager(QObject *parent = 0);
     ~ThreadManager();
-
+    enum {
+      DEFAULT_SENSOR_TIMEOUT = 60 * 1000 // 1 min
+    };
     GuidClass       Guid_Mercury_1;
     GuidClass       Guid_Owen_1;
+    GuidClass       Guid_Pulsar_1;
     ModbusClass     Modbus;
-    CanClass        Can;
 
     //------------------OWEN MODULES---------------------------------------//
     OwenClass_16D   Owen_16D_1;
@@ -31,7 +34,7 @@ public:
     //------------------Mercury MODULES---------------------------------------//
     MercuryClass    Mercury_1;
     //------------------Pulsar---------------------------------------//
-//    PulsarClass Pulse;
+    PulsarClass     Pulsar_1;
     //------------------SQL---------------------------//
     SqlDriver       sqlDriver;
     //------------------HTTPS-------------------------//
@@ -42,31 +45,40 @@ private:
     QThread *thread2;
     QThread *thread3;
     QThread *thread4;
+    QThread *thread5;
 
     void doEvery(std::function<void()> myFunction, qint64 interval);
-
+    void doEvery(std::function<void()> myFunction);
     void owen_thread();
     void mercury_thread();
+    void pulsar_thread();
     void sendToServer();
     void deb();
+    void getSensorIntervalFromServer();
+
+    qint64 _sensorTimeout;
+    QMutex*  _sensorTimeout_mutex;
 
 
 public slots:
 
     void mercury_slot() {
-        doEvery(std::bind(&ThreadManager::mercury_thread, this), 2000);
+        doEvery(std::bind(&ThreadManager::mercury_thread, this));
     }
     void owen_slot() {
         doEvery(std::bind(&ThreadManager::owen_thread, this), 2000);
     }
+    void pulsar_slot() {
+        doEvery(std::bind(&ThreadManager::pulsar_thread, this));
+    }
     void send_slot() {
         doEvery(std::bind(&ThreadManager::sendToServer, this), 1000);
     }
-    void debug_slot() {
-        doEvery(std::bind(&ThreadManager::deb, this), 1000);
+    void get_sensor_interval_slot() {
+        doEvery(std::bind(&ThreadManager::getSensorIntervalFromServer, this), 5000);
     }
 
-    void getSensorIntervalFromServer();
+
 
 };
 

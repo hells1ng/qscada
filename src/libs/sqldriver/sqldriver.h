@@ -21,7 +21,7 @@ public:
 
     Data fromDataTable(quint16 data_size);
 
-    Data fromGuidTable(const QString& table);
+    Data fromGuidTable(const QString& table, const QString &key="");
 
     void push(Data data);
     Data pop(const quint8 size);
@@ -31,6 +31,7 @@ signals:
 public slots:
 
 private:
+    QMutex* mutex;
     QSqlDatabase db;
     QQueue<QStringList> queue;
 

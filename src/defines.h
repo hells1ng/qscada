@@ -12,6 +12,7 @@
 
 #define USB0 "/dev/ttyUSB0"
 #define USB1 "/dev/ttyUSB1"
+#define USB2 "/dev/ttyUSB1"
 
 
 #include <QtCore/QtCore>

@@ -24,7 +24,6 @@ UInt16 MercuryClass::ModRTU_CRC(byte* buf, int len)
     return crc;
 }
 
-
 // -- Abnormal termination
 void MercuryClass::exitFailure(const char* msg)
 {
@@ -152,58 +151,6 @@ int MercuryClass::checkResult_4x4b(byte* buf, int len)
     return OK;
 }
 
-
-// -- Check the communication channel
-int MercuryClass::checkChannel(CanClass* can, int address)
-{
-    // Command initialisation
-    TestCmd testCmd = { testCmd.address = address, testCmd.command = 0x00, 0x00 };
-    testCmd.CRC = ModRTU_CRC((byte*)&testCmd, sizeof(testCmd) - sizeof(UInt16));
-
-    // Send Req and Get responce
-    byte buf[BSZ];
-    int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&testCmd, sizeof(testCmd), buf);
-
-    if (len == 0)
-        return CHECK_CHANNEL_TIME_OUT;
-
-    return checkResult_1b(buf, len);
-}
-
-// -- Connection initialisation
-int MercuryClass::initConnection(CanClass* can, int address)
-{
-    InitCmd initCmd = {
-        /*initCmd.address =*/ (unsigned char)address,
-        /*initCmd.command =*/ 0x01,
-        /*initCmd.accessLevel=*/ 0x01,
-        {0x01,0x01,0x01,0x01,0x01,0x01},
-        0x00
-    };
-    //initCmd.password[6] = 0x01;//{0x01,0x01,0x01,0x01,0x01,0x01};
-    initCmd.CRC = ModRTU_CRC((byte*)&initCmd, sizeof(initCmd) - sizeof(UInt16));
-
-    // Send Req and Get responce
-    byte buf[BSZ];
-    int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&initCmd, sizeof(initCmd), buf);
-    return checkResult_1b(buf, len);
-}
-// -- Close connection
-int MercuryClass::closeConnection(CanClass* can, int address)
-{
-    ByeCmd byeCmd = { byeCmd.address = address, byeCmd.command = 0x02, 0x00};
-    byeCmd.CRC = ModRTU_CRC((byte*)&byeCmd, sizeof(byeCmd) - sizeof(UInt16));
-
-    // Send Req and Get responce
-    byte buf[BSZ];
-    int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&byeCmd, sizeof(byeCmd), buf);
-
-    return checkResult_1b(buf, len);
-}
-
 // Decode float from 3 bytes
 float MercuryClass::B3F(byte b[3], float factor)
 {
@@ -218,8 +165,124 @@ float MercuryClass::B4F(byte b[4], float factor)
     return val/factor;
 }
 
+
+
+// -- Check the communication channel
+int MercuryClass::checkChannel(int address)
+{
+    // Command initialisation
+    TestCmd testCmd = { testCmd.address = address, testCmd.command = 0x00, 0x00 };
+    testCmd.CRC = ModRTU_CRC((byte*)&testCmd, sizeof(testCmd) - sizeof(UInt16));
+
+    // Send Req and Get responce
+//    byte buf[BSZ];
+//    int len = 0;
+//    len = write((byte*)&testCmd, sizeof(testCmd), buf);
+    emit write((byte*)&testCmd, sizeof(testCmd));
+    while (!receivedData) {
+    };
+    receivedData = false;
+
+    if (len == 0)
+        return CHECK_CHANNEL_TIME_OUT;
+
+    return checkResult_1b(buf, len);
+}
+
+// -- Connection initialisation
+int MercuryClass::initConnection(int address)
+{
+    InitCmd initCmd = {
+        /*initCmd.address =*/ (unsigned char)address,
+        /*initCmd.command =*/ 0x01,
+        /*initCmd.accessLevel=*/ 0x01,
+        {0x01,0x01,0x01,0x01,0x01,0x01},
+        0x00
+    };
+    //initCmd.password[6] = 0x01;//{0x01,0x01,0x01,0x01,0x01,0x01};
+    initCmd.CRC = ModRTU_CRC((byte*)&initCmd, sizeof(initCmd) - sizeof(UInt16));
+
+    // Send Req and Get responce
+//    byte buf[BSZ];
+//    int len = 0;
+//    len = can->write((byte*)&initCmd, sizeof(initCmd), buf);
+    emit write((byte*)&initCmd, sizeof(initCmd));
+    while (!receivedData) {
+    };
+    receivedData = false;
+
+    if (len == 0)
+        return CHECK_CHANNEL_TIME_OUT;
+
+    return checkResult_1b(buf, len);
+}
+// -- Close connection
+int MercuryClass::closeConnection(int address)
+{
+    ByeCmd byeCmd = { byeCmd.address = address, byeCmd.command = 0x02, 0x00};
+    byeCmd.CRC = ModRTU_CRC((byte*)&byeCmd, sizeof(byeCmd) - sizeof(UInt16));
+
+    // Send Req and Get responce
+//    byte buf[BSZ];
+//    int len = 0;
+//    len = can->write((byte*)&byeCmd, sizeof(byeCmd), buf);
+    emit write((byte*)&byeCmd, sizeof(byeCmd));
+    while (!receivedData) {
+    };
+    receivedData = false;
+
+    if (len == 0)
+        return CHECK_CHANNEL_TIME_OUT;
+
+    return checkResult_1b(buf, len);
+}
+
+/* Get power counters by phases for the period
+    periodId - one of PowerPeriod enum values
+    month - month number when periodId is PP_MONTH
+    tariffNo - 0 for all tariffs, 1 - tariff #1, 2 - tariff #2 etc. */
+int MercuryClass::getW(int address, PWV* W, int periodId, int month, int tariffNo)
+{
+    ReadParamCmd getWCmd =
+    {
+        getWCmd.address = address,
+        getWCmd.command = 0x05,
+        getWCmd.paramId = (periodId << 4) | (month & 0xF),
+        getWCmd.BWRI = tariffNo,
+        0x00
+    };
+    getWCmd.CRC = ModRTU_CRC((byte*)&getWCmd, sizeof(getWCmd) - sizeof(UInt16));
+
+    // Send Req and Get responce
+//    byte buf[BSZ];
+//    int len = 0;
+//    len = can->write((byte*)&getWCmd, sizeof(getWCmd), buf);
+    emit write((byte*)&getWCmd, sizeof(getWCmd));
+    while (!receivedData) {
+    };
+    receivedData = false;
+
+    if (len == 0)
+        return CHECK_CHANNEL_TIME_OUT;
+
+    // Check and decode result
+    int checkResult = checkResult_4x4b(buf, len);
+    if (OK == checkResult)
+    {
+        Result_4x4b* res = (Result_4x4b*)buf;
+        W->ap = B4F(res->ap, 1000.0);
+        W->am = B4F(res->am, 1000.0);
+        W->rp = B4F(res->rp, 1000.0);
+        W->rm = B4F(res->rm, 1000.0);
+    }
+
+    return checkResult;
+}
+
+
+
 // Get voltage (U) by phases
-int MercuryClass::getU(CanClass* can, int address, P3V* U)
+int MercuryClass::getU(int address, P3V* U)
 {
     ReadParamCmd getUCmd =
     {
@@ -235,7 +298,7 @@ int MercuryClass::getU(CanClass* can, int address, P3V* U)
     // Send Req and Get responce
     byte buf[BSZ];
     int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&getUCmd, sizeof(getUCmd), buf);
+//    len = can->write((byte*)&getUCmd, sizeof(getUCmd), buf);
 
     // Check and decode result
     int checkResult = checkResult_3x3b(buf, len);
@@ -251,7 +314,7 @@ int MercuryClass::getU(CanClass* can, int address, P3V* U)
 }
 
 // Get current (I) by phases
-int MercuryClass::getI(CanClass* can, int address, P3V* I)
+int MercuryClass::getI(int address, P3V* I)
 {
     ReadParamCmd getICmd =
     {
@@ -267,7 +330,7 @@ int MercuryClass::getI(CanClass* can, int address, P3V* I)
     // Send Req and Get responce
     byte buf[BSZ];
     int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&getICmd, sizeof(getICmd), buf);
+//    len = can->write((byte*)&getICmd, sizeof(getICmd), buf);
 
     // Check and decode result
     int checkResult = checkResult_3x3b(buf, len);
@@ -283,7 +346,7 @@ int MercuryClass::getI(CanClass* can, int address, P3V* I)
 }
 
 // Get power consumption factor cos(f) by phases
-int MercuryClass::getCosF(CanClass* can, int address, P3VS* C)
+int MercuryClass::getCosF(int address, P3VS* C)
 {
     ReadParamCmd getCosCmd =
     {
@@ -299,7 +362,7 @@ int MercuryClass::getCosF(CanClass* can, int address, P3VS* C)
     // Send Req and Get responce
     byte buf[BSZ];
     int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&getCosCmd, sizeof(getCosCmd), buf);
+//    len = can->write((byte*)&getCosCmd, sizeof(getCosCmd), buf);
 
     // Check and decode result
     int checkResult = checkResult_4x3b(buf, len);
@@ -316,7 +379,7 @@ int MercuryClass::getCosF(CanClass* can, int address, P3VS* C)
 }
 
 // Get grid frequency (Hz)
-int MercuryClass::getF(CanClass* can, int address, float *f)
+int MercuryClass::getF(int address, float *f)
 {
     ReadParamCmd getFCmd =
     {
@@ -332,7 +395,7 @@ int MercuryClass::getF(CanClass* can, int address, float *f)
     // Send Req and Get responce
     byte buf[BSZ];
     int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&getFCmd, sizeof(getFCmd), buf);
+//    len = can->write((byte*)&getFCmd, sizeof(getFCmd), buf);
 
     // Check and decode result
     int checkResult = checkResult_3b(buf, len);
@@ -346,7 +409,7 @@ int MercuryClass::getF(CanClass* can, int address, float *f)
 }
 
 // Get phases angle
-int MercuryClass::getA(CanClass* can, int address, P3V* A)
+int MercuryClass::getA(int address, P3V* A)
 {
     ReadParamCmd getACmd =
     {
@@ -362,7 +425,7 @@ int MercuryClass::getA(CanClass* can, int address, P3V* A)
     // Send Req and Get responce
     byte buf[BSZ];
     int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&getACmd, sizeof(getACmd), buf);
+//    len = can->write((byte*)&getACmd, sizeof(getACmd), buf);
 
     // Check and decode result
     int checkResult = checkResult_3x3b(buf, len);
@@ -378,7 +441,7 @@ int MercuryClass::getA(CanClass* can, int address, P3V* A)
 }
 
 // Get active power (W) consumption by phases with total
-int MercuryClass::getP(CanClass* can, int address, P3VS* P)
+int MercuryClass::getP(int address, P3VS* P)
 {
     ReadParamCmd getPCmd =
     {
@@ -394,7 +457,7 @@ int MercuryClass::getP(CanClass* can, int address, P3VS* P)
     // Send Req and Get responce
     byte buf[BSZ];
     int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&getPCmd, sizeof(getPCmd), buf);
+//    len = can->write((byte*)&getPCmd, sizeof(getPCmd), buf);
 
     // Check and decode result
     int checkResult = checkResult_4x3b(buf, len);
@@ -411,7 +474,7 @@ int MercuryClass::getP(CanClass* can, int address, P3VS* P)
 }
 
 // Get reactive power (VA) consumption by phases with total
-int MercuryClass::getS(CanClass* can, int address, P3VS* S)
+int MercuryClass::getS(int address, P3VS* S)
 {
     ReadParamCmd getSCmd =
     {
@@ -427,7 +490,7 @@ int MercuryClass::getS(CanClass* can, int address, P3VS* S)
     // Send Req and Get responce
     byte buf[BSZ];
     int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&getSCmd, sizeof(getSCmd), buf);
+//    len = can->write((byte*)&getSCmd, sizeof(getSCmd), buf);
 
     // Check and decode result
     int checkResult = checkResult_4x3b(buf, len);
@@ -438,40 +501,6 @@ int MercuryClass::getS(CanClass* can, int address, P3VS* S)
         S->p2 = B3F(res->p2, 100.0);
         S->p3 = B3F(res->p3, 100.0);
         S->sum = B3F(res->sum, 100.0);
-    }
-
-    return checkResult;
-}
-
-/* Get power counters by phases for the period
-    periodId - one of PowerPeriod enum values
-    month - month number when periodId is PP_MONTH
-    tariffNo - 0 for all tariffs, 1 - tariff #1, 2 - tariff #2 etc. */
-int MercuryClass::getW(CanClass* can,int address, PWV* W, int periodId, int month, int tariffNo)
-{
-    ReadParamCmd getWCmd =
-    {
-        getWCmd.address = address,
-        getWCmd.command = 0x05,
-        getWCmd.paramId = (periodId << 4) | (month & 0xF),
-        getWCmd.BWRI = tariffNo,
-        0x00
-    };
-    getWCmd.CRC = ModRTU_CRC((byte*)&getWCmd, sizeof(getWCmd) - sizeof(UInt16));
-
-    // Send Req and Get responce
-    byte buf[BSZ];
-    int len = 0;
-    len = can->write_read_rtu_tcp((byte*)&getWCmd, sizeof(getWCmd), buf);
-    // Check and decode result
-    int checkResult = checkResult_4x4b(buf, len);
-    if (OK == checkResult)
-    {
-        Result_4x4b* res = (Result_4x4b*)buf;
-        W->ap = B4F(res->ap, 1000.0);
-        W->am = B4F(res->am, 1000.0);
-        W->rp = B4F(res->rp, 1000.0);
-        W->rm = B4F(res->rm, 1000.0);
     }
 
     return checkResult;
@@ -494,21 +523,11 @@ void MercuryClass::printUsage()
     printf("  %s\tprints this screen\n\r", OPT_HELP);
 }
 
-void getDateTimeStr(char *str, int length, time_t time)
-{
-    struct tm *ti = localtime(&time);
-
-    snprintf(str, length, "%4d-%02d-%02d %02d:%02d:%02d",
-             ti->tm_year+1900, ti->tm_mon+1, ti->tm_mday,
-             ti->tm_hour, ti->tm_min, ti->tm_sec);
-}
-
 // -- Output formatting and print
 void MercuryClass::printOutput(int format, OutputBlock o, int header)
 {
     // getting current time for timestamp
     char timeStamp[BSZ];
-    getDateTimeStr(timeStamp, BSZ, time(NULL));
 
     switch(format)
     {
@@ -570,348 +589,170 @@ void MercuryClass::printOutput(int format, OutputBlock o, int header)
     }
 }
 
-CanClass::CanClass(const char *device,  unsigned int baud_, char parity_,
-                   unsigned int data_bit_, unsigned int stop_bit_, const char *ip, int port, int mode_) :
-    com_port(device), stop_bit(stop_bit_), parity(parity_), net(ip, port), mode(mode_)
-
+MercuryClass::MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout/* = 1000*/) :
+    ioDriver(Type, server_com, port_props, timeout)
 {
-    mutex = new QMutex();
+    connect(this, SIGNAL(write(unsigned char*, int )), &ioDriver, SLOT(write(unsigned char *, int)));
+    connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
+    connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
 
-    switch (baud_) {
-    case 110:
-        baudrate = B110;
-        break;
-    case 300:
-        baudrate = B300;
-        break;
-    case 600:
-        baudrate = B600;
-        break;
-    case 1200:
-        baudrate = B1200;
-        break;
-    case 2400:
-        baudrate = B2400;
-        break;
-    case 4800:
-        baudrate = B4800;
-        break;
-    case 9600:
-        baudrate = B9600;
-        break;
-    case 19200:
-        baudrate = B19200;
-        break;
-    case 38400:
-        baudrate = B38400;
-        break;
-    case 57600:
-        baudrate = B57600;
-        break;
-    case 115200:
-        baudrate = B115200;
-        break;
+    header = 0;
+    bzero(&o, sizeof(o));
+    format = OF_HUMAN;
 
-    default:
-        baudrate = B9600;
-        break;
+    receivedData = false;
+}
+
+void MercuryClass::received(QByteArray buf_)
+{
+    len = buf_.size();
+    for (int i = 0; i < len; i++)
+    {
+        buf[i] = buf_[i];
     }
-
-    /* Set data bits (5, 6, 7, 8 bits)
-       CSIZE        Bit mask for data bits
-    */
-    switch (data_bit_) {
-    case 5:
-        data_bit = CS5;
-        break;
-    case 6:
-        data_bit = CS6;
-        break;
-    case 7:
-        data_bit = CS7;
-        break;
-    case 8:
-    default:
-        data_bit = CS8;
-        break;
-    }
+//    qDebug() << "Receive buf = " << buf_.toHex() << " with size = " << len;
+    receivedData = true;
 }
 
-
-void CanClass::lock()
+void MercuryClass::timeout()
 {
-    mutex->lock();
+    len = 0;
+    receivedData = true;
 }
 
-void CanClass::unlock()
+Data MercuryClass::read_data(GuidClass* guid)
 {
-    mutex->unlock();
-}
-
-bool CanClass::isConnected()
-{
-    lock();
-    switch (mode) {
-    case RTU:
-        fd = open(com_port, O_RDWR | O_NOCTTY | O_NDELAY);
-        if (fd < 0) {
-            std::cout << "Connection to CAN failed" << std::endl;
-            //exitFailure(com_port);
-            return false;
-        }
-        else {
-            fcntl(fd, F_SETFL, 0);
-            tcgetattr(fd, &oldtio); /* save current port settings */
-            bzero(&newtio, sizeof(newtio));
-            cfsetispeed(&newtio, baudrate);
-            cfsetospeed(&newtio, baudrate);
-            newtio.c_cflag = baudrate | data_bit | CLOCAL | CREAD;
-            //	newtio.c_cflag = BAUDRATE | CRTSCTS | CS8 | CLOCAL | CREAD;
-            //	newtio.c_cflag = BAUDRATE | CS8 | CREAD;
-
-            /* Stop bit (1 or 2) */
-            if (stop_bit == 1)
-                newtio.c_cflag &=~ CSTOPB;
-            else /* 2 */
-                newtio.c_cflag |= CSTOPB;
-
-            /* PARENB       Enable parity bit
-               PARODD       Use odd parity instead of even */
-            if (parity == 'N') {
-                /* None */
-                newtio.c_cflag &=~ PARENB;
-            } else if (parity == 'E') {
-                /* Even */
-                newtio.c_cflag |= PARENB;
-                newtio.c_cflag &=~ PARODD;
-            } else {
-                /* Odd */
-                newtio.c_cflag |= PARENB;
-                newtio.c_cflag |= PARODD;
-            }
-
-            newtio.c_iflag = IGNPAR;
-            newtio.c_oflag = 0;
-            cfmakeraw(&newtio);
-            tcsetattr(fd, TCSANOW, &newtio);
-        }
-        return true;
-        break;
-    case TCP:
-        //ctx = modbus_new_rtutcp(ip,port);
-        return true;
-        break;
-    default:
-        return true;
-        break;
-    }
-}
-int CanClass::write_read_rtu_tcp(byte *cmd, size_t sizecmd, byte* buf)
-{
-    int len;
-    MercuryClass::printPackage(cmd, sizeof(cmd), OUT);
-
-    switch (mode) {
-    case RTU:
-        write(fd, cmd, sizecmd);//(byte*)&cmd
-        usleep(TIME_OUT);
-        //      len = nb_read_impl(ttyd, buf, BSZ);
-        len = MercuryClass::nb_read(fd, buf, BSZ);
-        break;
-    case TCP:
-        //        qDebug()<<"TCP_WRite";
-        len = net.write(cmd, sizecmd, buf);
-        break;
-    default:
-        break;
-    }
-
-    MercuryClass::printPackage(buf, len, IN);
-
-    return len;
-}
-void CanClass::closeCan()
-{
-    switch (mode) {
-    case RTU:
-        close(fd);
-        tcsetattr(fd, TCSANOW, &oldtio);
-        break;
-    case TCP:
-        break;
-    default:
-        break;
-    }
-    unlock();
-}
-
-char MercuryClass::str_data[STR_DATA_LINE][STR_DATA_COLUMNS] = {};
-std::string MercuryClass::data = "";
-std::string MercuryClass::str_id = "";
-
-
-
-Data MercuryClass::read_data(CanClass* can, GuidClass* guid)
-{
-    connection_error = 0;
-    address = guid->get_address().toInt();
-//    qDebug() << "Mercury address = " << address;
-
     QStringList qsl1, qsl2;
     Data retData;
-    //open_connection();
-    if ( can->isConnected() ) {
-        switch(checkChannel(can, address)) {
-        case OK :
-            if (OK != initConnection(can, address)) {
-                connection_error = 1;
-                exitFailure("Power meter connection initialisation error.");
-            }
 
-            //    // Get voltage by phases
-            //                if (OK != getU(can, address, &o.U))
-            //                    exitFailure("Cannot collect voltage data.");
-            //    // Get current by phases
-            //                if (OK != getI(can, address, &o.I))
-            //                    exitFailure("Cannot collect current data.");
-            //    // Get power cos(f) by phases
-            //                if (OK != getCosF(can, address, &o.C))
-            //                    exitFailure("Cannot collect cos(f) data.");
-            //    // Get grid frequency
-            //                if (OK != getF(can, address, &o.f))
-            //                    exitFailure("Cannot collect grid frequency data.");
-            //                    //std::cout << "!!!!!!!!!!!!!2" << std::endl;
-            //    // Get phase angles
-            //                if (OK != getA(can, address, &o.A))
-            //                    exitFailure("Cannot collect phase angles data.");
-            //    // Get active power consumption by phases
-            //                if (OK != getP(can, address, &o.P))
-            //                    exitFailure("Cannot collect active power consumption data.");
-            //    // Get reactive power consumption by phases
-            //                if (OK != getS(can, address, &o.S))
-            //                    exitFailure("Cannot collect reactive power consumption data.");
-
-            // Get power counter from reset, for yesterday and today
-            if     (OK != getW(can, address, &o.PR, PP_RESET, 0, 0) ||		// total from reset
-                    OK != getW(can, address, &o.PRT[0], PP_RESET, 0, 0+1) ||	// day tariff from reset
-                    OK != getW(can, address, &o.PRT[1], PP_RESET, 0, 1+1) ||	// night tariff from reset
-                    OK != getW(can, address, &o.PY, PP_YESTERDAY, 0, 0) ||
-                    OK != getW(can, address, &o.PT, PP_TODAY, 0, 0))
-                exitFailure("Cannot collect power counters data.");
-
-            if (OK != closeConnection(can, address))
-                exitFailure("Power meter connection closing error.");
-
+    address = guid->get_address().toInt();
+//    qDebug() << "Mercury address = " << address;
+    int state = 0;
+    switch (state) {
+    case 0:
+        if (OK != checkChannel(address)) {
+            qDebug()<< "Mercury check channel error.";
             break;
-
-        case CHECK_CHANNEL_TIME_OUT :
-            break;
-
-        default :
-            exitFailure("Power meter communication channel test failed.");
-            connection_error = 1;
         }
-//TODO секция старая, закомментить
-//        str_id = makeId(str_line, address, 0);
-
-        if (/*((*guid)[str_id] != "no_guid") && */(connection_error == 0)) {
-            //sprintf(str_data[0], "%d", PM_ADDRESS);
-            data = "";
-//            data = data + (*guid)[str_id];
-            sprintf(str_data[1], "%.2f", o.U.p1);//Voltage 1(V)
-            sprintf(str_data[2], "%.2f", o.U.p2);//Voltage 2(V)
-            sprintf(str_data[3], "%.2f", o.U.p3);//Voltage 3(V)
-            sprintf(str_data[4], "%.2f", o.I.p1);//Current 1(A)
-            sprintf(str_data[5], "%.2f", o.I.p2);//Current 2(A)
-            sprintf(str_data[6], "%.2f", o.I.p3);//Current 3(A)
-            sprintf(str_data[7], "%.2f", o.C.p1);//Cos(f) 1
-            sprintf(str_data[8], "%.2f", o.C.p2);//Cos(f) 2
-            sprintf(str_data[9], "%.2f", o.C.p3);//Cos(f) 3
-            sprintf(str_data[10], "%.2f", o.C.sum);//Cos(f) sum
-            sprintf(str_data[11], "%.2f", o.f);//Frequency (Hz)
-            sprintf(str_data[12], "%.2f", o.P.p1);//Active power (W) 1
-            sprintf(str_data[13], "%.2f", o.P.p2);//Active power (W) 2
-            sprintf(str_data[14], "%.2f", o.P.p3);//Active power (W) 3
-            sprintf(str_data[15], "%.2f", o.P.sum);//Active power (W) sum
-            sprintf(str_data[16], "%.2f", o.S.p1);//Reactive power (W) 1
-            sprintf(str_data[17], "%.2f", o.S.p2);//Reactive power (W) 2
-            sprintf(str_data[18], "%.2f", o.S.p3);//Reactive power (W) 3
-            sprintf(str_data[19], "%.2f", o.S.sum);//Reactive power (W) sum
-            sprintf(str_data[20], "%.2f", o.PR.ap);//Total consumed, all tariffs (KW)
-            sprintf(str_data[21], "%.3f", o.PRT[0].ap);//ncluding day tariff (KW)
-            sprintf(str_data[22], "%.3f", o.PRT[1].ap);//ncluding night tariff (KW)
-            sprintf(str_data[23], "%.2f", o.PY.ap);//Yesterday consumed (KW)
-            sprintf(str_data[24], "%.2f", o.PT.ap);//Today consumed (KW)
-            /*
-            for (int i=1; i<25; i++ ){
-                data=data+"/"+str_data[i];
-            }
-            data=data+"/";//+"\r\n";
-    */
-
+    case 1:
+        if (OK != initConnection(address)) {
+            qDebug()<< "Mercury connection initialisation error.";
+            break;
+        }
+    case 2:
+        if (OK != getW(address, &o.PRT[0], PP_RESET, 0, 0+1) ||	// day tariff from reset
+            OK != getW(address, &o.PRT[1], PP_RESET, 0, 1+1) )	// night tariff from reset)
+        {
+            qDebug() << "Mercury get power error.";
+            break;
+        }
+        else
+        {
             if ((o.PRT[0].ap > 0.00) && (o.PRT[1].ap > 0.00)) {
-//                data = data + "|" + str_data[21] + "|1"; //day tariff [12]
-//                if (PRINT_RESULTS)
-//                    std::cout << data << std::endl;
-//                if (SENDING /*&&(isFirstReading||(o.PRT[0].ap!=o_prev.PRT[0].ap))*/)
-//                    send_data();  //SEND MERCURY DATA!!!!!!!
 
-//                std::cout<<"DAY: o.PRT[0].ap = "<<o.PRT[0].ap <<"o_prev.PRT[0].ap ="<< o_prev.PRT[0].ap<<std::endl;
-//                data = "";
-//                data = data + "/" + (*guid)[str_id] + "|" + str_data[22] + "|2";//night tariff [16]
-//                if (PRINT_RESULTS)
-//                    std::cout << data << std::endl;
-//                if (SENDING /*&&(isFirstReading||(o.PRT[1].ap!=o_prev.PRT[1].ap))*/)
-//                    send_data();  //SEND MERCURY DATA!!!!!!!
-
-//                std::cout<<"NIGHT o.PRT[1].ap = "<<o.PRT[1].ap <<"o_prev.PRT[1].ap ="<< o_prev.PRT[1].ap<<std::endl;
-
+                char dat[10];
+                sprintf(dat, "%.3f", o.PRT[0].ap);//ncluding day tariff (KW)
                 qsl1.append(guid->get_guid());
-                qsl1.append(QString::fromStdString(str_data[21]));
+                qsl1.append(QString::fromStdString(dat));
                 qsl1.append(QString::number(DATA_VALUE_FLAG1));
 
                 retData.append(qsl1);
 
+                sprintf(dat, "%.3f", o.PRT[1].ap);//ncluding night tariff (KW)
                 qsl2.append(guid->get_guid());
-                qsl2.append(QString::fromStdString(str_data[22]));
+                qsl2.append(QString::fromStdString(dat));
                 qsl2.append(QString::number(DATA_VALUE_FLAG2));
 
                 retData.append(qsl2);
 
-//                qDebug() << "mercury_1 = " << retData[0]
-//                         << "mercury_2 = " << retData[1] ;
-
-                connection_error = 0;
-                isFirstReading = false;
                 o_prev = o;
             }
         }
-    };
-    /*
-    //TODO ne rabotaet opros Mercury
-    data = "1e146e46623044b1972078ba22ea6579";
-    sprintf(str_data[21], "%.3f", o.PRT[0].ap);//ncluding day tariff (KW)
-    data = data + "|" + str_data[21] + "|1"; //day tariff [12]
-    send_data();
-    */
-    //
-    can->closeCan();
+    default:
+        break;
+    }
+    if (OK != closeConnection(address))
+        qDebug() << "Mercury connection closing error.";
 
-//    qsl1.append(QString("wrong_guid"));
-//    qsl1.append(QString::fromStdString("34.0"));
-//    qsl1.append(QString::number(DATA_VALUE_FLAG1));
+/*
+        //    // Get voltage by phases
+        //                if (OK != getU(can, address, &o.U))
+        //                    exitFailure("Cannot collect voltage data.");
+        //    // Get current by phases
+        //                if (OK != getI(can, address, &o.I))
+        //                    exitFailure("Cannot collect current data.");
+        //    // Get power cos(f) by phases
+        //                if (OK != getCosF(can, address, &o.C))
+        //                    exitFailure("Cannot collect cos(f) data.");
+        //    // Get grid frequency
+        //                if (OK != getF(can, address, &o.f))
+        //                    exitFailure("Cannot collect grid frequency data.");
+        //                    //std::cout << "!!!!!!!!!!!!!2" << std::endl;
+        //    // Get phase angles
+        //                if (OK != getA(can, address, &o.A))
+        //                    exitFailure("Cannot collect phase angles data.");
+        //    // Get active power consumption by phases
+        //                if (OK != getP(can, address, &o.P))
+        //                    exitFailure("Cannot collect active power consumption data.");
+        //    // Get reactive power consumption by phases
+        //                if (OK != getS(can, address, &o.S))
+        //                    exitFailure("Cannot collect reactive power consumption data.");
 
-//    retData.append(qsl1);
+        // Get power counter from reset, for yesterday and today
+//        if     (OK != getW(address, &o.PR, PP_RESET, 0, 0) ||		// total from reset
+//                OK != getW(address, &o.PRT[0], PP_RESET, 0, 0+1) ||	// day tariff from reset
+//                OK != getW(address, &o.PRT[1], PP_RESET, 0, 1+1) ||	// night tariff from reset
+//                OK != getW(address, &o.PY, PP_YESTERDAY, 0, 0) ||
+//                OK != getW(address, &o.PT, PP_TODAY, 0, 0))
+//            exitFailure("Cannot collect power counters data.");
 
-//    qsl2.append(QString::fromStdString((*guid)[str_id]));
-//    qsl2.append(QString::fromStdString("15.0"));
-//    qsl2.append(QString::number(DATA_VALUE_FLAG2));
+//        if (OK != closeConnection(address))
+//            exitFailure("Power meter connection closing error.");
 
-//    retData.append(qsl2);
+//        break;
+
+//    case CHECK_CHANNEL_TIME_OUT :
+//        break;
+
+//    default :
+//        exitFailure("Power meter communication channel test failed.");
+//        connection_error = 1;
+//    }
+*/
+   /*
+        //sprintf(str_data[0], "%d", PM_ADDRESS);
+//        data = "";
+//        data = data + (*guid)[str_id];
+//        sprintf(str_data[1], "%.2f", o.U.p1);//Voltage 1(V)
+//        sprintf(str_data[2], "%.2f", o.U.p2);//Voltage 2(V)
+//        sprintf(str_data[3], "%.2f", o.U.p3);//Voltage 3(V)
+//        sprintf(str_data[4], "%.2f", o.I.p1);//Current 1(A)
+//        sprintf(str_data[5], "%.2f", o.I.p2);//Current 2(A)
+//        sprintf(str_data[6], "%.2f", o.I.p3);//Current 3(A)
+//        sprintf(str_data[7], "%.2f", o.C.p1);//Cos(f) 1
+//        sprintf(str_data[8], "%.2f", o.C.p2);//Cos(f) 2
+//        sprintf(str_data[9], "%.2f", o.C.p3);//Cos(f) 3
+//        sprintf(str_data[10], "%.2f", o.C.sum);//Cos(f) sum
+//        sprintf(str_data[11], "%.2f", o.f);//Frequency (Hz)
+//        sprintf(str_data[12], "%.2f", o.P.p1);//Active power (W) 1
+//        sprintf(str_data[13], "%.2f", o.P.p2);//Active power (W) 2
+//        sprintf(str_data[14], "%.2f", o.P.p3);//Active power (W) 3
+//        sprintf(str_data[15], "%.2f", o.P.sum);//Active power (W) sum
+//        sprintf(str_data[16], "%.2f", o.S.p1);//Reactive power (W) 1
+//        sprintf(str_data[17], "%.2f", o.S.p2);//Reactive power (W) 2
+//        sprintf(str_data[18], "%.2f", o.S.p3);//Reactive power (W) 3
+//        sprintf(str_data[19], "%.2f", o.S.sum);//Reactive power (W) sum
+//        sprintf(str_data[20], "%.2f", o.PR.ap);//Total consumed, all tariffs (KW)
+//        sprintf(str_data[21], "%.3f", o.PRT[0].ap);//ncluding day tariff (KW)
+//        sprintf(str_data[22], "%.3f", o.PRT[1].ap);//ncluding night tariff (KW)
+//        sprintf(str_data[23], "%.2f", o.PY.ap);//Yesterday consumed (KW)
+//        sprintf(str_data[24], "%.2f", o.PT.ap);//Today consumed (KW)
+*/
 
     qDebug() << "Mercury with Address = " << address
              << " Values : " << retData << endl;
 
     return retData;
 }
+
 

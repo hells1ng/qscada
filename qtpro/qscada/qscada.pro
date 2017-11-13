@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core network sql
+QT       += core network sql serialport
 
 QT       -= gui
 
@@ -30,10 +30,10 @@ SOURCES += \
     ../../src/libs/modbus/modbus.c \
     ../../src/libs/owen/owen.cpp \
     ../../src/libs/threadmanager/threadmanager.cpp \
-    ../../src/libs/network/networkclass.cpp \
     ../../src/libs/json/json.cpp \
     ../../src/libs/pulsar/pulsarclass.cpp \
-    ../../src/libs/sqldriver/sqldriver.cpp
+    ../../src/libs/sqldriver/sqldriver.cpp \
+    ../../src/libs/iodriver/iodriver.cpp
 INSTALLS        = target
 target.path     = /home/pi
 
@@ -56,11 +56,10 @@ HEADERS += \
     ../../src/libs/modbus/ModbusClass.h \
     ../../src/libs/owen/owen.h \
     ../../src/libs/threadmanager/threadmanager.h \
-    ../../src/libs/network/networkclass.h \
     ../../src/libs/json/json.h \
     ../../src/libs/pulsar/pulsarclass.h \
-    ../../src/libs/sqldriver/sqldriver.h
-INCLUDEPATH += ../../../../../sysroot/usr/local/include/
+    ../../src/libs/sqldriver/sqldriver.h \
+    ../../src/libs/iodriver/iodriver.h
+INCLUDEPATH += ~/raspi/sysroot/usr/local/include/
 LIBS += -lcurl -lssl -lcrypto
-INCLUDEPATH += /home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/
 

@@ -114,9 +114,6 @@ size_t CurlWriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *
 
 void HttpsDriver::Send(const quint8 cmd, Data *data) {
 
-//    if ((data == EMPTY_STRING) || (data.size() == 0)) return 1;
-    if (data->isEmpty())
-         return;
 
     QtJson::JsonObject  json;
 
@@ -126,6 +123,9 @@ void HttpsDriver::Send(const quint8 cmd, Data *data) {
         json[ins.c_str()] = get_interval_json();
 
     } else if (cmd == HTTPS_CMD_POST_SENSOR_VALUE){
+
+        if (data->isEmpty())
+             return;
 
         quint8 i = 0;
         foreach (const QStringList &qsl, *data) {
@@ -172,6 +172,8 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
 
 //            return nested["results"].toString();
             qsl.append(nested["results"].toString());
+
+            data->append(qsl);
 //            return qsl;
             return;
         }
@@ -198,6 +200,19 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
             if(!ok)
                 qFatal("An error occurred during parsing response from server");
 
+            /*Ищем ошибки в ответе*/
+            bool needSave = false;
+
+            for (int i = 0; i < data->size(); i++) {
+                string ins = "insert_" + std::to_string(i);
+                QtJson::JsonObject nested = result[ins.c_str()].toMap();
+
+                if (nested["results"] != "true") {
+                    needSave = true;
+                }
+            }
+
+
             for (int i = 0; i < data->size(); i++) {
 
                 string ins = "insert_" + std::to_string(i);
@@ -205,18 +220,39 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
                 QtJson::JsonObject errors = nested["errors"].toMap();
 
                 if (nested["results"] != "true") {
-                    /*Update Error flag*/
                     if ((errors["code"] == HTTP_RESPONSE_ERROR_DUPLICATE) ||
-                        (errors["code"] == HTTP_RESPONSE_ERROR_WRONGSECRET)) {
-                        data->remove(i);
-//                        qDebug() << "Deleted duplicate request!" << endl;
-                    }
-                    else {
+                            (errors["code"] == HTTP_RESPONSE_ERROR_WRONGSECRET)) {
+//                        qDebug() << "REMOVE WRONG RESPONSE SENSOR " << data->at(i) << endl;
                         QStringList slist = data->at(i);
-                        slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG2));
+                        slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG0));
                         data->replace(i, slist);
                     }
                 }
+                else if (needSave) {
+                    QStringList slist = data->at(i);
+                    slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG2));
+                    data->replace(i, slist);
+//                    qDebug() << "SAVE RESPONSE SENSOR" << data->at(i) << endl;
+
+                }
+                else { //result = true and no need to Save
+                    QStringList slist = data->at(i);
+                    slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG0));
+                    data->replace(i, slist);
+                }
+
+//                if (nested["results"] != "true") {
+//                    /*Update Error flag*/
+//                    if ((errors["code"] == HTTP_RESPONSE_ERROR_DUPLICATE) ||
+//                        (errors["code"] == HTTP_RESPONSE_ERROR_WRONGSECRET)) {
+//                        data->remove(i);
+//                    }
+//                    else {
+//                        QStringList slist = data->at(i);
+//                        slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG2));
+//                        data->replace(i, slist);
+//                    }
+//                }
 
 //                foreach (const QStringList &qsl, *data) {
 //                    qDebug() << "Https::Send -> get answer" << qsl;
@@ -227,7 +263,7 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
 }
 
 string HttpsDriver::curl_send(string const &str) {
-    //    qDebug() << QString::fromStdString(str);
+//        qDebug() << QString::fromStdString(str);
 
     struct MemoryStruct chunk;
     string retstr;

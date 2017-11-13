@@ -44,9 +44,11 @@ void GuidClass::init(SqlDriver *sqlDriver, const QString& table)
 
         if (_guidtype == GUID_TYPE_SUBTABLE) {
 
-            const QString subtable = _guid[i].at(POS_GUID);
+//            const QString subtable = _guid[i].at(POS_GUID);
+            const QString subtable = table + "_subguid";
 
-            Data subdata = sqlDriver->fromGuidTable(subtable);
+//            Data subdata = sqlDriver->fromGuidTable(subtable);
+            Data subdata = sqlDriver->fromGuidTable(subtable, data[i].at(POS_KEY));
             QMap<QString, QString> qmap;
 
             for (quint16 j = 0; j < subdata.size(); j++) {

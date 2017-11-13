@@ -1,0 +1,27 @@
+QMAKE_CXX.INCDIRS = \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/include/c++/4.8.3 \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/include/c++/4.8.3/arm-linux-gnueabihf \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/include/c++/4.8.3/backward \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/lib/gcc/arm-linux-gnueabihf/4.8.3/include \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/lib/gcc/arm-linux-gnueabihf/4.8.3/include-fixed \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/include \
+    /home/hells1ng/raspi/sysroot/usr/include \
+    /home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf
+QMAKE_CXX.LIBDIRS = \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/lib/gcc/arm-linux-gnueabihf/4.8.3 \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/lib/gcc/arm-linux-gnueabihf \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/lib/gcc \
+    /home/hells1ng/raspi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/arm-linux-gnueabihf/lib \
+    /home/hells1ng/raspi/sysroot/lib/arm-linux-gnueabihf \
+    /home/hells1ng/raspi/sysroot/lib \
+    /home/hells1ng/raspi/sysroot/usr/lib/arm-linux-gnueabihf \
+    /home/hells1ng/raspi/sysroot/usr/lib
+QMAKE_CXX.QT_COMPILER_STDCXX = 199711L
+QMAKE_CXX.QT_GCC_MAJOR_VERSION = 4
+QMAKE_CXX.QT_GCC_MINOR_VERSION = 8
+QMAKE_CXX.QT_GCC_PATCH_VERSION = 3
+QMAKE_CXX.COMPILER_MACROS = \
+    QT_COMPILER_STDCXX \
+    QT_GCC_MAJOR_VERSION \
+    QT_GCC_MINOR_VERSION \
+    QT_GCC_PATCH_VERSION

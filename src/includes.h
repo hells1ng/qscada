@@ -6,12 +6,11 @@
 #include "defines.h"
 #include "libs/mercury/mercury.h"
 #include "libs/id/id.h"
+#include "libs/pulsar/pulsarclass.h"
 #include "libs/threadmanager/threadmanager.h"
-#include "libs/network/networkclass.h"
 
 #include <curl/curl.h>
 #include "libs/https/https.h"
-#include "libs/pulsar/pulsarclass.h"
 #include "libs/sqldriver/sqldriver.h"
 
 #endif // INCLUDES_H_INCLUDED

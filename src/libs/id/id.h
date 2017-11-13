@@ -15,8 +15,9 @@ public:
     typedef QVector<QStringList> Guid;
     typedef QVector<QMap<QString, QString>> SubGuid;
     enum {
-        POS_GUID       = 0,
-        POS_ADDRESS    = 1,
+        POS_KEY        = 0,
+        POS_GUID       = 1,
+        POS_ADDRESS    = 2,
     };
     enum TypeOfGuid {
         GUID_TYPE_ONE_TABLE,

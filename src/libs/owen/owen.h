@@ -17,7 +17,6 @@
 //#include "../modbus/modbus.h"
 #include "../modbus/ModbusClass.h"
 #include "../id/id.h"
-#include "../network/networkclass.h"
 #include "../../defines.h"
 
 using std::string;

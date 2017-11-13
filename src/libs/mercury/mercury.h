@@ -13,8 +13,8 @@
 #include <termios.h>
 #include "../../defines.h"
 #include "../id/id.h"
-#include "../network/networkclass.h"
 #include "../sqldriver/sqldriver.h"
+#include "../iodriver/iodriver.h"
 //#include <boost/thread/mutex.hpp>
 #include <QtCore/QMutex>
 
@@ -25,7 +25,7 @@
 #define BAUDRATE 	B9600		// 9600 baud
 #define _POSIX_SOURCE 	1		// POSIX compliant source
 
-#define TIME_OUT	50* 1000	// Mercury inter-command delay (mks)
+#define TIME_OUT	200* 1000	// Mercury inter-command delay (mks)
 #define CH_TIME_OUT	2		// Channel timeout (sec)
 #define BSZ		255
 //#define PM_ADDRESS	44		// RS485 address of the power meter
@@ -40,7 +40,6 @@
 #define debugPrint 0
 
 using std::string;
-void getDateTimeStr(char *, int, time_t);
 
 // ***** Commands
 // Test connection
@@ -214,83 +213,35 @@ typedef enum			// Output formatting
 } OutputFormat;
 
 
-/*
- * CAN properties class
- */
-
-class CanClass //: public QThread
-{
-public:
-    enum {
-        RTU = 0,
-        TCP = 1
-    };
-    int fd;
-    struct termios oldtio, newtio;
-    const char* com_port;
-    unsigned int baudrate, data_bit, stop_bit;
-    char parity;
-    NetworkClass net;
-    int mode;
-    CanClass();
-    CanClass(const char *device, unsigned int baud_, char parity_,
-             unsigned int data_bit_, unsigned int stop_bit_, const char *ip, int port, int mode_);
-
-    ~CanClass() {
-    };
-    bool isConnected();
-    void closeCan();
-    void lock();
-    void unlock();
-    int write_read_rtu_tcp(byte *cmd, size_t sizecmd, byte* buf);
-private:
-    QMutex* mutex;
-};
-
-
 //--MERCURY CLASS
-class MercuryClass {
-
+class MercuryClass  : public QObject
+{
+    Q_OBJECT
 public:
+    explicit MercuryClass(QObject *parent = nullptr);
 
-    static string str_id;
-    bool isFirstReading;
-    int address, connection_error;
-    string str_line;
-    static char str_data[STR_DATA_LINE][STR_DATA_COLUMNS];
-    static std::string data;
-    int format, header ;//delete fd
+    int address;
+    int format, header;
     OutputBlock o, o_prev;
-    MercuryClass();
-    MercuryClass(int address_, const string str_line_ = "") :
-                 address(address_), str_line(str_line_)
-    {
-        header = 0;
-        bzero(&o, sizeof(o));
-        isFirstReading = true;
-        connection_error = 0;
-        format = OF_HUMAN;
-    }
-    ~MercuryClass() {
-    }
+    IODriver ioDriver;
 
-    Data read_data(CanClass* can, GuidClass* guid);
+    MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout = 500);
+    ~MercuryClass() {}
 
-    // -- Abnormal termination
-    static void exitFailure(const char* msg);
+    Data read_data(GuidClass* guid);
 
-    // -- Print out data buffer in hex
-    static void printPackage(byte *data, int size_, int isin);
 
-    // -- Non-blocking file read with timeout
-    // -- Returns 0 if timed out.
-    static int nb_read_impl(int fd, byte* buf, int sz);
-
-    // -- Non-blocking file read with timeout
-    // -- Aborts if timed out.
-    static int nb_read(int fd, byte* buf, int sz);
+signals:
+    void write(unsigned char *cmd, int sizecmd);
+public slots:
+    void received(QByteArray buf_);
+    void timeout();
 
 private:
+    //buf and lenght for receive data from Mercury
+    byte buf[BSZ];
+    int len;
+    bool receivedData;
 
     // Compute the MODBUS RTU CRC
     // Source: http://www.ccontrolsys.com/w/How_to_Compute_the_Modbus_RTU_Message_CRC
@@ -312,13 +263,21 @@ private:
     int checkResult_4x4b(byte* buf, int len);
 
     // -- Check the communication channel
-    int checkChannel(CanClass* can, int address);
+    int checkChannel(int address);
 
     // -- Connection initialisation
-    int initConnection(CanClass* can, int address);
+    int initConnection(int address);
 
     // -- Close connection
-    int closeConnection(CanClass* can, int address);
+    int closeConnection(int address);
+
+    // -- Non-blocking file read with timeout
+    // -- Returns 0 if timed out.
+     int nb_read_impl(int fd, byte* buf, int sz);
+
+    // -- Non-blocking file read with timeout
+    // -- Aborts if timed out.
+     int nb_read(int fd, byte* buf, int sz);
 
     // Decode float from 3 bytes
     float B3F(byte b[3], float factor);
@@ -327,31 +286,37 @@ private:
     float B4F(byte b[4], float factor);
 
     // Get voltage (U) by phases
-    int getU(CanClass* can, int address, P3V* U);
+    int getU(int address, P3V* U);
 
     // Get current (I) by phases
-    int getI(CanClass* can, int address, P3V* I);
+    int getI(int address, P3V* I);
 
     // Get power consumption factor cos(f) by phases
-    int getCosF(CanClass* can, int address, P3VS* C);
+    int getCosF(int address, P3VS* C);
 
     // Get grid frequency (Hz)
-    int getF(CanClass* can, int address, float *f);
+    int getF(int address, float *f);
 
     // Get phases angle
-    int getA(CanClass* can, int address, P3V* A);
+    int getA(int address, P3V* A);
 
     // Get active power (W) consumption by phases with total
-    int getP(CanClass* can, int address, P3VS* P);
+    int getP(int address, P3VS* P);
 
     // Get reactive power (VA) consumption by phases with total
-    int getS(CanClass* can, int address, P3VS* S);
+    int getS(int address, P3VS* S);
 
     /* Get power counters by phases for the period
         periodId - one of PowerPeriod enum values
         month - month number when periodId is PP_MONTH
         tariffNo - 0 for all tariffs, 1 - tariff #1, 2 - tariff #2 etc. */
-    int getW(CanClass* can, int address, PWV* W, int periodId, int month, int tariffNo);
+    int getW(int address, PWV* W, int periodId, int month, int tariffNo);
+
+    // -- Abnormal termination
+     void exitFailure(const char* msg);
+
+    // -- Print out data buffer in hex
+     void printPackage(byte *data, int size_, int isin);
 
     // -- Command line usage help
     void printUsage();
