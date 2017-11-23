@@ -134,6 +134,25 @@ public:
     Data read_data(ModbusClass* modbus, GuidClass* guid);
 };
 
+class Sphera_24CI : public OwenClass
+{
+public:
+    enum {
+        ADDRESS_START_DI = 0,
+        nb_INPUTS = 24,
+        nb_REGS = nb_INPUTS * 2 + 2 // 24 входа 32bit, 1 регист адреса 16bit, 1 регистр общий 16bit
+    };
+    uint16_t tab_registers[nb_REGS];
+
+    Sphera_24CI();
+    Sphera_24CI(uint8_t address_ = 255, uint8_t arr_size_ = nb_REGS, const string str_line_ = "") : OwenClass(address_, arr_size_, str_line_) {
+    }
+    ~Sphera_24CI() {
+        counter--;
+    }
+    Data read_data(ModbusClass* modbus, GuidClass* guid);
+};
+
 class OwenClass_8AC : public OwenClass
 {
 public:

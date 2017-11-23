@@ -3,6 +3,7 @@
 
 #include <QtCore/QtCore>
 #include <QtCore/QDebug>
+#include <QObject>
 #include "../iodriver/iodriver.h"
 #include "../../defines.h"
 #include "../id/id.h"

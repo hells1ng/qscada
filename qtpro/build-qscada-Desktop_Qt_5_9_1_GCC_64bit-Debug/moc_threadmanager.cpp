@@ -22,7 +22,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_ThreadManager_t {
     QByteArrayData data[8];
-    char stringdata0[99];
+    char stringdata0[97];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -37,13 +37,13 @@ QT_MOC_LITERAL(2, 27, 0), // ""
 QT_MOC_LITERAL(3, 28, 9), // "owen_slot"
 QT_MOC_LITERAL(4, 38, 11), // "pulsar_slot"
 QT_MOC_LITERAL(5, 50, 9), // "send_slot"
-QT_MOC_LITERAL(6, 60, 10), // "debug_slot"
-QT_MOC_LITERAL(7, 71, 27) // "getSensorIntervalFromServer"
+QT_MOC_LITERAL(6, 60, 24), // "get_sensor_interval_slot"
+QT_MOC_LITERAL(7, 85, 11) // "sphera_slot"
 
     },
     "ThreadManager\0mercury_slot\0\0owen_slot\0"
-    "pulsar_slot\0send_slot\0debug_slot\0"
-    "getSensorIntervalFromServer"
+    "pulsar_slot\0send_slot\0get_sensor_interval_slot\0"
+    "sphera_slot"
 };
 #undef QT_MOC_LITERAL
 
@@ -89,8 +89,8 @@ void ThreadManager::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 1: _t->owen_slot(); break;
         case 2: _t->pulsar_slot(); break;
         case 3: _t->send_slot(); break;
-        case 4: _t->debug_slot(); break;
-        case 5: _t->getSensorIntervalFromServer(); break;
+        case 4: _t->get_sensor_interval_slot(); break;
+        case 5: _t->sphera_slot(); break;
         default: ;
         }
     }

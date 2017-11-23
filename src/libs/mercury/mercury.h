@@ -17,6 +17,7 @@
 #include "../iodriver/iodriver.h"
 //#include <boost/thread/mutex.hpp>
 #include <QtCore/QMutex>
+#include <QObject>
 
 #define UInt16		uint16_t
 #define byte		unsigned char
@@ -224,8 +225,12 @@ public:
     int format, header;
     OutputBlock o, o_prev;
     IODriver ioDriver;
+    enum
+    {
+        TIMEOUT  = 500
+    };
 
-    MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout = 500);
+    MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout = TIMEOUT);
     ~MercuryClass() {}
 
     Data read_data(GuidClass* guid);

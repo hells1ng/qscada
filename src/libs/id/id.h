@@ -45,7 +45,7 @@ private:
     SubGuid _subguid;
     quint16 _index;
     quint8  _guidtype;
-    void add(QStringList qsl);
+    void    add(QStringList qsl);
 };
 
 #endif

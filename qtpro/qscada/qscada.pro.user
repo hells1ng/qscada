@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.4.0, 2017-11-13T11:21:28. -->
+<!-- Written by QtCreator 4.4.0, 2017-11-23T10:49:02. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -54,7 +54,9 @@
  </data>
  <data>
   <variable>ProjectExplorer.Project.PluginSettings</variable>
-  <valuemap type="QVariantMap"/>
+  <valuemap type="QVariantMap">
+   <valuelist type="QVariantList" key="ClangStaticAnalyzer.SuppressedDiagnostics"/>
+  </valuemap>
  </data>
  <data>
   <variable>ProjectExplorer.Project.Target.0</variable>
@@ -267,9 +269,9 @@
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinux.DirectUploadStep</value>
       <valuelist type="QVariantList" key="ProjectExplorer.RunConfiguration.LastDeployedFiles">
-       <value type="QString">/home/hells1ng/qscada/qtpro/build-qscada-Raspberry_Pi-Debug/qscada</value>
-       <value type="QString">/home/hells1ng/qscada/qtpro/build-qscada-Raspberry_Pi-Debug/qscada</value>
        <value type="QString">/home/hells1ng/qscada/qtpro/build-qscada-Raspberry_Pi-Release/qscada</value>
+       <value type="QString">/home/hells1ng/qscada/qtpro/build-qscada-Raspberry_Pi-Debug/qscada</value>
+       <value type="QString">/home/hells1ng/qscada/qtpro/build-qscada-Raspberry_Pi-Debug/qscada</value>
       </valuelist>
       <valuelist type="QVariantList" key="ProjectExplorer.RunConfiguration.LastDeployedHosts">
        <value type="QString">192.168.88.247</value>
@@ -287,9 +289,9 @@
        <value type="QString">/home/hells1ng/raspi/sysroot</value>
       </valuelist>
       <valuelist type="QVariantList" key="ProjectExplorer.RunConfiguration.LastDeployedTimes">
-       <value type="QDateTime">2017-11-07T17:18:48</value>
-       <value type="QDateTime">2017-11-13T09:32:42</value>
        <value type="QDateTime">2017-10-23T16:27:17</value>
+       <value type="QDateTime">2017-11-23T10:45:46</value>
+       <value type="QDateTime">2017-11-07T17:18:48</value>
       </valuelist>
       <value type="bool" key="RemoteLinux.GenericDirectUploadStep.IgnoreMissingFiles">false</value>
       <value type="bool" key="RemoteLinux.GenericDirectUploadStep.Incremental">true</value>
@@ -351,7 +353,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">qscada (на внешнем устройстве)</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinuxRunConfiguration:qscada</value>
-    <value type="QString" key="Qt4ProjectManager.MaemoRunConfiguration.Arguments"></value>
+    <value type="QString" key="Qt4ProjectManager.MaemoRunConfiguration.Arguments">-m start</value>
     <value type="QString" key="Qt4ProjectManager.MaemoRunConfiguration.TargetName">qscada</value>
     <value type="int" key="RemoteLinux.EnvironmentAspect.Version">1</value>
     <value type="QString" key="RemoteLinux.RunConfig.AlternateRemoteExecutable"></value>
@@ -617,7 +619,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/hells1ng/qscada/qtpro/qscada/qscada.pro</value>
     <value type="bool" key="QmakeProjectManager.QmakeRunConfiguration.UseLibrarySearchPath">true</value>
-    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments"></value>
+    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.CommandLineArguments">-m start</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.ProFile">qscada.pro</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseDyldImageSuffix">false</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory"></value>

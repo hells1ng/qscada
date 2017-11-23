@@ -7,7 +7,7 @@
 #include <QtNetwork/QUdpSocket>
 #include <QtSerialPort/QSerialPort>
 
-class IODriver : public QThread
+class IODriver : public QObject/*QThread*/
 {
     Q_OBJECT
 public:
@@ -33,6 +33,7 @@ public:
     quint16     Timeout;
 
     IODriver(quint8 type, QString server_com, quint16 port_props, quint16 timeout = TIMEOUT);
+    ~IODriver();
 
 //    int write(unsigned char * cmd, int cmdsize, unsigned char * buf);
 signals:

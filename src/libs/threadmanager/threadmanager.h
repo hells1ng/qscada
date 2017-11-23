@@ -18,10 +18,12 @@ public:
     enum {
       DEFAULT_SENSOR_TIMEOUT = 60 * 1000 // 1 min
     };
+    ModbusClass     Modbus;
+    ModbusClass     Modbus_Sphera;
     GuidClass       Guid_Mercury_1;
     GuidClass       Guid_Owen_1;
     GuidClass       Guid_Pulsar_1;
-    ModbusClass     Modbus;
+    GuidClass       Guid_Sphera24_1;
 
     //------------------OWEN MODULES---------------------------------------//
     OwenClass_16D   Owen_16D_1;
@@ -35,6 +37,8 @@ public:
     MercuryClass    Mercury_1;
     //------------------Pulsar---------------------------------------//
     PulsarClass     Pulsar_1;
+    //------------------Sphera MODULES-------------------------------//
+    Sphera_24CI     Sphera24_1;
     //------------------SQL---------------------------//
     SqlDriver       sqlDriver;
     //------------------HTTPS-------------------------//
@@ -46,6 +50,7 @@ private:
     QThread *thread3;
     QThread *thread4;
     QThread *thread5;
+    QThread *thread6;
 
     void doEvery(std::function<void()> myFunction, qint64 interval);
     void doEvery(std::function<void()> myFunction);
@@ -55,15 +60,17 @@ private:
     void sendToServer();
     void deb();
     void getSensorIntervalFromServer();
+    void sphera_thread();
 
     qint64 _sensorTimeout;
     QMutex*  _sensorTimeout_mutex;
 
-
+signals:
+    void finish();
 public slots:
 
     void mercury_slot() {
-        doEvery(std::bind(&ThreadManager::mercury_thread, this));
+        doEvery(std::bind(&ThreadManager::mercury_thread, this)/*, 3000*/);
     }
     void owen_slot() {
         doEvery(std::bind(&ThreadManager::owen_thread, this), 2000);
@@ -76,6 +83,9 @@ public slots:
     }
     void get_sensor_interval_slot() {
         doEvery(std::bind(&ThreadManager::getSensorIntervalFromServer, this), 5000);
+    }
+    void sphera_slot() {
+        doEvery(std::bind(&ThreadManager::sphera_thread, this)/*, 3000*/);
     }
 
 

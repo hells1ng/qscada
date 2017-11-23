@@ -61,10 +61,10 @@ Data OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
                     bool ok = false;
                     qsl.append(guid->get_subguid(QString::number(i), &ok));
                     if (ok) {
-                    qsl.append(QString::number(tab_rp_bits[i]));
-                    qsl.append(QString::number(DATA_VALUE_FLAG1));
+                        qsl.append(QString::number(tab_rp_bits[i]));
+                        qsl.append(QString::number(DATA_VALUE_FLAG0));
 
-                    retData.append(qsl);
+                        retData.append(qsl);
                     }
                     qsl.clear();
                 }
@@ -98,10 +98,10 @@ Data OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
                     bool ok = false;
                 qsl.append(guid->get_subguid(QString::number(j + 16), &ok));
                 if (ok) {
-                qsl.append(QString::fromStdString(str_data[1]));
-                qsl.append(QString::number(DATA_VALUE_FLAG1));
+                    qsl.append(QString::fromStdString(str_data[1]));
+                    qsl.append(QString::number(DATA_VALUE_FLAG0));
 
-                retData.append(qsl);
+                    retData.append(qsl);
                 }
                 qsl.clear();
             }
@@ -112,6 +112,60 @@ Data OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
 
     qDebug() << "OwenClass_16D with Address = " << address
              << " Values : " << retData << endl;
+
+    return retData;
+}
+
+Data Sphera_24CI::read_data(ModbusClass* modbus, GuidClass* guid)
+{
+
+    Data retData;
+    QStringList qsl;
+
+    address = guid->get_address().toInt();
+
+    if (modbus->isConnected()) {
+        modbus_set_slave(modbus->ctx, address);
+        usleep(DELAY_PRE_SEND);
+        int rc = modbus_read_registers(modbus->ctx, ADDRESS_START_DI, nb_REGS, tab_registers);
+        if (rc != nb_REGS) {
+            printf("ERROR modbus_read_registers\n");
+            printf("Address = %d, nb = %d\n", address, nb_REGS);
+            nb_fail++;
+            qDebug() << "Sphera24 Fail" << "Receive = " << rc << endl;
+        }
+        else {
+            uint32_t value;
+            for (int i = 0; i < nb_REGS - 2; i = i + 2) {
+                value = tab_registers[i] << 16 | tab_registers[i+1];
+                tab_registers[i] = 0;
+                tab_registers[i+1] = 0;
+//                qDebug() << "VAL = " << value;
+
+                uint8_t j = i/2;
+                bool ok = false;
+                qsl.append(guid->get_subguid(QString::number(j), &ok));
+                if (ok) {
+                    qsl.append(QString::number(value));
+                    qsl.append(QString::number(DATA_VALUE_FLAG0));
+
+                    retData.append(qsl);
+                }
+                qsl.clear();
+            }
+
+        }
+        usleep(DELAY_PRE_SEND);
+
+        isFirstReading = false;
+    }
+    modbus->close();
+
+    qDebug() << "Sphera_16CI with Address = " << address
+             << " Values : " << retData << endl;
+
+    //test
+//    retData.clear();
 
     return retData;
 }
@@ -166,7 +220,7 @@ Data OwenClass_8A::read_data(ModbusClass* modbus, GuidClass* guid)
                 qsl.append(guid->get_subguid(QString::number(i), &ok));
                 if (ok) {
                 qsl.append(QString::fromStdString(str_data[1]));
-                qsl.append(QString::number(DATA_VALUE_FLAG1));
+                qsl.append(QString::number(DATA_VALUE_FLAG0));
 
                 retData.append(qsl);
                 }

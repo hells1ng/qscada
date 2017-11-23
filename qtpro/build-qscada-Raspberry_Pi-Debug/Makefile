@@ -1943,7 +1943,8 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		../../src/libs/json/json.h \
 		../../../raspi/qt5pi/include/QtCore/QVariant \
 		../../../raspi/qt5pi/include/QtCore/QString \
-		../../src/main.h
+		../../src/main.h \
+		../../../raspi/qt5pi/include/QtCore/QTextStream
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../src/main.cpp
 
 https.o: ../../src/libs/https/https.cpp ../../src/libs/https/https.h \

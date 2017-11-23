@@ -178,6 +178,7 @@ int MercuryClass::checkChannel(int address)
 //    byte buf[BSZ];
 //    int len = 0;
 //    len = write((byte*)&testCmd, sizeof(testCmd), buf);
+//    qDebug() << "Mercury write checkChannel";
     emit write((byte*)&testCmd, sizeof(testCmd));
     while (!receivedData) {
     };
@@ -592,7 +593,7 @@ void MercuryClass::printOutput(int format, OutputBlock o, int header)
 MercuryClass::MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout/* = 1000*/) :
     ioDriver(Type, server_com, port_props, timeout)
 {
-    connect(this, SIGNAL(write(unsigned char*, int )), &ioDriver, SLOT(write(unsigned char *, int)));
+    connect(this, SIGNAL(write(unsigned char *, int )), &ioDriver, SLOT(write(unsigned char *, int )));
     connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
     connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
 

@@ -62,7 +62,7 @@ static const uint8_t table_crc_lo[] = {
 };
 
 PulsarClass::PulsarClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout/* = 200*/):
-    ioDriver(Type, server_com, port_props, timeout)
+    ioDriver (Type, server_com, port_props, timeout)
 {
     connect(this, SIGNAL(write(QByteArray )), &ioDriver, SLOT(write(QByteArray)));
     connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));

@@ -42,6 +42,10 @@ IODriver::IODriver(quint8 type, QString server_com, quint16 port_props, quint16 
     else qFatal("Wrong Type for IODriver");
 }
 
+IODriver::~IODriver()
+{
+    delete mutex;
+}
 
 void IODriver::write_(QByteArray Request)
 {

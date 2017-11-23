@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_QML_DEBUG -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_SERIALPORT_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../qscada -I. -I../../../../../sysroot/usr/local/include/ -I/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include/ -I../../../Qt/5.9.1/gcc_64/include -I../../../Qt/5.9.1/gcc_64/include/QtNetwork -I../../../Qt/5.9.1/gcc_64/include/QtSql -I../../../Qt/5.9.1/gcc_64/include/QtSerialPort -I../../../Qt/5.9.1/gcc_64/include/QtCore -I. -I../../../Qt/5.9.1/gcc_64/mkspecs/linux-g++
+INCPATH       = -I../qscada -I. -I~/raspi/sysroot/usr/local/include/ -I../../../Qt/5.9.1/gcc_64/include -I../../../Qt/5.9.1/gcc_64/include/QtNetwork -I../../../Qt/5.9.1/gcc_64/include/QtSql -I../../../Qt/5.9.1/gcc_64/include/QtSerialPort -I../../../Qt/5.9.1/gcc_64/include/QtCore -I. -I../../../Qt/5.9.1/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/hells1ng/Qt/5.9.1/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -865,7 +865,7 @@ moc_mercury.cpp: ../../src/defines.h \
 		../../src/libs/mercury/mercury.h \
 		moc_predefs.h \
 		../../../Qt/5.9.1/gcc_64/bin/moc
-	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/sysroot/usr/local/include -I/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/mercury/mercury.h -o moc_mercury.cpp
+	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I'/home/hells1ng/qscada/qtpro/qscada/~/raspi/sysroot/usr/local/include' -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/mercury/mercury.h -o moc_mercury.cpp
 
 moc_threadmanager.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QtCoreDepends \
@@ -1093,7 +1093,7 @@ moc_threadmanager.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../src/libs/threadmanager/threadmanager.h \
 		moc_predefs.h \
 		../../../Qt/5.9.1/gcc_64/bin/moc
-	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/sysroot/usr/local/include -I/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/threadmanager/threadmanager.h -o moc_threadmanager.cpp
+	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I'/home/hells1ng/qscada/qtpro/qscada/~/raspi/sysroot/usr/local/include' -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/threadmanager/threadmanager.h -o moc_threadmanager.cpp
 
 moc_pulsarclass.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QtCoreDepends \
@@ -1305,7 +1305,7 @@ moc_pulsarclass.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../src/libs/pulsar/pulsarclass.h \
 		moc_predefs.h \
 		../../../Qt/5.9.1/gcc_64/bin/moc
-	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/sysroot/usr/local/include -I/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/pulsar/pulsarclass.h -o moc_pulsarclass.cpp
+	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I'/home/hells1ng/qscada/qtpro/qscada/~/raspi/sysroot/usr/local/include' -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/pulsar/pulsarclass.h -o moc_pulsarclass.cpp
 
 moc_sqldriver.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QtCoreDepends \
@@ -1505,7 +1505,7 @@ moc_sqldriver.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../src/libs/sqldriver/sqldriver.h \
 		moc_predefs.h \
 		../../../Qt/5.9.1/gcc_64/bin/moc
-	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/sysroot/usr/local/include -I/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/sqldriver/sqldriver.h -o moc_sqldriver.cpp
+	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I'/home/hells1ng/qscada/qtpro/qscada/~/raspi/sysroot/usr/local/include' -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/sqldriver/sqldriver.h -o moc_sqldriver.cpp
 
 moc_iodriver.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QtCoreDepends \
@@ -1705,7 +1705,7 @@ moc_iodriver.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../src/libs/iodriver/iodriver.h \
 		moc_predefs.h \
 		../../../Qt/5.9.1/gcc_64/bin/moc
-	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/sysroot/usr/local/include -I/home/hells1ng/raspi/sysroot/usr/local/qt5pi/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/iodriver/iodriver.h -o moc_iodriver.cpp
+	/home/hells1ng/Qt/5.9.1/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/Qt/5.9.1/gcc_64/mkspecs/linux-g++ -I/home/hells1ng/qscada/qtpro/qscada -I'/home/hells1ng/qscada/qtpro/qscada/~/raspi/sysroot/usr/local/include' -I/home/hells1ng/Qt/5.9.1/gcc_64/include -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtNetwork -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSql -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtSerialPort -I/home/hells1ng/Qt/5.9.1/gcc_64/include/QtCore -I. -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../../src/libs/iodriver/iodriver.h -o moc_iodriver.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -1942,7 +1942,8 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		../../src/libs/json/json.h \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QVariant \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QString \
-		../../src/main.h
+		../../src/main.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QTextStream
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../src/main.cpp
 
 https.o: ../../src/libs/https/https.cpp ../../src/libs/https/https.h \
@@ -3359,7 +3360,8 @@ pulsarclass.o: ../../src/libs/pulsar/pulsarclass.cpp ../../src/libs/pulsar/pulsa
 		../../../Qt/5.9.1/gcc_64/include/QtSql/QSqlQuery \
 		../../../Qt/5.9.1/gcc_64/include/QtSql/qsqlquery.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSql/QSqlError \
-		../../../Qt/5.9.1/gcc_64/include/QtSql/qsqlerror.h
+		../../../Qt/5.9.1/gcc_64/include/QtSql/qsqlerror.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QtEndian
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pulsarclass.o ../../src/libs/pulsar/pulsarclass.cpp
 
 sqldriver.o: ../../src/libs/sqldriver/sqldriver.cpp ../../src/libs/sqldriver/sqldriver.h \

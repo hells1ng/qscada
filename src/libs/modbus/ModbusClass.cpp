@@ -26,18 +26,19 @@ ModbusClass::ModbusClass(const char *device, int baud, char parity,
     }
     struct timeval response_timeout;
 
-    /* Define a new timeout! Default timeout is 500ms*/
+    /* Define a new timeout! Default timeout is 1000ms*/
     response_timeout.tv_sec = 1;
     response_timeout.tv_usec = 0;
     modbus_set_response_timeout(ctx, response_timeout.tv_sec, response_timeout.tv_usec);
 
-
+    /*set debug mode true*/
 //    modbus_set_debug(ctx, TRUE);
 }
 
 ModbusClass::~ModbusClass()
 {
     modbus_free(ctx);
+    delete mtx_;
 }
 
 void ModbusClass::lock()

@@ -94,7 +94,9 @@ QString SqlDriver::get_systime()
     return QDateTime::currentDateTime().toString("yyyyMMdd hh:mm:ss");
 }
 
-
+/*
+    Функция для сохранения данных при ошибках передачи на сервер
+*/
 void SqlDriver::toDataTable(const Data& data)
 {
 //    foreach (const QStringList &qsl, data) {
@@ -107,6 +109,7 @@ void SqlDriver::toDataTable(const Data& data)
     } else {
         for (int i = 0; i < data.size(); i++) {
             QStringList slist = data.at(i);
+            //сохраняем только с не DATA_ERROR_FLAG0
             if (slist.at(DATA_POS_ERRORFLAG) != QString::number(DATA_ERROR_FLAG0)) {
 
 //                qDebug() << "Write to data Table " << slist << endl;
@@ -133,7 +136,9 @@ void SqlDriver::toDataTable(const Data& data)
         return;
     }
 }
-
+/*
+    Функция для вынимания данных из базы хранения непереданных данных
+*/
 Data SqlDriver::fromDataTable(quint16 data_size)
 {
     Data retData;
@@ -151,12 +156,10 @@ Data SqlDriver::fromDataTable(quint16 data_size)
 
         else if (query.size()) {
 
-            QVector<QString> post_id_vector;
-
             while (query.next()) {
 
                 QStringList qsl;
-                const quint8 offset = 1;//post_id on 1
+                const quint8 offset = 0;//post_id on 1
                 qsl.append(query.value(offset + DATA_POS_GUID).toString());
                 qsl.append(query.value(offset + DATA_POS_VALUE).toString());
                 qsl.append(query.value(offset + DATA_POS_VALUEFLAG).toString());
@@ -164,24 +167,24 @@ Data SqlDriver::fromDataTable(quint16 data_size)
                 qsl.append(query.value(offset + DATA_POS_ERRORFLAG).toString());
 
                 retData.append(qsl);
-                post_id_vector.append(query.value(0).toString());
-            }
+//                post_id_vector.append(query.value(0).toString());
 
-            query_str = "DELETE FROM data WHERE ";
-            QString s_for_del;
+                //удаляем строку
+                QSqlQuery query_delete;
+                query_delete.prepare("DELETE FROM Data WHERE guid=:guid AND value=:value AND "
+                              "value_flag=:value_flag AND time=:time AND error_flag=:error_flag ;");
 
-            if (!retData.isEmpty())  {
-                s_for_del = "post_id=" + post_id_vector.at(0);
-                for (int i = 1; i < post_id_vector.size(); i++) {
-                    s_for_del = s_for_del + " OR " + "post_id=" + post_id_vector[i];
-                }
+                query_delete.bindValue(":guid",        qsl.at(DATA_POS_GUID));
+                query_delete.bindValue(":value",       qsl.at(DATA_POS_VALUE));
+                query_delete.bindValue(":value_flag",  qsl.at(DATA_POS_VALUEFLAG));
+                query_delete.bindValue(":time",        qsl.at(DATA_POS_TIME));
+                query_delete.bindValue(":error_flag",  qsl.at(DATA_POS_ERRORFLAG));
 
-                query_str = query_str + s_for_del;
+                bool d = query_delete.exec();
 
-                bool c = query.exec(query_str);
-//                qDebug()<< query.lastQuery();
+//                qDebug()<< query_delete.lastQuery();
 
-                if (!c) {
+                if (!d) {
                     qWarning() << "Cannot delete from " << db.databaseName() << endl;
                     qDebug() << "SqLite error:" << query.lastError().text();
                 }
