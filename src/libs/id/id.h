@@ -23,6 +23,7 @@ public:
         QStringList                              current_guid;    //qsl for pair "guid - address"
         QMap<QString, QString>                   current_subguid; //map for pair "subguid - pin address"
         quint8                                   type;
+        quint8                                   id;    //id of this struct
     } GuidStruct;
 
     enum {
@@ -39,6 +40,7 @@ public:
     ~GuidClass ();
 
     void init(SqlDriver *sqlDriver, const QString& table, quint8 * id, quint8 type = GUID_TYPE_ONE_TABLE);
+    bool hasNext(quint8 vector_index);
     QString get_address(quint8 vector_index);
     QString get_guid(quint8 vector_index);
     QString get_subguid(const QString& addr, bool *ok, quint8 vector_index);

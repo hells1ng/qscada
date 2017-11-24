@@ -28,19 +28,19 @@ public:
                     ID_Sphera24_1;
 
     //------------------OWEN MODULES---------------------------------------//
-    OwenClass_16D   Owen_16D_1;
-    OwenClass_8A    Owen_8A_11;
-    OwenClass_8AC   Owen_8AC_41;
-    OwenClass_NL_8R NL_8R_2;
+    OwenClass_16D*   Owen_16D_1;
+    OwenClass_8A*    Owen_8A_11;
+//    OwenClass_8AC   Owen_8AC_41;
+//    OwenClass_NL_8R NL_8R_2;
 
-    vector<OwenClass*>  OwenVector;
-    OwenClass*          Owen_ptr;
+//    vector<OwenClass*>  OwenVector;
+//    OwenClass*          Owen_ptr;
     //------------------Mercury MODULES---------------------------------------//
-    MercuryClass    Mercury_1;
+    MercuryClass*    Mercury_1;
     //------------------Pulsar---------------------------------------//
-    PulsarClass     Pulsar_1;
+    PulsarClass*     Pulsar_1;
     //------------------Sphera MODULES-------------------------------//
-    Sphera_24CI     Sphera24_1;
+    Sphera_24CI*     Sphera24_1;
     //------------------SQL---------------------------//
     SqlDriver       sqlDriver;
     //------------------HTTPS-------------------------//
@@ -51,8 +51,8 @@ private:
     QThread *thread2;
     QThread *thread3;
     QThread *thread4;
-    QThread *thread5;
-    QThread *thread6;
+    QThread *thread_send;
+    QThread *thread_read;
 
     void doEvery(std::function<void()> myFunction, qint64 interval);
     void doEvery(std::function<void()> myFunction);
@@ -72,25 +72,23 @@ signals:
 public slots:
 
     void mercury_slot() {
-        doEvery(std::bind(&ThreadManager::mercury_thread, this), 3000);
+        doEvery(std::bind(&ThreadManager::mercury_thread, this), 5000);
     }
     void owen_slot() {
-        doEvery(std::bind(&ThreadManager::owen_thread, this), 2000);
+        doEvery(std::bind(&ThreadManager::owen_thread, this), 5000);
     }
     void pulsar_slot() {
-        doEvery(std::bind(&ThreadManager::pulsar_thread, this), 3000);
+        doEvery(std::bind(&ThreadManager::pulsar_thread, this), 5000);
     }
     void send_slot() {
-        doEvery(std::bind(&ThreadManager::sendToServer, this), 1000);
+        doEvery(std::bind(&ThreadManager::sendToServer, this), 5000);
     }
     void get_sensor_interval_slot() {
         doEvery(std::bind(&ThreadManager::getSensorIntervalFromServer, this), 5000);
     }
     void sphera_slot() {
-        doEvery(std::bind(&ThreadManager::sphera_thread, this), 3000);
+        doEvery(std::bind(&ThreadManager::sphera_thread, this), 5000);
     }
-
-
 
 };
 

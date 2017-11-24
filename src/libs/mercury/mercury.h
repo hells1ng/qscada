@@ -243,6 +243,7 @@ public slots:
     void timeout();
 
 private:
+    QMutex mutex;
     //buf and lenght for receive data from Mercury
     byte buf[BSZ];
     int len;

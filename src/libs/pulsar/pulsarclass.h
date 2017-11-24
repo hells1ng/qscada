@@ -3,6 +3,7 @@
 
 #include <QtCore/QtCore>
 #include <QtCore/QDebug>
+#include <QtCore/QMutex>
 #include <QObject>
 #include "../iodriver/iodriver.h"
 #include "../../defines.h"
@@ -13,7 +14,7 @@ class PulsarClass : public QObject
 {
     Q_OBJECT
 public:
-    explicit PulsarClass(QObject *parent = 0);
+    explicit PulsarClass(QObject *parent = nullptr);
 
     typedef enum
     {
@@ -60,7 +61,7 @@ public:
 
     IODriver ioDriver;
     PulsarClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout = TIMEOUT);
-
+    ~PulsarClass(){}
 
     Data read_data(GuidClass* guid, quint8 id);
 
@@ -72,6 +73,8 @@ private:
     int         len;
     float       energy;
     bool        receivedData;
+
+    QMutex      mutex;
 
     void create_request(quint32 channelMask);
     quint16 make_crc(QByteArray *buf, int size);

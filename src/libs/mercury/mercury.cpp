@@ -593,6 +593,8 @@ void MercuryClass::printOutput(int format, OutputBlock o, int header)
 MercuryClass::MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout/* = 1000*/) :
     ioDriver(Type, server_com, port_props, timeout)
 {
+//    mutex = new QMutex();
+
     connect(this, SIGNAL(write(unsigned char *, int )), &ioDriver, SLOT(write(unsigned char *, int )));
     connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
     connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
@@ -623,8 +625,11 @@ void MercuryClass::timeout()
 
 Data MercuryClass::read_data(GuidClass* guid, quint8 id)
 {
+    QMutexLocker locker(&mutex);
+
     QStringList qsl1, qsl2;
     Data retData;
+
     address = guid->get_address(id).toInt();
 
 //    qDebug() << "Mercury address = " << address;

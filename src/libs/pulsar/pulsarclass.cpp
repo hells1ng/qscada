@@ -64,6 +64,8 @@ static const uint8_t table_crc_lo[] = {
 PulsarClass::PulsarClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout/* = 200*/):
     ioDriver (Type, server_com, port_props, timeout)
 {
+//    mutex = new QMutex();
+
     connect(this, SIGNAL(write(QByteArray )), &ioDriver, SLOT(write(QByteArray)));
     connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
     connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
@@ -237,11 +239,13 @@ bool PulsarClass::getP()
 
 Data PulsarClass::read_data(GuidClass* guid, quint8 id)
 {
+    QMutexLocker locker(&mutex);
     Data retData;
     QStringList qsl;
     bool ok;
+    QString address_str = guid->get_address(id);
 
-    address = guid->get_address(id).toInt(&ok, 16);
+    address = address_str.toInt(&ok, 16);
     if (!ok)
         qFatal("Cannot convert Pulsar address from string to BCD");
 
@@ -256,10 +260,10 @@ Data PulsarClass::read_data(GuidClass* guid, quint8 id)
 
         qsl.clear();
 
-        qDebug() << "Pulsar with Address = " << guid->get_address(id)
+        qDebug() << "Pulsar with Address = " << address_str
                  << " Values : " << retData << endl;
     } else
-        qDebug() << "Pulsar with Address = " << guid->get_address(id)
+        qDebug() << "Pulsar with Address = " << address_str
                  << " Cannot read values "   << endl;
 
     return retData;

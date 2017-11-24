@@ -16,6 +16,17 @@ void GuidClass::next_iterators(quint8 vector_index)
     }
 }
 
+bool GuidClass::hasNext(quint8 vector_index)
+{
+    if (GuidVector.at(vector_index).main_it->hasNext())
+        return true;
+    else
+    {
+        GuidVector.at(vector_index).main_it->toFront();
+        return false;
+    }
+}
+
 //  get address of device (uniq address in RS485 line for example)
 //  and shift iterators
 QString GuidClass::get_address(quint8 vector_index)
@@ -76,7 +87,6 @@ void GuidClass::init(SqlDriver *sqlDriver, const QString& table, quint8 * id, qu
     *id = count;
     count++;
 }
-
 
 GuidClass::GuidClass()
 {
