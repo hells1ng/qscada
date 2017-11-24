@@ -19,19 +19,13 @@ public:
         POS_GUID       = 1,
         POS_ADDRESS    = 2,
     };
-    enum TypeOfGuid {
+    enum {
         GUID_TYPE_ONE_TABLE,
         GUID_TYPE_SUBTABLE
     };
 
-    GuidClass(quint8 guid_type = TypeOfGuid::GUID_TYPE_ONE_TABLE) :
-        _guidtype(guid_type) {
-
-    }
-
-    ~GuidClass () {
-
-    }
+    GuidClass(quint8 guid_type = GUID_TYPE_ONE_TABLE);
+    ~GuidClass ();
 
     void    set_index(quint16 index);
     QString get_guid();
@@ -39,13 +33,20 @@ public:
     QString get_subguid(const QString& addr, bool *ok);
     quint16  size();
     void init(SqlDriver *sqlDriver, const QString& table);
+    bool hasNext();
 
 private:
     Guid    _guid;
     SubGuid _subguid;
     quint16 _index;
     quint8  _guidtype;
+    QStringList            current_guid;    //qsl for pair "guid - address"
+    QMap<QString, QString> current_subguid; //map for pair "subguid - pin address"
+    QVectorIterator<QStringList>* it;
+    QVectorIterator<QMap<QString, QString>>* it_sub;
     void    add(QStringList qsl);
+    void    next_iterators();
+
 };
 
 #endif

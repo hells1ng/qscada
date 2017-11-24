@@ -6,8 +6,8 @@ ThreadManager::ThreadManager(QObject *parent) :
     QObject(parent),
     Modbus(USB1, 115200, 'N', 8, 1, "192.168.88.100", 4006, ModbusClass::TCP),
     Modbus_Sphera(USB1, 9600, 'N', 8, 1, "192.168.88.100", 4005, ModbusClass::TCP),
-    Guid_Owen_1(GuidClass::TypeOfGuid::GUID_TYPE_SUBTABLE),
-    Guid_Sphera24_1(GuidClass::TypeOfGuid::GUID_TYPE_SUBTABLE),
+    Guid_Owen_1     (GuidClass::GUID_TYPE_SUBTABLE),
+    Guid_Sphera24_1 (GuidClass::GUID_TYPE_SUBTABLE),
     Owen_16D_1(1, 16, "RS485"),
     Owen_8A_11(11, 8, "RS485"),
     Owen_8AC_41(41, 8, "RS485"),
@@ -53,6 +53,91 @@ ThreadManager::ThreadManager(QObject *parent) :
     thread4->start();
     thread5->start();
     thread6->start();
+}
+
+void ThreadManager::owen_thread()
+{
+
+    sqlDriver.push(Owen_16D_1.read_data(&Modbus, &Guid_Owen_1));
+    sqlDriver.push(Owen_8A_11.read_data(&Modbus, &Guid_Owen_1));
+
+//    for (quint16 i = 0; i < Guid_Owen_1.size(); i++) {
+//        Owen_ptr = OwenVector[i];
+////        Guid_Owen_1.set_index(i);
+//        sqlDriver.push(Owen_ptr->read_data(&Modbus, &Guid_Owen_1));
+//    }
+
+    //test code for exiting from qScada
+
+//    QTextStream out(stdout);
+//    QTextStream in(stdin);
+//    while (1)
+//    {
+//        QString msg;
+
+//        msg = in.readLine();
+
+//        if (msg == QString("stop"))
+//        {
+//            out << "Exit from qScada ......."<< endl;
+//            emit finish();
+//        }
+
+//    }
+
+}
+
+void ThreadManager::sphera_thread()
+{
+    sqlDriver.push(Sphera24_1.read_data(&Modbus_Sphera, &Guid_Sphera24_1));
+}
+
+void ThreadManager::mercury_thread()
+{
+    sqlDriver.push(Mercury_1.read_data(&Guid_Mercury_1));
+}
+
+void ThreadManager::pulsar_thread()
+{
+    sqlDriver.push(Pulsar_1.read_data(&Guid_Pulsar_1));
+}
+
+void ThreadManager::sendToServer()
+{
+    /* Get data from queue*/
+    Data sendData = sqlDriver.pop(100);
+
+    httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &sendData);
+
+    sqlDriver.toDataTable(sendData);
+
+    /* Get data from sqlite*/
+    Data dataFromTable = sqlDriver.fromDataTable(200);
+
+    httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &dataFromTable);
+
+    sqlDriver.toDataTable(dataFromTable);
+
+}
+
+void ThreadManager::getSensorIntervalFromServer()
+{
+    Data receiveData;
+    qint64 new_sensorTimeout;
+    httpsDriver.Send( HttpsDriver::HTTPS_CMD_GET_SENSOR_PERIOD, &receiveData );
+
+    if (!receiveData.isEmpty()) {
+
+        QString qs = receiveData[0].at(0);
+        new_sensorTimeout = qs.toInt() * 60 * 1000;//msec
+
+        if (_sensorTimeout != new_sensorTimeout) {
+            _sensorTimeout_mutex->lock();
+            _sensorTimeout = new_sensorTimeout;
+//            qDebug() << "Sensor Timeout = " << _sensorTimeout << endl;
+            _sensorTimeout_mutex->unlock();
+        }
+    }
 }
 
 ThreadManager::~ThreadManager()
@@ -144,99 +229,6 @@ void ThreadManager::doEvery(std::function<void()> myFunction)
 void ThreadManager::deb()
 {
     qDebug() << "DEBUG" << endl;
-}
-
-void ThreadManager::owen_thread()
-{
-
-    for (quint16 i = 0; i < Guid_Owen_1.size(); i++) {
-        Owen_ptr = OwenVector[i];
-        Guid_Owen_1.set_index(i);
-        sqlDriver.push(Owen_ptr->read_data(&Modbus, &Guid_Owen_1));
-    }
-
-    //test code for exiting from qScada
-
-//    QTextStream out(stdout);
-//    QTextStream in(stdin);
-//    while (1)
-//    {
-//        QString msg;
-
-//        msg = in.readLine();
-
-//        if (msg == QString("stop"))
-//        {
-//            out << "Exit from qScada ......."<< endl;
-//            emit finish();
-//        }
-
-//    }
-
-}
-
-void ThreadManager::sphera_thread()
-{
-
-    for (quint16 i = 0; i < Guid_Sphera24_1.size(); i++) {
-        Guid_Sphera24_1.set_index(i);
-        sqlDriver.push(Sphera24_1.read_data(&Modbus_Sphera, &Guid_Sphera24_1));
-    }
-}
-
-void ThreadManager::mercury_thread()
-{
-    for (quint16 i = 0; i < Guid_Mercury_1.size(); i++) {
-        Guid_Mercury_1.set_index(i);
-        sqlDriver.push(Mercury_1.read_data(&Guid_Mercury_1));
-    }
-}
-
-void ThreadManager::pulsar_thread()
-{
-    for (quint16 i = 0; i < Guid_Pulsar_1.size(); i++) {
-        Guid_Pulsar_1.set_index(i);
-        sqlDriver.push(Pulsar_1.read_data(&Guid_Pulsar_1));
-    }
-
-}
-
-void ThreadManager::sendToServer()
-{
-    /* Get data from queue*/
-    Data sendData = sqlDriver.pop(100);
-
-    httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &sendData);
-
-    sqlDriver.toDataTable(sendData);
-
-    /* Get data from sqlite*/
-    Data dataFromTable = sqlDriver.fromDataTable(200);
-
-    httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &dataFromTable);
-
-    sqlDriver.toDataTable(dataFromTable);
-
-}
-
-void ThreadManager::getSensorIntervalFromServer()
-{
-    Data receiveData;
-    qint64 new_sensorTimeout;
-    httpsDriver.Send( HttpsDriver::HTTPS_CMD_GET_SENSOR_PERIOD, &receiveData );
-
-    if (!receiveData.isEmpty()) {
-
-        QString qs = receiveData[0].at(0);
-        new_sensorTimeout = qs.toInt() * 60 * 1000;//msec
-
-        if (_sensorTimeout != new_sensorTimeout) {
-            _sensorTimeout_mutex->lock();
-            _sensorTimeout = new_sensorTimeout;
-//            qDebug() << "Sensor Timeout = " << _sensorTimeout << endl;
-            _sensorTimeout_mutex->unlock();
-        }
-    }
 }
 
 

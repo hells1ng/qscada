@@ -625,8 +625,8 @@ Data MercuryClass::read_data(GuidClass* guid)
 {
     QStringList qsl1, qsl2;
     Data retData;
-
     address = guid->get_address().toInt();
+
 //    qDebug() << "Mercury address = " << address;
     int state = 0;
     switch (state) {

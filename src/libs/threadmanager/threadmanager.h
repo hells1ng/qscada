@@ -20,6 +20,7 @@ public:
     };
     ModbusClass     Modbus;
     ModbusClass     Modbus_Sphera;
+
     GuidClass       Guid_Mercury_1;
     GuidClass       Guid_Owen_1;
     GuidClass       Guid_Pulsar_1;
@@ -76,7 +77,7 @@ public slots:
         doEvery(std::bind(&ThreadManager::owen_thread, this), 2000);
     }
     void pulsar_slot() {
-        doEvery(std::bind(&ThreadManager::pulsar_thread, this));
+        doEvery(std::bind(&ThreadManager::pulsar_thread, this)/*, 3000*/);
     }
     void send_slot() {
         doEvery(std::bind(&ThreadManager::sendToServer, this), 1000);
