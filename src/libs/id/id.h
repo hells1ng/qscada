@@ -12,8 +12,19 @@ class SqlDriver;
 class GuidClass
 {
 public:
-    typedef QVector<QStringList> Guid;
-    typedef QVector<QMap<QString, QString>> SubGuid;
+//    typedef QVector<QStringList> Guid;
+//    typedef QVector<QMap<QString, QString>> SubGuid;
+    typedef struct
+    {
+        QVector<QStringList>                     main_guid;  //vector of qsl for pair "guid - device adress"
+        QVector<QMap<QString,QString>>           sub_guid;   //vector of map for pair "subguid - pin address of device"
+        QVectorIterator<QStringList>*            main_it;
+        QVectorIterator<QMap<QString, QString>>* sub_it;
+        QStringList                              current_guid;    //qsl for pair "guid - address"
+        QMap<QString, QString>                   current_subguid; //map for pair "subguid - pin address"
+        quint8                                   type;
+    } GuidStruct;
+
     enum {
         POS_KEY        = 0,
         POS_GUID       = 1,
@@ -24,29 +35,19 @@ public:
         GUID_TYPE_SUBTABLE
     };
 
-    GuidClass(quint8 guid_type = GUID_TYPE_ONE_TABLE);
+    GuidClass();
     ~GuidClass ();
 
-    void    set_index(quint16 index);
-    QString get_guid();
-    QString get_address();
-    QString get_subguid(const QString& addr, bool *ok);
-    quint16  size();
-    void init(SqlDriver *sqlDriver, const QString& table);
-    bool hasNext();
+    void init(SqlDriver *sqlDriver, const QString& table, quint8 * id, quint8 type = GUID_TYPE_ONE_TABLE);
+    QString get_address(quint8 vector_index);
+    QString get_guid(quint8 vector_index);
+    QString get_subguid(const QString& addr, bool *ok, quint8 vector_index);
+
 
 private:
-    Guid    _guid;
-    SubGuid _subguid;
-    quint16 _index;
-    quint8  _guidtype;
-    QStringList            current_guid;    //qsl for pair "guid - address"
-    QMap<QString, QString> current_subguid; //map for pair "subguid - pin address"
-    QVectorIterator<QStringList>* it;
-    QVectorIterator<QMap<QString, QString>>* it_sub;
-    void    add(QStringList qsl);
-    void    next_iterators();
-
+    quint8 count;
+    QVector<GuidStruct> GuidVector;
+    void    next_iterators(quint8 vector_index);
 };
 
 #endif

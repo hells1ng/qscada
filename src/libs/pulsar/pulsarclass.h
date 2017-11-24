@@ -62,7 +62,7 @@ public:
     PulsarClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout = TIMEOUT);
 
 
-    Data read_data(GuidClass* guid);
+    Data read_data(GuidClass* guid, quint8 id);
 
 private:
     quint32     address;

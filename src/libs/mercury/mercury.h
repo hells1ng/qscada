@@ -233,7 +233,7 @@ public:
     MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout = TIMEOUT);
     ~MercuryClass() {}
 
-    Data read_data(GuidClass* guid);
+    Data read_data(GuidClass* guid, quint8 id);
 
 
 signals:

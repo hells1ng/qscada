@@ -621,11 +621,11 @@ void MercuryClass::timeout()
     receivedData = true;
 }
 
-Data MercuryClass::read_data(GuidClass* guid)
+Data MercuryClass::read_data(GuidClass* guid, quint8 id)
 {
     QStringList qsl1, qsl2;
     Data retData;
-    address = guid->get_address().toInt();
+    address = guid->get_address(id).toInt();
 
 //    qDebug() << "Mercury address = " << address;
     int state = 0;
@@ -653,14 +653,14 @@ Data MercuryClass::read_data(GuidClass* guid)
 
                 char dat[10];
                 sprintf(dat, "%.3f", o.PRT[0].ap);//ncluding day tariff (KW)
-                qsl1.append(guid->get_guid());
+                qsl1.append(guid->get_guid(id));
                 qsl1.append(QString::fromStdString(dat));
                 qsl1.append(QString::number(DATA_VALUE_FLAG1));
 
                 retData.append(qsl1);
 
                 sprintf(dat, "%.3f", o.PRT[1].ap);//ncluding night tariff (KW)
-                qsl2.append(guid->get_guid());
+                qsl2.append(guid->get_guid(id));
                 qsl2.append(QString::fromStdString(dat));
                 qsl2.append(QString::number(DATA_VALUE_FLAG2));
 

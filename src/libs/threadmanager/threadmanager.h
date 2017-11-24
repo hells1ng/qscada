@@ -21,10 +21,11 @@ public:
     ModbusClass     Modbus;
     ModbusClass     Modbus_Sphera;
 
-    GuidClass       Guid_Mercury_1;
-    GuidClass       Guid_Owen_1;
-    GuidClass       Guid_Pulsar_1;
-    GuidClass       Guid_Sphera24_1;
+    GuidClass       Guid;
+    quint8          ID_Mercury_1,
+                    ID_Owen_1,
+                    ID_Pulsar_1,
+                    ID_Sphera24_1;
 
     //------------------OWEN MODULES---------------------------------------//
     OwenClass_16D   Owen_16D_1;
@@ -71,13 +72,13 @@ signals:
 public slots:
 
     void mercury_slot() {
-        doEvery(std::bind(&ThreadManager::mercury_thread, this)/*, 3000*/);
+        doEvery(std::bind(&ThreadManager::mercury_thread, this), 3000);
     }
     void owen_slot() {
         doEvery(std::bind(&ThreadManager::owen_thread, this), 2000);
     }
     void pulsar_slot() {
-        doEvery(std::bind(&ThreadManager::pulsar_thread, this)/*, 3000*/);
+        doEvery(std::bind(&ThreadManager::pulsar_thread, this), 3000);
     }
     void send_slot() {
         doEvery(std::bind(&ThreadManager::sendToServer, this), 1000);
@@ -86,7 +87,7 @@ public slots:
         doEvery(std::bind(&ThreadManager::getSensorIntervalFromServer, this), 5000);
     }
     void sphera_slot() {
-        doEvery(std::bind(&ThreadManager::sphera_thread, this)/*, 3000*/);
+        doEvery(std::bind(&ThreadManager::sphera_thread, this), 3000);
     }
 
 

@@ -21,13 +21,13 @@ void OwenClass::print_results()
 }
 
 
-Data OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
+Data OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid, quint8 id)
 {
 
     Data retData;
     QStringList qsl;
 
-    address = guid->get_address().toInt();
+    address = guid->get_address(id).toInt();
 
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
@@ -59,7 +59,7 @@ Data OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
 //                        data_16D.bits[i] = tab_rp_bits_prev[i]; //TODO test
 //                    }
                     bool ok = false;
-                    qsl.append(guid->get_subguid(QString::number(i), &ok));
+                    qsl.append(guid->get_subguid(QString::number(i), &ok, id));
                     if (ok) {
                         qsl.append(QString::number(tab_rp_bits[i]));
                         qsl.append(QString::number(DATA_VALUE_FLAG0));
@@ -96,7 +96,7 @@ Data OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
 //                    data_16D.regs[j] = tab_rp_registers_prev[j]; //TODO test
 //                }
                     bool ok = false;
-                qsl.append(guid->get_subguid(QString::number(j + 16), &ok));
+                qsl.append(guid->get_subguid(QString::number(j + 16), &ok, id));
                 if (ok) {
                     qsl.append(QString::fromStdString(str_data[1]));
                     qsl.append(QString::number(DATA_VALUE_FLAG0));
@@ -116,13 +116,13 @@ Data OwenClass_16D::read_data(ModbusClass* modbus, GuidClass* guid)
     return retData;
 }
 
-Data Sphera_24CI::read_data(ModbusClass* modbus, GuidClass* guid)
+Data Sphera_24CI::read_data(ModbusClass* modbus, GuidClass* guid, quint8 id)
 {
 
     Data retData;
     QStringList qsl;
 
-    address = guid->get_address().toInt();
+    address = guid->get_address(id).toInt();
 
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
@@ -144,7 +144,7 @@ Data Sphera_24CI::read_data(ModbusClass* modbus, GuidClass* guid)
 
                 uint8_t j = i/2;
                 bool ok = false;
-                qsl.append(guid->get_subguid(QString::number(j), &ok));
+                qsl.append(guid->get_subguid(QString::number(j), &ok, id));
                 if (ok) {
                     qsl.append(QString::number(value));
                     qsl.append(QString::number(DATA_VALUE_FLAG0));
@@ -170,12 +170,12 @@ Data Sphera_24CI::read_data(ModbusClass* modbus, GuidClass* guid)
     return retData;
 }
 
-Data OwenClass_8A::read_data(ModbusClass* modbus, GuidClass* guid)
+Data OwenClass_8A::read_data(ModbusClass* modbus, GuidClass* guid, quint8 id)
 {
     Data retData;
     QStringList qsl;
 
-    address = guid->get_address().toInt();
+    address = guid->get_address(id).toInt();
 
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
@@ -217,12 +217,12 @@ Data OwenClass_8A::read_data(ModbusClass* modbus, GuidClass* guid)
 //                    real_prev[i] = real[i];
 //                }
                     bool ok = false;
-                qsl.append(guid->get_subguid(QString::number(i), &ok));
+                qsl.append(guid->get_subguid(QString::number(i), &ok, id));
                 if (ok) {
-                qsl.append(QString::fromStdString(str_data[1]));
-                qsl.append(QString::number(DATA_VALUE_FLAG0));
+                    qsl.append(QString::fromStdString(str_data[1]));
+                    qsl.append(QString::number(DATA_VALUE_FLAG0));
 
-                retData.append(qsl);
+                    retData.append(qsl);
                 }
                 qsl.clear();
             }
@@ -237,9 +237,9 @@ Data OwenClass_8A::read_data(ModbusClass* modbus, GuidClass* guid)
     return retData;
 }
 
-Data OwenClass_8AC::read_data(ModbusClass* modbus, GuidClass* guid)
+Data OwenClass_8AC::read_data(ModbusClass* modbus, GuidClass* guid, quint8 id)
 {
-    address = guid->get_address().toInt();
+    address = guid->get_address(id).toInt();
 
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
@@ -305,9 +305,9 @@ Data OwenClass_8AC::read_data(ModbusClass* modbus, GuidClass* guid)
 }
 
         //TODO: previous values and data for sending
-Data OwenClass_KM::read_data(ModbusClass* modbus, GuidClass* guid)
+Data OwenClass_KM::read_data(ModbusClass* modbus, GuidClass* guid, quint8 id)
 {
-    address = guid->get_address().toInt();
+    address = guid->get_address(id).toInt();
 
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
@@ -417,9 +417,9 @@ Data OwenClass_KM::read_data(ModbusClass* modbus, GuidClass* guid)
     return retData;
 }
 
-Data OwenClass_SimDI::read_data(ModbusClass* modbus, GuidClass* guid)
+Data OwenClass_SimDI::read_data(ModbusClass* modbus, GuidClass* guid, quint8 id)
 {
-    address = guid->get_address().toInt();
+    address = guid->get_address(id).toInt();
 
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
@@ -455,9 +455,9 @@ Data OwenClass_SimDI::read_data(ModbusClass* modbus, GuidClass* guid)
     return retData;
 }
 
-Data OwenClass_SimAI::read_data(ModbusClass* modbus, GuidClass* guid)
+Data OwenClass_SimAI::read_data(ModbusClass* modbus, GuidClass* guid, quint8 id)
 {
-    address = guid->get_address().toInt();
+    address = guid->get_address(id).toInt();
 
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);
@@ -492,9 +492,9 @@ Data OwenClass_SimAI::read_data(ModbusClass* modbus, GuidClass* guid)
     return retData;
 }
 
-Data OwenClass_NL_8R::read_data(ModbusClass* modbus, GuidClass* guid)
+Data OwenClass_NL_8R::read_data(ModbusClass* modbus, GuidClass* guid, quint8 id)
 {
-    address = guid->get_address().toInt();
+    address = guid->get_address(id).toInt();
 
     if (modbus->isConnected()) {
         modbus_set_slave(modbus->ctx, address);

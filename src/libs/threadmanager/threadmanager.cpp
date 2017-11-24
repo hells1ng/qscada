@@ -6,8 +6,6 @@ ThreadManager::ThreadManager(QObject *parent) :
     QObject(parent),
     Modbus(USB1, 115200, 'N', 8, 1, "192.168.88.100", 4006, ModbusClass::TCP),
     Modbus_Sphera(USB1, 9600, 'N', 8, 1, "192.168.88.100", 4005, ModbusClass::TCP),
-    Guid_Owen_1     (GuidClass::GUID_TYPE_SUBTABLE),
-    Guid_Sphera24_1 (GuidClass::GUID_TYPE_SUBTABLE),
     Owen_16D_1(1, 16, "RS485"),
     Owen_8A_11(11, 8, "RS485"),
     Owen_8AC_41(41, 8, "RS485"),
@@ -28,10 +26,10 @@ ThreadManager::ThreadManager(QObject *parent) :
     //OwenVector.push_back(&UNO_61);
     //OwenVector.push_back(&NL_8R_2);
 
-    Guid_Mercury_1.init(&sqlDriver, QString("mercury_1"));
-    Guid_Owen_1.init(&sqlDriver,    QString("owen_1"));
-    Guid_Pulsar_1.init(&sqlDriver,  QString("pulsar_1"));
-    Guid_Sphera24_1.init(&sqlDriver,QString("sphera24_1"));
+    Guid.init(&sqlDriver, QString("mercury_1"), &ID_Mercury_1);
+    Guid.init(&sqlDriver, QString("owen_1"), &ID_Owen_1, GuidClass::GUID_TYPE_SUBTABLE);
+    Guid.init(&sqlDriver, QString("pulsar_1"), &ID_Pulsar_1);
+    Guid.init(&sqlDriver, QString("sphera24_1"), &ID_Sphera24_1, GuidClass::GUID_TYPE_SUBTABLE);
 
     thread1 = new QThread;
     thread2 = new QThread;
@@ -57,15 +55,8 @@ ThreadManager::ThreadManager(QObject *parent) :
 
 void ThreadManager::owen_thread()
 {
-
-    sqlDriver.push(Owen_16D_1.read_data(&Modbus, &Guid_Owen_1));
-    sqlDriver.push(Owen_8A_11.read_data(&Modbus, &Guid_Owen_1));
-
-//    for (quint16 i = 0; i < Guid_Owen_1.size(); i++) {
-//        Owen_ptr = OwenVector[i];
-////        Guid_Owen_1.set_index(i);
-//        sqlDriver.push(Owen_ptr->read_data(&Modbus, &Guid_Owen_1));
-//    }
+    sqlDriver.push(Owen_16D_1.read_data(&Modbus, &Guid, ID_Owen_1));
+    sqlDriver.push(Owen_8A_11.read_data(&Modbus, &Guid, ID_Owen_1));
 
     //test code for exiting from qScada
 
@@ -89,17 +80,17 @@ void ThreadManager::owen_thread()
 
 void ThreadManager::sphera_thread()
 {
-    sqlDriver.push(Sphera24_1.read_data(&Modbus_Sphera, &Guid_Sphera24_1));
+    sqlDriver.push(Sphera24_1.read_data(&Modbus_Sphera, &Guid, ID_Sphera24_1));
 }
 
 void ThreadManager::mercury_thread()
 {
-    sqlDriver.push(Mercury_1.read_data(&Guid_Mercury_1));
+    sqlDriver.push(Mercury_1.read_data(&Guid, ID_Mercury_1));
 }
 
 void ThreadManager::pulsar_thread()
 {
-    sqlDriver.push(Pulsar_1.read_data(&Guid_Pulsar_1));
+    sqlDriver.push(Pulsar_1.read_data(&Guid, ID_Pulsar_1));
 }
 
 void ThreadManager::sendToServer()

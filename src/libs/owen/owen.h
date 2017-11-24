@@ -82,7 +82,7 @@ public:
         counter--;
     }
     /* Prototype of read_data func */
-    virtual Data read_data(ModbusClass* , GuidClass* ) {
+    virtual Data read_data(ModbusClass* , GuidClass* , quint8) {
         Data ret;
         return ret;
     }
@@ -118,7 +118,7 @@ public:
     uint8_t tab_rp_bits[nb_BITS];
     uint8_t tab_rp_bits_prev[nb_BITS];
     uint16_t tab_rp_registers_prev[nb_BITS];
-    Data read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid, quint8 id);
 };
 
 class OwenClass_8A : public OwenClass
@@ -131,7 +131,7 @@ public:
         counter--;
     }
     float real_prev[8];
-    Data read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid, quint8 id);
 };
 
 class Sphera_24CI : public OwenClass
@@ -150,7 +150,7 @@ public:
     ~Sphera_24CI() {
         counter--;
     }
-    Data read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid, quint8 id);
 };
 
 class OwenClass_8AC : public OwenClass
@@ -163,7 +163,7 @@ public:
         counter--;
     }
     float real_prev[8];
-    Data read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid, quint8 id);
 };
 
 class OwenClass_KM : public OwenClass
@@ -175,7 +175,7 @@ public:
     ~OwenClass_KM() {
         counter--;
         }
-    Data read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid, quint8 id);
 };
 
 class OwenClass_SimDI : public OwenClass
@@ -191,7 +191,7 @@ public:
         counter--;
     }
     uint8_t tab_rp_bits[nb_BITS];
-    Data read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid, quint8 id);
 };
 
 class OwenClass_SimAI : public OwenClass
@@ -203,7 +203,7 @@ public:
     ~OwenClass_SimAI() {
         counter--;
     }
-    Data read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid, quint8 id);
 };
 
 class OwenClass_NL_8R : public OwenClass
@@ -217,7 +217,7 @@ public:
     }
     uint8_t tab_rp_bits[nb_8R];
     uint8_t tab_rp_bits_prev[nb_8R];
-    Data read_data(ModbusClass* modbus, GuidClass* guid);
+    Data read_data(ModbusClass* modbus, GuidClass* guid, quint8 id);
     int write_data(ModbusClass* modbus, vector<string> stringguidforwrite, int valueforwrite);
 };
 #endif // OWENCLASS_H_INCLUDED
