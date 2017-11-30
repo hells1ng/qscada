@@ -21,7 +21,7 @@ SqlDriver::SqlDriver(QObject *parent) :
 //        db = QSqlDatabase::addDatabase("QMYSQL");
 //        db.setDatabaseName("Safe");
         db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName("qscada_db");
+        db.setDatabaseName("/home/pi/rw/qscada_db");
     }
 //    db.setHostName("localhost");
 //    db.setUserName("root");
@@ -128,6 +128,7 @@ void SqlDriver::toDataTable(const Data& data)
                 if (!b) {
                     qWarning() << "Cannot write to " << db.databaseName() << endl;
 //                    qWarning() << "Error =  " << query.e << endl;
+                    qDebug() << "SqLite error:" << query.lastError().text();
                 }
             }
         }

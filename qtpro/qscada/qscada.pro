@@ -35,7 +35,7 @@ SOURCES += \
     ../../src/libs/sqldriver/sqldriver.cpp \
     ../../src/libs/iodriver/iodriver.cpp
 INSTALLS        = target
-target.path     = /home/pi
+target.path     = /home/pi/rw
 
 HEADERS += \
     ../../src/defines.h \

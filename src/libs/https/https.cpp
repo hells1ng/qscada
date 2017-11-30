@@ -90,7 +90,27 @@ QtJson::JsonObject HttpsDriver::from_data_to_json(QStringList data) {
     insert["fields"] = "";
 
     return insert;
+}
 
+QtJson::JsonObject HttpsDriver::from_guids_to_json(QStringList data) {
+
+    string guids;
+
+    foreach (const QString &str, data) {
+        guids = guids + str.toStdString() + "/";
+    }
+
+    QtJson::JsonObject target, insert;
+
+    target["sensor_secret"]     = guids.c_str();
+
+    insert["to_do"] = "show_sensor_commands";
+    insert["token"] = "";
+    insert["target"] = "";
+    insert["filter"] = target;
+    insert["fields"] = "";
+
+    return insert;
 }
 
 size_t CurlWriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -122,6 +142,17 @@ void HttpsDriver::Send(const quint8 cmd, Data *data) {
         string ins = "check_interval";
         json[ins.c_str()] = get_interval_json();
 
+    } else if (cmd == HTTPS_CMD_GET_SENSOR_REQUESTS){
+
+        if (data->isEmpty())
+             return;
+
+        foreach (const QStringList &qsl, *data) {
+            string ins = "check_commands";
+            json[ins.c_str()] = from_guids_to_json(qsl);
+            break;  //get only 1 qsl
+        }
+
     } else if (cmd == HTTPS_CMD_POST_SENSOR_VALUE){
 
         if (data->isEmpty())
@@ -147,9 +178,7 @@ void HttpsDriver::Send(const quint8 cmd, Data *data) {
 
 void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &response/*, vector<string> &datas*/)
 {
-    vector<string> str;
     QtJson::JsonObject result;
-    static SqlDriver SQL_dr;
     QStringList qsl;
 
     if (cmd == HTTPS_CMD_GET_SENSOR_PERIOD) { // TODO this section if
@@ -177,8 +206,37 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
 //            return qsl;
             return;
         }
+    }
+    else if (cmd == HTTPS_CMD_GET_SENSOR_REQUESTS) { // TODO this section if
 
-    } else if (cmd == HTTPS_CMD_POST_SENSOR_VALUE) {
+        if (response.empty()) {   //no connection
+            return;
+        } else {
+            bool ok;
+
+            //парсим ответ
+            result = QtJson::parse(QString::fromStdString(response), ok).toMap();
+            if(!ok)
+                qFatal("An error occurred during parsing response from server");
+
+            string ins = "check_commands";
+
+            QtJson::JsonObject nested = result[ins.c_str()].toMap();
+
+            foreach(QVariant guid, nested["results"].toList()) {
+
+//                qDebug() << " GUID from server = " << guid.toMap().value("sensor_secret").toString();
+//                qDebug() << " Whaw to do = " << guid.toMap().value("value_signal").toString();
+
+                //если в value_signal ничего, значит запрос на чтение
+                if (guid.toMap().value("value_signal").toString().isEmpty())
+                    qsl.append(guid.toMap().value("sensor_secret").toString());
+
+            }
+        }
+        data->append(qsl);
+    }
+    else if (cmd == HTTPS_CMD_POST_SENSOR_VALUE) {
 
         if (response.empty()) {  //no connection
 
@@ -203,6 +261,7 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
             /*Ищем ошибки в ответе*/
             bool needSave = false;
 
+            //если хотя бы 1 результат не true, нужно сохранять
             for (int i = 0; i < data->size(); i++) {
                 string ins = "insert_" + std::to_string(i);
                 QtJson::JsonObject nested = result[ins.c_str()].toMap();
@@ -240,30 +299,14 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
                     slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG0));
                     data->replace(i, slist);
                 }
-
-//                if (nested["results"] != "true") {
-//                    /*Update Error flag*/
-//                    if ((errors["code"] == HTTP_RESPONSE_ERROR_DUPLICATE) ||
-//                        (errors["code"] == HTTP_RESPONSE_ERROR_WRONGSECRET)) {
-//                        data->remove(i);
-//                    }
-//                    else {
-//                        QStringList slist = data->at(i);
-//                        slist.replace(DATA_POS_ERRORFLAG, QString::number(DATA_ERROR_FLAG2));
-//                        data->replace(i, slist);
-//                    }
-//                }
-
-//                foreach (const QStringList &qsl, *data) {
-//                    qDebug() << "Https::Send -> get answer" << qsl;
-//                }
             }
         }
     }
 }
 
 string HttpsDriver::curl_send(string const &str) {
-//        qDebug() << QString::fromStdString(str);
+
+//    qDebug() << QString::fromStdString(str);
 
     struct MemoryStruct chunk;
     string retstr;
@@ -326,7 +369,7 @@ string HttpsDriver::curl_send(string const &str) {
         if (res == CURLE_OK) //если соединение успешно
         {
             retstr = retFromServer;
-            qDebug() << "cURL returns : " << QString::fromStdString(retFromServer) << endl;;
+//            qDebug() << "cURL returns : " << QString::fromStdString(retFromServer) << endl;;
         }
         else // если не было соединения
         {

@@ -12,8 +12,7 @@ class SqlDriver;
 class GuidClass
 {
 public:
-//    typedef QVector<QStringList> Guid;
-//    typedef QVector<QMap<QString, QString>> SubGuid;
+    //структура для одной линии RS485
     typedef struct
     {
         QVector<QStringList>                     main_guid;  //vector of qsl for pair "guid - device adress"
@@ -25,6 +24,15 @@ public:
         quint8                                   type;
         quint8                                   id;    //id of this struct
     } GuidStruct;
+
+    //структура для одного прибора
+    typedef struct
+    {
+        QStringList             main_guid;
+        QMap<QString, QString>  sub_guid;
+        quint8                  type;
+        quint8                  id;
+    } GuidStructDevice;
 
     enum {
         POS_KEY        = 0,
@@ -45,11 +53,24 @@ public:
     QString get_guid(quint8 vector_index);
     QString get_subguid(const QString& addr, bool *ok, quint8 vector_index);
 
+    bool    isEmptyQueue(quint8 vector_index);
+    void    addQueue(const QString &guid);
+    void    addQueue(const QStringList guid_qsl);
+    QStringList getAllGuid();
 
 private:
-    quint8 count;
-    QVector<GuidStruct> GuidVector;
+    quint8                              count;
+    QVector<GuidStruct>                 GuidVector;
+    QVector<QQueue<GuidStructDevice>>   GuidQueueVector;
+    QVector<bool>                       GuidActiveStateVector;
+    QStringList                         AllGuid;
+    QMutex*                             mutex;
+    QMutex*                             mutex_queue;
+
+
+    QQueue<GuidStructDevice> GuidQueue; //queue of deviceces for reading
     void    next_iterators(quint8 vector_index);
+    bool    find_guid(const QString& guid, GuidStructDevice* local_guid);
 };
 
 #endif

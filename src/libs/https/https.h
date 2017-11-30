@@ -32,7 +32,8 @@ public:
 
     enum {
         HTTPS_CMD_POST_SENSOR_VALUE,
-        HTTPS_CMD_GET_SENSOR_PERIOD
+        HTTPS_CMD_GET_SENSOR_PERIOD,
+        HTTPS_CMD_GET_SENSOR_REQUESTS
     };
     const char* HTTP_RESPONSE_ERROR_DUPLICATE = "1011";
     const char* HTTP_RESPONSE_ERROR_WRONGSECRET = "1010";
@@ -54,6 +55,7 @@ protected:
 private:
     QtJson::JsonObject  get_interval_json();
     QtJson::JsonObject  from_data_to_json(QStringList data);
+    QtJson::JsonObject  from_guids_to_json(QStringList data);
 
     string  curl_send(string const &str);
     void    process_response(const quint8 cmd, Data *data, string const &response/* , vector<string> &datas*/);

@@ -33,7 +33,7 @@ ThreadManager::ThreadManager(QObject *parent) :
         Owen_16D_1  = new OwenClass_16D(1, 16, "RS485");
         Owen_8A_11  = new OwenClass_8A(11, 8, "RS485");
         thread2     = new QThread;
-        QObject::connect(thread2, SIGNAL(started()), this, SLOT(owen_slot()),    Qt::DirectConnection);
+//        QObject::connect(thread2, SIGNAL(started()), this, SLOT(owen_slot()),    Qt::DirectConnection);
 
     Guid.init(&sqlDriver, QString("pulsar_1"), &ID_Pulsar_1);
         Pulsar_1    = new PulsarClass(IODriver::RTU, USB1, IODriver::COM600_8N1);
@@ -45,12 +45,22 @@ ThreadManager::ThreadManager(QObject *parent) :
         thread4 = new QThread;
         QObject::connect(thread4, SIGNAL(started()), this, SLOT(sphera_slot()),   Qt::DirectConnection);
 
-
     thread_send = new QThread;
     QObject::connect(thread_send, SIGNAL(started()), this, SLOT(send_slot()),    Qt::DirectConnection);
     thread_read = new QThread;
-    QObject::connect(thread_read, SIGNAL(started()), this, SLOT(get_sensor_interval_slot()),   Qt::DirectConnection);
+    QObject::connect(thread_read, SIGNAL(started()), this, SLOT(getInfoFromServer_slot()),   Qt::DirectConnection);
+    thread_queue = new QThread;
+    QObject::connect(thread_queue, SIGNAL(started()), this, SLOT(QueueReqFromServer_slot()),   Qt::DirectConnection);
+    thread_cmdline = new QThread;
+    QObject::connect(thread_cmdline, SIGNAL(started()), this, SLOT(cmdline_slot()),   Qt::DirectConnection);
 
+    //test
+//    Guid.addQueue(QString("1e146e46623044b1972078ba22ea6579"));
+//    Guid.addQueue(QString("e06ef2480bca4b00a6bc718afc800a99"));
+//    Guid.addQueue(QString("FD3F35BF-7881-495C-9E30-7C910352BE83"));
+//    Guid.addQueue(QString("b0ac1d32e60e42f9a4beb99100e4b98q"));
+//    Guid.addQueue(QString("1111"));
+    qDebug() << "ALL GUID : " << Guid.getAllGuid() << endl;
 
     thread1->start();
     thread2->start();
@@ -58,31 +68,21 @@ ThreadManager::ThreadManager(QObject *parent) :
     thread4->start();
     thread_send->start();
     thread_read->start();
+    thread_queue->start();
+//    thread_cmdline->start();
+}
+
+void ThreadManager::mercury_thread()
+{
+    while (Guid.hasNext(ID_Mercury_1))
+        sqlDriver.push(Mercury_1->read_data(&Guid, ID_Mercury_1));
+
 }
 
 void ThreadManager::owen_thread()
 {
     sqlDriver.push(Owen_16D_1->read_data(&Modbus, &Guid, ID_Owen_1));
     sqlDriver.push(Owen_8A_11->read_data(&Modbus, &Guid, ID_Owen_1));
-
-    //test code for exiting from qScada
-
-//    QTextStream out(stdout);
-//    QTextStream in(stdin);
-//    while (1)
-//    {
-//        QString msg;
-
-//        msg = in.readLine();
-
-//        if (msg == QString("stop"))
-//        {
-//            out << "Exit from qScada ......."<< endl;
-//            emit finish();
-//        }
-
-//    }
-
 }
 
 void ThreadManager::sphera_thread()
@@ -91,11 +91,6 @@ void ThreadManager::sphera_thread()
         sqlDriver.push(Sphera24_1->read_data(&Modbus_Sphera, &Guid, ID_Sphera24_1));
 }
 
-void ThreadManager::mercury_thread()
-{
-    while (Guid.hasNext(ID_Mercury_1))
-        sqlDriver.push(Mercury_1->read_data(&Guid, ID_Mercury_1));
-}
 
 void ThreadManager::pulsar_thread()
 {
@@ -121,10 +116,12 @@ void ThreadManager::sendToServer()
 
 }
 
-void ThreadManager::getSensorIntervalFromServer()
+void ThreadManager::getInfoFromServer_thread()
 {
     Data receiveData;
     qint64 new_sensorTimeout;
+
+    /* Get sensor interval from server*/
     httpsDriver.Send( HttpsDriver::HTTPS_CMD_GET_SENSOR_PERIOD, &receiveData );
 
     if (!receiveData.isEmpty()) {
@@ -138,6 +135,71 @@ void ThreadManager::getSensorIntervalFromServer()
 //            qDebug() << "Sensor Timeout = " << _sensorTimeout << endl;
             _sensorTimeout_mutex->unlock();
         }
+
+        receiveData.clear();
+    }
+
+    /*Get Request from server */
+    receiveData.append(Guid.getAllGuid());
+
+    httpsDriver.Send(HttpsDriver::HTTPS_CMD_GET_SENSOR_REQUESTS, &receiveData);
+
+    //в 0 стринглисте все гуайдишники малины, в 1 - гуайдишники полученные на сервере
+    if (receiveData.size() == 2)
+        Guid.addQueue(receiveData.at(1));
+
+}
+
+
+void ThreadManager::QueueReqFromServer_thread()
+{
+    if (!Guid.isEmptyQueue(ID_Mercury_1))
+        sqlDriver.push(Mercury_1->read_data(&Guid, ID_Mercury_1));
+
+    if (!Guid.isEmptyQueue(ID_Pulsar_1))
+        sqlDriver.push(Pulsar_1->read_data(&Guid, ID_Pulsar_1));
+
+    if (!Guid.isEmptyQueue(ID_Sphera24_1))
+        sqlDriver.push(Sphera24_1->read_data(&Modbus_Sphera, &Guid, ID_Sphera24_1));
+}
+
+void ThreadManager::cmdline_thread()
+{
+    QTextStream out(stdout);
+    QTextStream in(stdin);
+    while (1)
+    {
+        QString msg;
+
+        msg = in.readLine();
+
+        if (msg == QString("stop"))
+        {
+            out << "Exit from qScada ......."<< endl;
+            emit finish();
+        }
+        else if (msg == QString("1")) //mercury
+            Guid.addQueue("1e146e46623044b1972078ba22ea6579");
+
+        else if (msg == QString("2")) //sphera
+            Guid.addQueue(QString("b0ac1d32e60e42f9a4beb99100e4b98q"));
+
+        else if (msg == QString("3")) //pulsar
+            Guid.addQueue(QString("FD3F35BF-7881-495C-9E30-7C910352BE83"));
+
+        else if (msg == QString("4")) //sphera
+        {
+            QStringList qsl;
+            qsl << "b0ac1d32e60e42f9a4beb99100e4b98a" << "b0ac1d32e60e42f9a4beb99100e4b98q" << "b0ac1d32e60e42f9a4beb99100e4b98q";
+            Guid.addQueue(qsl);
+        }
+        else if (msg == QString("5")) //mercury
+        {
+            QStringList qsl;
+            qsl << "1e146e46623044b1972078ba22ea6579" << "1e146e46623044b1972078ba22ea6579";
+            Guid.addQueue(qsl);
+        }
+
     }
 }
 

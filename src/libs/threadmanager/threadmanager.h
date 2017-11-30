@@ -53,6 +53,8 @@ private:
     QThread *thread4;
     QThread *thread_send;
     QThread *thread_read;
+    QThread *thread_queue;
+    QThread *thread_cmdline;
 
     void doEvery(std::function<void()> myFunction, qint64 interval);
     void doEvery(std::function<void()> myFunction);
@@ -61,8 +63,10 @@ private:
     void pulsar_thread();
     void sendToServer();
     void deb();
-    void getSensorIntervalFromServer();
+    void getInfoFromServer_thread();
     void sphera_thread();
+    void QueueReqFromServer_thread();
+    void cmdline_thread();
 
     qint64 _sensorTimeout;
     QMutex*  _sensorTimeout_mutex;
@@ -72,25 +76,30 @@ signals:
 public slots:
 
     void mercury_slot() {
-        doEvery(std::bind(&ThreadManager::mercury_thread, this), 5000);
+        doEvery(std::bind(&ThreadManager::mercury_thread, this)/*, 5000*/);
     }
     void owen_slot() {
-        doEvery(std::bind(&ThreadManager::owen_thread, this), 5000);
+        doEvery(std::bind(&ThreadManager::owen_thread, this), 30000);
     }
     void pulsar_slot() {
-        doEvery(std::bind(&ThreadManager::pulsar_thread, this), 5000);
+        doEvery(std::bind(&ThreadManager::pulsar_thread, this)/*, 5000*/);
     }
     void send_slot() {
-        doEvery(std::bind(&ThreadManager::sendToServer, this), 5000);
+        doEvery(std::bind(&ThreadManager::sendToServer, this), 1000);
     }
-    void get_sensor_interval_slot() {
-        doEvery(std::bind(&ThreadManager::getSensorIntervalFromServer, this), 5000);
+    void getInfoFromServer_slot() {
+        doEvery(std::bind(&ThreadManager::getInfoFromServer_thread, this), 5000);
     }
     void sphera_slot() {
-        doEvery(std::bind(&ThreadManager::sphera_thread, this), 5000);
+        doEvery(std::bind(&ThreadManager::sphera_thread, this)/*, 5000*/);
     }
 
+    void QueueReqFromServer_slot() {
+        doEvery(std::bind(&ThreadManager::QueueReqFromServer_thread, this), 1000);
+    }
+    void cmdline_slot() {
+            doEvery(std::bind(&ThreadManager::cmdline_thread, this), 1000);
+    }
 };
-
 
 #endif // THREADMANAGER_H_INCLUDED
