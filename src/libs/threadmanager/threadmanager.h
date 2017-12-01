@@ -23,8 +23,10 @@ public:
 
     GuidClass       Guid;
     quint8          ID_Mercury_1,
-                    ID_Owen_1,
+                    ID_Mercury_2,
                     ID_Pulsar_1,
+                    ID_Pulsar_2,
+                    ID_Owen_1,
                     ID_Sphera24_1;
 
     //------------------OWEN MODULES---------------------------------------//
@@ -37,8 +39,10 @@ public:
 //    OwenClass*          Owen_ptr;
     //------------------Mercury MODULES---------------------------------------//
     MercuryClass*    Mercury_1;
+    MercuryClass*    Mercury_2;
     //------------------Pulsar---------------------------------------//
     PulsarClass*     Pulsar_1;
+    PulsarClass*     Pulsar_2;
     //------------------Sphera MODULES-------------------------------//
     Sphera_24CI*     Sphera24_1;
     //------------------SQL---------------------------//
@@ -47,9 +51,19 @@ public:
     HttpsDriver     httpsDriver;
 
 private:
-    QThread *thread1;
+    QThread *thread_mercury_1;
+    void mercury_1_thread();
+
+    QThread *thread_mercury_2;
+    void mercury_2_thread();
+
+    QThread *thread_pulsar_1;
+    void pulsar_1_thread();
+
+    QThread *thread_pulsar_2;
+    void pulsar_2_thread();
+
     QThread *thread2;
-    QThread *thread3;
     QThread *thread4;
     QThread *thread_send;
     QThread *thread_read;
@@ -59,14 +73,14 @@ private:
     void doEvery(std::function<void()> myFunction, qint64 interval);
     void doEvery(std::function<void()> myFunction);
     void owen_thread();
-    void mercury_thread();
-    void pulsar_thread();
     void sendToServer();
     void deb();
     void getInfoFromServer_thread();
     void sphera_thread();
     void QueueReqFromServer_thread();
     void cmdline_thread();
+
+
 
     qint64 _sensorTimeout;
     QMutex*  _sensorTimeout_mutex;
@@ -75,14 +89,22 @@ signals:
     void finish();
 public slots:
 
-    void mercury_slot() {
-        doEvery(std::bind(&ThreadManager::mercury_thread, this)/*, 5000*/);
+    void mercury_1_slot() {
+        doEvery(std::bind(&ThreadManager::mercury_1_thread, this)/*, 5000*/);
     }
+    void mercury_2_slot() {
+        doEvery(std::bind(&ThreadManager::mercury_2_thread, this)/*, 5000*/);
+    }
+
+    void pulsar_1_slot() {
+        doEvery(std::bind(&ThreadManager::pulsar_1_thread, this)/*, 5000*/);
+    }
+    void pulsar_2_slot() {
+        doEvery(std::bind(&ThreadManager::pulsar_2_thread, this)/*, 5000*/);
+    }
+
     void owen_slot() {
         doEvery(std::bind(&ThreadManager::owen_thread, this), 30000);
-    }
-    void pulsar_slot() {
-        doEvery(std::bind(&ThreadManager::pulsar_thread, this)/*, 5000*/);
     }
     void send_slot() {
         doEvery(std::bind(&ThreadManager::sendToServer, this), 1000);

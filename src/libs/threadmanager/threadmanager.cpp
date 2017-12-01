@@ -25,25 +25,35 @@ ThreadManager::ThreadManager(QObject *parent) :
 
     Guid.init(&sqlDriver, QString("mercury_1"), &ID_Mercury_1);
         //Mercury_1   = new MercuryClass(IODriver::RTU, USB0, IODriver::Com9600_8N1);
-        Mercury_1   = new MercuryClass(IODriver::TCP, "192.168.88.100", 4007);
-        thread1     = new QThread;
-        QObject::connect(thread1, SIGNAL(started()), this, SLOT(mercury_slot()), Qt::DirectConnection);
+        Mercury_1               = new MercuryClass(IODriver::TCP, "192.168.88.100", 4007);
+        thread_mercury_1        = new QThread;
+        QObject::connect(thread_mercury_1, SIGNAL(started()), this, SLOT(mercury_1_slot()), Qt::DirectConnection);
 
-    Guid.init(&sqlDriver, QString("owen_1"), &ID_Owen_1, GuidClass::GUID_TYPE_SUBTABLE);
-        Owen_16D_1  = new OwenClass_16D(1, 16, "RS485");
-        Owen_8A_11  = new OwenClass_8A(11, 8, "RS485");
-        thread2     = new QThread;
-//        QObject::connect(thread2, SIGNAL(started()), this, SLOT(owen_slot()),    Qt::DirectConnection);
+    Guid.init(&sqlDriver, QString("mercury_2"), &ID_Mercury_2);
+        Mercury_2               = new MercuryClass(IODriver::TCP, "192.168.88.100", 4007);
+        thread_mercury_2        = new QThread;
+        QObject::connect(thread_mercury_2, SIGNAL(started()), this, SLOT(mercury_2_slot()), Qt::DirectConnection);
 
     Guid.init(&sqlDriver, QString("pulsar_1"), &ID_Pulsar_1);
-        Pulsar_1    = new PulsarClass(IODriver::RTU, USB1, IODriver::COM600_8N1);
-        thread3     = new QThread;
-        QObject::connect(thread3, SIGNAL(started()), this, SLOT(pulsar_slot()),   Qt::DirectConnection);
+        Pulsar_1                = new PulsarClass(IODriver::RTU, USB1, IODriver::COM600_8N1);
+        thread_pulsar_1         = new QThread;
+        QObject::connect(thread_pulsar_1, SIGNAL(started()), this, SLOT(pulsar_1_slot()),   Qt::DirectConnection);
 
-    Guid.init(&sqlDriver, QString("sphera24_1"), &ID_Sphera24_1, GuidClass::GUID_TYPE_SUBTABLE);
-        Sphera24_1  = new Sphera_24CI(1, 50, "RS485");
-        thread4 = new QThread;
-        QObject::connect(thread4, SIGNAL(started()), this, SLOT(sphera_slot()),   Qt::DirectConnection);
+    Guid.init(&sqlDriver, QString("pulsar_2"), &ID_Pulsar_2);
+        Pulsar_2                = new PulsarClass(IODriver::RTU, USB1, IODriver::COM600_8N1);
+        thread_pulsar_2         = new QThread;
+        QObject::connect(thread_pulsar_2, SIGNAL(started()), this, SLOT(pulsar_2_slot()),   Qt::DirectConnection);
+
+//    Guid.init(&sqlDriver, QString("owen_1"), &ID_Owen_1, GuidClass::GUID_TYPE_SUBTABLE);
+//        Owen_16D_1  = new OwenClass_16D(1, 16, "RS485");
+//        Owen_8A_11  = new OwenClass_8A(11, 8, "RS485");
+//        thread2     = new QThread;
+//        QObject::connect(thread2, SIGNAL(started()), this, SLOT(owen_slot()),    Qt::DirectConnection);
+
+//    Guid.init(&sqlDriver, QString("sphera24_1"), &ID_Sphera24_1, GuidClass::GUID_TYPE_SUBTABLE);
+//        Sphera24_1  = new Sphera_24CI(1, 50, "RS485");
+//        thread4 = new QThread;
+//        QObject::connect(thread4, SIGNAL(started()), this, SLOT(sphera_slot()),   Qt::DirectConnection);
 
     thread_send = new QThread;
     QObject::connect(thread_send, SIGNAL(started()), this, SLOT(send_slot()),    Qt::DirectConnection);
@@ -60,23 +70,45 @@ ThreadManager::ThreadManager(QObject *parent) :
 //    Guid.addQueue(QString("FD3F35BF-7881-495C-9E30-7C910352BE83"));
 //    Guid.addQueue(QString("b0ac1d32e60e42f9a4beb99100e4b98q"));
 //    Guid.addQueue(QString("1111"));
-    qDebug() << "ALL GUID : " << Guid.getAllGuid() << endl;
+//    qDebug() << "ALL GUID : " << Guid.getAllGuid() << endl;
 
-    thread1->start();
-    thread2->start();
-    thread3->start();
-    thread4->start();
+    thread_mercury_1->start();
+    thread_mercury_2->start();
+
+    thread_pulsar_1->start();
+    thread_pulsar_2->start();
+
+//    thread2->start();
+//    thread4->start();
     thread_send->start();
     thread_read->start();
     thread_queue->start();
 //    thread_cmdline->start();
 }
 
-void ThreadManager::mercury_thread()
+void ThreadManager::mercury_1_thread()
 {
     while (Guid.hasNext(ID_Mercury_1))
         sqlDriver.push(Mercury_1->read_data(&Guid, ID_Mercury_1));
 
+}
+void ThreadManager::mercury_2_thread()
+{
+    while (Guid.hasNext(ID_Mercury_2))
+        sqlDriver.push(Mercury_2->read_data(&Guid, ID_Mercury_2));
+
+}
+
+void ThreadManager::pulsar_1_thread()
+{
+    while (Guid.hasNext(ID_Pulsar_1))
+        sqlDriver.push(Pulsar_1->read_data(&Guid, ID_Pulsar_1));
+}
+
+void ThreadManager::pulsar_2_thread()
+{
+    while (Guid.hasNext(ID_Pulsar_2))
+        sqlDriver.push(Pulsar_2->read_data(&Guid, ID_Pulsar_2));
 }
 
 void ThreadManager::owen_thread()
@@ -92,11 +124,6 @@ void ThreadManager::sphera_thread()
 }
 
 
-void ThreadManager::pulsar_thread()
-{
-    while (Guid.hasNext(ID_Pulsar_1))
-        sqlDriver.push(Pulsar_1->read_data(&Guid, ID_Pulsar_1));
-}
 
 void ThreadManager::sendToServer()
 {
@@ -155,12 +182,16 @@ void ThreadManager::QueueReqFromServer_thread()
 {
     if (!Guid.isEmptyQueue(ID_Mercury_1))
         sqlDriver.push(Mercury_1->read_data(&Guid, ID_Mercury_1));
+    if (!Guid.isEmptyQueue(ID_Mercury_2))
+        sqlDriver.push(Mercury_2->read_data(&Guid, ID_Mercury_2));
 
     if (!Guid.isEmptyQueue(ID_Pulsar_1))
         sqlDriver.push(Pulsar_1->read_data(&Guid, ID_Pulsar_1));
+    if (!Guid.isEmptyQueue(ID_Pulsar_2))
+        sqlDriver.push(Pulsar_2->read_data(&Guid, ID_Pulsar_2));
 
-    if (!Guid.isEmptyQueue(ID_Sphera24_1))
-        sqlDriver.push(Sphera24_1->read_data(&Modbus_Sphera, &Guid, ID_Sphera24_1));
+//    if (!Guid.isEmptyQueue(ID_Sphera24_1))
+//        sqlDriver.push(Sphera24_1->read_data(&Modbus_Sphera, &Guid, ID_Sphera24_1));
 }
 
 void ThreadManager::cmdline_thread()
@@ -206,11 +237,11 @@ void ThreadManager::cmdline_thread()
 ThreadManager::~ThreadManager()
 {
     const int dead_delay_ms = 50;
-    thread1->quit();
-    if(thread1->wait(dead_delay_ms))
+    thread_mercury_1->quit();
+    if(thread_mercury_1->wait(dead_delay_ms))
     {
-        thread1->terminate();
-        thread1->wait();
+        thread_mercury_1->terminate();
+        thread_mercury_1->wait();
     }
     thread2->quit();
     if(thread2->wait(dead_delay_ms))
@@ -218,11 +249,11 @@ ThreadManager::~ThreadManager()
         thread2->terminate();
         thread2->wait();
     }
-    thread3->quit();
-    if(thread3->wait(dead_delay_ms))
+    thread_pulsar_1->quit();
+    if(thread_pulsar_1->wait(dead_delay_ms))
     {
-        thread3->terminate();
-        thread3->wait();
+        thread_pulsar_1->terminate();
+        thread_pulsar_1->wait();
     }
     thread4->quit();
     if(thread4->wait(dead_delay_ms))
@@ -243,9 +274,9 @@ ThreadManager::~ThreadManager()
         thread_read->wait();
     }
 
-//    delete thread1;
+//    delete thread_mercury_1;
 //    delete thread2;
-//    delete thread3;
+//    delete thread_pulsar_1;
 //    delete thread4;
 //    delete thread_send;
 //    delete thread_read;

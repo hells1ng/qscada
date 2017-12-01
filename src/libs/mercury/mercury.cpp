@@ -629,8 +629,11 @@ Data MercuryClass::read_data(GuidClass* guid, quint8 id)
 
     QStringList qsl1, qsl2;
     Data retData;
+    QString mercury_guid;
 
     address = guid->get_address(id).toInt();
+
+    mercury_guid = guid->get_guid(id);
 
 //    qDebug() << "Mercury address = " << address;
     int state = 0;
@@ -658,14 +661,16 @@ Data MercuryClass::read_data(GuidClass* guid, quint8 id)
 
                 char dat[10];
                 sprintf(dat, "%.3f", o.PRT[0].ap);//ncluding day tariff (KW)
-                qsl1.append(guid->get_guid(id));
+//                qsl1.append(guid->get_guid(id));
+                qsl1.append(mercury_guid);
                 qsl1.append(QString::fromStdString(dat));
                 qsl1.append(QString::number(DATA_VALUE_FLAG1));
 
                 retData.append(qsl1);
 
                 sprintf(dat, "%.3f", o.PRT[1].ap);//ncluding night tariff (KW)
-                qsl2.append(guid->get_guid(id));
+//                qsl2.append(guid->get_guid(id));
+                qsl2.append(mercury_guid);
                 qsl2.append(QString::fromStdString(dat));
                 qsl2.append(QString::number(DATA_VALUE_FLAG2));
 
@@ -755,7 +760,7 @@ Data MercuryClass::read_data(GuidClass* guid, quint8 id)
 //        sprintf(str_data[24], "%.2f", o.PT.ap);//Today consumed (KW)
 */
 
-    qDebug() << "Mercury with Address = " << address
+    qDebug() << "Mercury with Address = " << address << "and Guid = " << mercury_guid
              << " Values : " << retData << endl;
 
     return retData;

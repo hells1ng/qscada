@@ -244,14 +244,17 @@ Data PulsarClass::read_data(GuidClass* guid, quint8 id)
     QStringList qsl;
     bool ok;
     QString address_str = guid->get_address(id);
+    QString pulsar_guid;
 
     address = address_str.toInt(&ok, 16);
+    pulsar_guid = guid->get_guid(id);
+
     if (!ok)
         qFatal("Cannot convert Pulsar address from string to BCD");
 
     if (getP()) {
 
-        qsl.append(guid->get_guid(id));
+        qsl.append(pulsar_guid);
 
         qsl.append(QString::number(energy));
         qsl.append(QString::number(DATA_VALUE_FLAG0));
@@ -260,10 +263,10 @@ Data PulsarClass::read_data(GuidClass* guid, quint8 id)
 
         qsl.clear();
 
-        qDebug() << "Pulsar with Address = " << address_str
+        qDebug() << "Pulsar with Address = " << address_str << "and Guid = " << pulsar_guid
                  << " Values : " << retData << endl;
     } else
-        qDebug() << "Pulsar with Address = " << address_str
+        qDebug() << "Pulsar with Address = " << address_str << "and Guid = " << pulsar_guid
                  << " Cannot read values "   << endl;
 
     return retData;
