@@ -113,7 +113,7 @@ void IODriver::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
 }
 
 const QMetaObject IODriver::staticMetaObject = {
-    { &QThread::staticMetaObject, qt_meta_stringdata_IODriver.data,
+    { &QObject::staticMetaObject, qt_meta_stringdata_IODriver.data,
       qt_meta_data_IODriver,  qt_static_metacall, nullptr, nullptr}
 };
 
@@ -128,12 +128,12 @@ void *IODriver::qt_metacast(const char *_clname)
     if (!_clname) return nullptr;
     if (!strcmp(_clname, qt_meta_stringdata_IODriver.stringdata0))
         return static_cast<void*>(const_cast< IODriver*>(this));
-    return QThread::qt_metacast(_clname);
+    return QObject::qt_metacast(_clname);
 }
 
 int IODriver::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
-    _id = QThread::qt_metacall(_c, _id, _a);
+    _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {

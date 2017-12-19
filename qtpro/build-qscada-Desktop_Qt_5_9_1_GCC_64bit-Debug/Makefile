@@ -1279,6 +1279,7 @@ moc_pulsarclass.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/qxmlstream.h \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/qtcoreversion.h \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QDebug \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QMutex \
 		../../src/libs/iodriver/iodriver.h \
 		../../../Qt/5.9.1/gcc_64/include/QtNetwork/QTcpSocket \
 		../../../Qt/5.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
@@ -1942,8 +1943,7 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		../../src/libs/json/json.h \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QVariant \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QString \
-		../../src/main.h \
-		../../../Qt/5.9.1/gcc_64/include/QtCore/QTextStream
+		../../src/main.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../src/main.cpp
 
 https.o: ../../src/libs/https/https.cpp ../../src/libs/https/https.h \
@@ -3082,7 +3082,8 @@ threadmanager.o: ../../src/libs/threadmanager/threadmanager.cpp ../../src/libs/t
 		../../src/libs/https/https.h \
 		../../src/libs/json/json.h \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QVariant \
-		../../../Qt/5.9.1/gcc_64/include/QtCore/QString
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QString \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QTextStream
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o threadmanager.o ../../src/libs/threadmanager/threadmanager.cpp
 
 json.o: ../../src/libs/json/json.cpp ../../../Qt/5.9.1/gcc_64/include/QtCore/QDateTime \
@@ -3338,6 +3339,7 @@ pulsarclass.o: ../../src/libs/pulsar/pulsarclass.cpp ../../src/libs/pulsar/pulsa
 		../../../Qt/5.9.1/gcc_64/include/QtCore/qxmlstream.h \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/qtcoreversion.h \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QDebug \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QMutex \
 		../../src/libs/iodriver/iodriver.h \
 		../../../Qt/5.9.1/gcc_64/include/QtNetwork/QTcpSocket \
 		../../../Qt/5.9.1/gcc_64/include/QtNetwork/qtcpsocket.h \
@@ -3781,12 +3783,12 @@ moc_iodriver.o: moc_iodriver.cpp
 ####### Install
 
 install_target: first FORCE
-	@test -d $(INSTALL_ROOT)/home/pi || mkdir -p $(INSTALL_ROOT)/home/pi
-	-$(QINSTALL_PROGRAM) $(QMAKE_TARGET) $(INSTALL_ROOT)/home/pi/$(QMAKE_TARGET)
+	@test -d $(INSTALL_ROOT)/home/pi/rw || mkdir -p $(INSTALL_ROOT)/home/pi/rw
+	-$(QINSTALL_PROGRAM) $(QMAKE_TARGET) $(INSTALL_ROOT)/home/pi/rw/$(QMAKE_TARGET)
 
 uninstall_target: FORCE
-	-$(DEL_FILE) $(INSTALL_ROOT)/home/pi/$(QMAKE_TARGET)
-	-$(DEL_DIR) $(INSTALL_ROOT)/home/pi/ 
+	-$(DEL_FILE) $(INSTALL_ROOT)/home/pi/rw/$(QMAKE_TARGET)
+	-$(DEL_DIR) $(INSTALL_ROOT)/home/pi/rw/ 
 
 
 install: install_target  FORCE

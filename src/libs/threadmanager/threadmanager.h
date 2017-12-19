@@ -16,7 +16,7 @@ public:
     explicit ThreadManager(QObject *parent = 0);
     ~ThreadManager();
     enum {
-      DEFAULT_SENSOR_TIMEOUT = 60 * 1000 // 1 min
+      DEFAULT_SENSOR_TIMEOUT = 60 * 1000 // 5 min
     };
     ModbusClass     Modbus;
     ModbusClass     Modbus_Sphera;

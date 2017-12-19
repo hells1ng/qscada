@@ -211,14 +211,16 @@ bool PulsarClass::getP()
 {
     bool flag = false;
     Cmd = READ_CHANNEL;
-//    quint32 mask = ((CH1|CH7)) | ((CH9|CH12) << 8) ;
 
+//    quint32 mask = ((CH1|CH7)) | ((CH9|CH12) << 8) ;
     quint32 mask = CH7;
 
     create_request(mask);
 
     // clear flag
     receivedData = false;
+
+    Response.clear();
 
     emit write(Request);
 
@@ -248,6 +250,7 @@ Data PulsarClass::read_data(GuidClass* guid, quint8 id)
 
     address = address_str.toInt(&ok, 16);
     pulsar_guid = guid->get_guid(id);
+//    qDebug() << "Pulsar aktiv!" ;
 
     if (!ok)
         qFatal("Cannot convert Pulsar address from string to BCD");

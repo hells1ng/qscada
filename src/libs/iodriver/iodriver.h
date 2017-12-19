@@ -7,11 +7,11 @@
 #include <QtNetwork/QUdpSocket>
 #include <QtSerialPort/QSerialPort>
 
-class IODriver : public QObject/*QThread*/
+class IODriver : public /*QObject*/QThread
 {
     Q_OBJECT
 public:
-    explicit IODriver(QObject *parent = nullptr);
+    explicit IODriver(/*QObject*/QThread *parent = nullptr);
     enum {
         RTU,
         UDP,//not support yet
@@ -41,13 +41,14 @@ signals:
     void timeout();
 public slots:
     void write(unsigned char * cmd, int cmdsize);
-    void write(QByteArray req);
+    void write(QByteArray Request);
 
 private:
     QMutex* mutex;
     bool debug;
 
     void write_(QByteArray Request);
+    void write_(QByteArray Request, QByteArray * responseData);
 };
 
 #endif // IODRIVER_H

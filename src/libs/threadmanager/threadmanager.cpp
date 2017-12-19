@@ -24,23 +24,26 @@ ThreadManager::ThreadManager(QObject *parent) :
 
 
     Guid.init(&sqlDriver, QString("mercury_1"), &ID_Mercury_1);
-        //Mercury_1   = new MercuryClass(IODriver::RTU, USB0, IODriver::Com9600_8N1);
-        Mercury_1               = new MercuryClass(IODriver::TCP, "192.168.88.100", 4007);
+        Mercury_1               = new MercuryClass(IODriver::RTU, USB1, IODriver::Com9600_8N1);
+//        Mercury_1               = new MercuryClass(IODriver::TCP, "192.168.88.100", 4007);
         thread_mercury_1        = new QThread;
         QObject::connect(thread_mercury_1, SIGNAL(started()), this, SLOT(mercury_1_slot()), Qt::DirectConnection);
 
     Guid.init(&sqlDriver, QString("mercury_2"), &ID_Mercury_2);
-        Mercury_2               = new MercuryClass(IODriver::TCP, "192.168.88.100", 4007);
+//        Mercury_2               = new MercuryClass(IODriver::RTU, USB0, IODriver::Com9600_8N1);
+        Mercury_2               = new MercuryClass(IODriver::TCP, "192.168.88.100", 4000);
         thread_mercury_2        = new QThread;
         QObject::connect(thread_mercury_2, SIGNAL(started()), this, SLOT(mercury_2_slot()), Qt::DirectConnection);
 
     Guid.init(&sqlDriver, QString("pulsar_1"), &ID_Pulsar_1);
-        Pulsar_1                = new PulsarClass(IODriver::RTU, USB1, IODriver::COM600_8N1);
+//        Pulsar_1                = new PulsarClass(IODriver::TCP, "192.168.88.100", 4006);
+        Pulsar_1                = new PulsarClass(IODriver::RTU, USB0, IODriver::COM600_8N1);
         thread_pulsar_1         = new QThread;
         QObject::connect(thread_pulsar_1, SIGNAL(started()), this, SLOT(pulsar_1_slot()),   Qt::DirectConnection);
 
     Guid.init(&sqlDriver, QString("pulsar_2"), &ID_Pulsar_2);
-        Pulsar_2                = new PulsarClass(IODriver::RTU, USB1, IODriver::COM600_8N1);
+        Pulsar_2                = new PulsarClass(IODriver::TCP, "192.168.88.100", 4001);
+//        Pulsar_2                = new PulsarClass(IODriver::RTU, USB0, IODriver::COM600_8N1);
         thread_pulsar_2         = new QThread;
         QObject::connect(thread_pulsar_2, SIGNAL(started()), this, SLOT(pulsar_2_slot()),   Qt::DirectConnection);
 
@@ -73,17 +76,19 @@ ThreadManager::ThreadManager(QObject *parent) :
 //    qDebug() << "ALL GUID : " << Guid.getAllGuid() << endl;
 
     thread_mercury_1->start();
-    thread_mercury_2->start();
+//    thread_mercury_2->start();
 
     thread_pulsar_1->start();
-    thread_pulsar_2->start();
+//    thread_pulsar_2->start();
 
 //    thread2->start();
 //    thread4->start();
-    thread_send->start();
-    thread_read->start();
+
+//    thread_send->start();
+//    thread_read->start();
     thread_queue->start();
-//    thread_cmdline->start();
+
+    thread_cmdline->start();
 }
 
 void ThreadManager::mercury_1_thread()
@@ -209,27 +214,29 @@ void ThreadManager::cmdline_thread()
             out << "Exit from qScada ......."<< endl;
             emit finish();
         }
-        else if (msg == QString("1")) //mercury
-            Guid.addQueue("1e146e46623044b1972078ba22ea6579");
+//        else if (msg == QString("1")) //mercury
+//            Guid.addQueue("1e146e46623044b1972078ba22ea6579");
 
-        else if (msg == QString("2")) //sphera
-            Guid.addQueue(QString("b0ac1d32e60e42f9a4beb99100e4b98q"));
+//        else if (msg == QString("2")) //sphera
+//            Guid.addQueue(QString("b0ac1d32e60e42f9a4beb99100e4b98q"));
 
-        else if (msg == QString("3")) //pulsar
-            Guid.addQueue(QString("FD3F35BF-7881-495C-9E30-7C910352BE83"));
+//        else if (msg == QString("3")) //pulsar
+//            Guid.addQueue(QString("FD3F35BF-7881-495C-9E30-7C910352BE83"));
 
-        else if (msg == QString("4")) //sphera
-        {
-            QStringList qsl;
-            qsl << "b0ac1d32e60e42f9a4beb99100e4b98a" << "b0ac1d32e60e42f9a4beb99100e4b98q" << "b0ac1d32e60e42f9a4beb99100e4b98q";
-            Guid.addQueue(qsl);
-        }
-        else if (msg == QString("5")) //mercury
-        {
-            QStringList qsl;
-            qsl << "1e146e46623044b1972078ba22ea6579" << "1e146e46623044b1972078ba22ea6579";
-            Guid.addQueue(qsl);
-        }
+//        else if (msg == QString("4")) //sphera
+//        {
+//            QStringList qsl;
+//            qsl << "b0ac1d32e60e42f9a4beb99100e4b98a" << "b0ac1d32e60e42f9a4beb99100e4b98q" << "b0ac1d32e60e42f9a4beb99100e4b98q";
+//            Guid.addQueue(qsl);
+//        }
+//        else if (msg == QString("5")) //mercury
+//        {
+//            QStringList qsl;
+//            qsl << "1e146e46623044b1972078ba22ea6579" << "1e146e46623044b1972078ba22ea6579";
+//            Guid.addQueue(qsl);
+//        }
+        else
+            Guid.addQueue(msg);
 
     }
 }

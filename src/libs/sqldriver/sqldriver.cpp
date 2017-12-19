@@ -21,7 +21,8 @@ SqlDriver::SqlDriver(QObject *parent) :
 //        db = QSqlDatabase::addDatabase("QMYSQL");
 //        db.setDatabaseName("Safe");
         db = QSqlDatabase::addDatabase("QSQLITE");
-        db.setDatabaseName("/home/pi/rw/qscada_db");
+//        db.setDatabaseName("/home/pi/rw/qscada_db");
+        db.setDatabaseName("qscada_db");
     }
 //    db.setHostName("localhost");
 //    db.setUserName("root");

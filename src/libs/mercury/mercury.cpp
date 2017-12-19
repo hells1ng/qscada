@@ -634,6 +634,7 @@ Data MercuryClass::read_data(GuidClass* guid, quint8 id)
     address = guid->get_address(id).toInt();
 
     mercury_guid = guid->get_guid(id);
+//    qDebug() << "Mercury aktiv!" ;
 
 //    qDebug() << "Mercury address = " << address;
     int state = 0;
@@ -657,7 +658,7 @@ Data MercuryClass::read_data(GuidClass* guid, quint8 id)
         }
         else
         {
-            if ((o.PRT[0].ap > 0.00) && (o.PRT[1].ap > 0.00)) {
+            if ((o.PRT[0].ap >= 0.00) && (o.PRT[1].ap >= 0.00)) {
 
                 char dat[10];
                 sprintf(dat, "%.3f", o.PRT[0].ap);//ncluding day tariff (KW)

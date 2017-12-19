@@ -40,6 +40,7 @@ void GuidClass::next_iterators(quint8 vector_index)
 bool GuidClass::hasNext(quint8 vector_index)
 {
     bool ret = false;
+//    QThread::msleep(2500);
     mutex->lock();
 
     if (GuidVector.at(vector_index).main_it->hasNext())

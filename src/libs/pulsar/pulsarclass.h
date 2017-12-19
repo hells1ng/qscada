@@ -56,7 +56,7 @@ public:
     enum
     {
         ID       = 0x55,
-        TIMEOUT  = 700
+        TIMEOUT  = 1500
     };
 
     IODriver ioDriver;

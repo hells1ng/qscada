@@ -16,6 +16,7 @@ IODriver::IODriver(quint8 type, QString server_com, quint16 port_props, quint16 
 
     if (Type == RTU) {
         com = new QSerialPort();
+//        com->moveToThread(this);
 
         switch (port_props) {
 
@@ -49,9 +50,10 @@ IODriver::~IODriver()
 
 void IODriver::write_(QByteArray Request)
 {
+    QByteArray responseData;
+
     if (debug)
         qDebug() << "Request = " << Request.toHex();
-    QByteArray responseData;
 
     mutex->lock();
 
@@ -59,7 +61,7 @@ void IODriver::write_(QByteArray Request)
     {
         tcp->connectToHost(ServerCom, PortProps);
 
-        if (!tcp->waitForConnected(Timeout + TCP_ADD_TIMEOUT*5))
+        if (!tcp->waitForConnected(Timeout + TCP_ADD_TIMEOUT * 5))
         {
             emit timeout();
             qDebug() << "Can't connect to " << ServerCom << " error code " << tcp->error();
@@ -141,7 +143,11 @@ void IODriver::write(unsigned char * cmd, int cmdsize)
     Request.clear();
 }
 
-void IODriver::write(QByteArray req)
+void IODriver::write(QByteArray Request)
 {
-    write_(req);
+//    this->start();
+    write_(Request);
+    Request.clear();
 }
+
+

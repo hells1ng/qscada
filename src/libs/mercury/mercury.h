@@ -227,7 +227,7 @@ public:
     IODriver ioDriver;
     enum
     {
-        TIMEOUT  = 500
+        TIMEOUT  = 2000
     };
 
     MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout = TIMEOUT);
