@@ -179,7 +179,8 @@ int MercuryClass::checkChannel(int address)
 //    int len = 0;
 //    len = write((byte*)&testCmd, sizeof(testCmd), buf);
 //    qDebug() << "Mercury write checkChannel";
-    emit write((byte*)&testCmd, sizeof(testCmd));
+//    emit write((byte*)&testCmd, sizeof(testCmd));
+    ioDriver.write((byte*)&testCmd, sizeof(testCmd));
     while (!receivedData) {
     };
     receivedData = false;
@@ -207,7 +208,8 @@ int MercuryClass::initConnection(int address)
 //    byte buf[BSZ];
 //    int len = 0;
 //    len = can->write((byte*)&initCmd, sizeof(initCmd), buf);
-    emit write((byte*)&initCmd, sizeof(initCmd));
+//    emit write((byte*)&initCmd, sizeof(initCmd));
+    ioDriver.write((byte*)&initCmd, sizeof(initCmd));
     while (!receivedData) {
     };
     receivedData = false;
@@ -227,7 +229,8 @@ int MercuryClass::closeConnection(int address)
 //    byte buf[BSZ];
 //    int len = 0;
 //    len = can->write((byte*)&byeCmd, sizeof(byeCmd), buf);
-    emit write((byte*)&byeCmd, sizeof(byeCmd));
+//    emit write((byte*)&byeCmd, sizeof(byeCmd));
+    ioDriver.write((byte*)&byeCmd, sizeof(byeCmd));
     while (!receivedData) {
     };
     receivedData = false;
@@ -258,7 +261,8 @@ int MercuryClass::getW(int address, PWV* W, int periodId, int month, int tariffN
 //    byte buf[BSZ];
 //    int len = 0;
 //    len = can->write((byte*)&getWCmd, sizeof(getWCmd), buf);
-    emit write((byte*)&getWCmd, sizeof(getWCmd));
+//    emit write((byte*)&getWCmd, sizeof(getWCmd));
+    ioDriver.write((byte*)&getWCmd, sizeof(getWCmd));
     while (!receivedData) {
     };
     receivedData = false;
@@ -595,7 +599,7 @@ MercuryClass::MercuryClass(quint8 Type, QString server_com, quint16 port_props, 
 {
 //    mutex = new QMutex();
 
-    connect(this, SIGNAL(write(unsigned char *, int )), &ioDriver, SLOT(write(unsigned char *, int )));
+//    connect(this, SIGNAL(write(unsigned char *, int )), &ioDriver, SLOT(write(unsigned char *, int )));
     connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
     connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
 

@@ -861,6 +861,7 @@ moc_mercury.cpp: ../../src/defines.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/QSerialPort \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialport.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QWaitCondition \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QMutex \
 		../../src/libs/mercury/mercury.h \
 		moc_predefs.h \
@@ -1084,6 +1085,7 @@ moc_threadmanager.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/QSerialPort \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialport.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QWaitCondition \
 		../../src/libs/pulsar/pulsarclass.h \
 		../../src/libs/threadmanager/threadmanager.h \
 		../../src/libs/https/https.h \
@@ -1292,6 +1294,7 @@ moc_pulsarclass.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/QSerialPort \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialport.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QWaitCondition \
 		../../src/defines.h \
 		../../src/libs/id/id.h \
 		../../src/libs/sqldriver/sqldriver.h \
@@ -1703,6 +1706,7 @@ moc_iodriver.cpp: ../../../Qt/5.9.1/gcc_64/include/QtCore/QtCore \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/QSerialPort \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialport.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QWaitCondition \
 		../../src/libs/iodriver/iodriver.h \
 		moc_predefs.h \
 		../../../Qt/5.9.1/gcc_64/bin/moc
@@ -1936,6 +1940,7 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/QSerialPort \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialport.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QWaitCondition \
 		../../src/libs/pulsar/pulsarclass.h \
 		../../src/libs/threadmanager/threadmanager.h \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QTimer \
@@ -2552,6 +2557,7 @@ mercury.o: ../../src/libs/mercury/mercury.cpp ../../src/libs/mercury/mercury.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/QSerialPort \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialport.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QWaitCondition \
 		../../../Qt/5.9.1/gcc_64/include/QtCore/QMutex
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mercury.o ../../src/libs/mercury/mercury.cpp
 
@@ -3078,6 +3084,7 @@ threadmanager.o: ../../src/libs/threadmanager/threadmanager.cpp ../../src/libs/t
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/QSerialPort \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialport.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QWaitCondition \
 		../../src/libs/pulsar/pulsarclass.h \
 		../../src/libs/https/https.h \
 		../../src/libs/json/json.h \
@@ -3352,6 +3359,7 @@ pulsarclass.o: ../../src/libs/pulsar/pulsarclass.cpp ../../src/libs/pulsar/pulsa
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/QSerialPort \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialport.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QWaitCondition \
 		../../src/defines.h \
 		../../src/libs/id/id.h \
 		../../src/libs/sqldriver/sqldriver.h \
@@ -3762,7 +3770,8 @@ iodriver.o: ../../src/libs/iodriver/iodriver.cpp ../../src/libs/iodriver/iodrive
 		../../../Qt/5.9.1/gcc_64/include/QtNetwork/qhostaddress.h \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/QSerialPort \
 		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialport.h \
-		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h
+		../../../Qt/5.9.1/gcc_64/include/QtSerialPort/qserialportglobal.h \
+		../../../Qt/5.9.1/gcc_64/include/QtCore/QWaitCondition
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o iodriver.o ../../src/libs/iodriver/iodriver.cpp
 
 moc_mercury.o: moc_mercury.cpp 

@@ -66,7 +66,7 @@ PulsarClass::PulsarClass(quint8 Type, QString server_com, quint16 port_props, qu
 {
 //    mutex = new QMutex();
 
-    connect(this, SIGNAL(write(QByteArray )), &ioDriver, SLOT(write(QByteArray)));
+//    connect(this, SIGNAL(write(QByteArray )), &ioDriver, SLOT(write(QByteArray)));
     connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
     connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
 
@@ -222,10 +222,12 @@ bool PulsarClass::getP()
 
     Response.clear();
 
-    emit write(Request);
+//    emit write(Request);
+    ioDriver.write(Request);
 
     // wait flag in slots: timeout() or received()
     while (!receivedData) {};
+
 
     if (check_crc()) {
         energy = convert_data();

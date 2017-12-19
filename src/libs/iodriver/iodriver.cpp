@@ -16,7 +16,7 @@ IODriver::IODriver(quint8 type, QString server_com, quint16 port_props, quint16 
 
     if (Type == RTU) {
         com = new QSerialPort();
-//        com->moveToThread(this);
+        com->moveToThread(this);
 
         switch (port_props) {
 
@@ -39,6 +39,7 @@ IODriver::IODriver(quint8 type, QString server_com, quint16 port_props, quint16 
     }
     else if (Type == TCP){
         tcp = new QTcpSocket();
+        tcp->moveToThread(this);
     }
     else qFatal("Wrong Type for IODriver");
 }
@@ -48,14 +49,29 @@ IODriver::~IODriver()
     delete mutex;
 }
 
-void IODriver::write_(QByteArray Request)
+
+void IODriver::write(unsigned char * cmd, int cmdsize)
+{
+    QMutexLocker locker(mutex);
+    Request = QByteArray((char*)cmd, cmdsize);
+    while (isRunning());
+    start();
+}
+
+void IODriver::write(QByteArray request)
+{
+    QMutexLocker locker(mutex);
+    Request.append(request);
+    while (isRunning());
+        start();
+}
+
+void IODriver::run()
 {
     QByteArray responseData;
 
     if (debug)
         qDebug() << "Request = " << Request.toHex();
-
-    mutex->lock();
 
     if (Type == TCP)
     {
@@ -69,10 +85,10 @@ void IODriver::write_(QByteArray Request)
         else
         {
             tcp->write(Request);
+            Request.clear();
 
             if (tcp->waitForBytesWritten(Timeout + TCP_ADD_TIMEOUT)) {
 
-                //! [8] //! [10]
                 // read response
                 if (tcp->waitForReadyRead(Timeout + TCP_ADD_TIMEOUT))//Если получен ответ в течение зад.времени
                 {
@@ -105,6 +121,7 @@ void IODriver::write_(QByteArray Request)
         else //if opened
         {
             com->write(Request);
+            Request.clear();
 
             if (com->waitForBytesWritten(Timeout)) {
                 // read response
@@ -132,22 +149,6 @@ void IODriver::write_(QByteArray Request)
                 com->close();
         }
     }
-
-    mutex->unlock();
+    quit();
 }
-
-void IODriver::write(unsigned char * cmd, int cmdsize)
-{
-    Request = QByteArray((char*)cmd, cmdsize);
-    write_(Request);
-    Request.clear();
-}
-
-void IODriver::write(QByteArray Request)
-{
-//    this->start();
-    write_(Request);
-    Request.clear();
-}
-
 

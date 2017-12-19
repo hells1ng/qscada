@@ -6,6 +6,7 @@
 #include <QtNetwork/QTcpSocket>
 #include <QtNetwork/QUdpSocket>
 #include <QtSerialPort/QSerialPort>
+#include <QWaitCondition>
 
 class IODriver : public /*QObject*/QThread
 {
@@ -34,21 +35,19 @@ public:
 
     IODriver(quint8 type, QString server_com, quint16 port_props, quint16 timeout = TIMEOUT);
     ~IODriver();
+    void run() Q_DECL_OVERRIDE;
+    void write(unsigned char * cmd, int cmdsize);
+    void write(QByteArray request);
 
-//    int write(unsigned char * cmd, int cmdsize, unsigned char * buf);
 signals:
     void response(QByteArray buf);
     void timeout();
-public slots:
-    void write(unsigned char * cmd, int cmdsize);
-    void write(QByteArray Request);
 
 private:
     QMutex* mutex;
     bool debug;
+    QWaitCondition cond;
 
-    void write_(QByteArray Request);
-    void write_(QByteArray Request, QByteArray * responseData);
 };
 
 #endif // IODRIVER_H
