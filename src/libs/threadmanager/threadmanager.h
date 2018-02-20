@@ -16,16 +16,28 @@ public:
     explicit ThreadManager(QObject *parent = 0);
     ~ThreadManager();
     enum {
-      DEFAULT_SENSOR_TIMEOUT = 60 * 1000 // 5 min
+      DEFAULT_SENSOR_TIMEOUT = 3600 * 1000 // 60 min
     };
     ModbusClass     Modbus;
     ModbusClass     Modbus_Sphera;
 
-    GuidClass       Guid;
+    GuidClass*       Guid;
+    GuidClass*       Guid_M1;
+    GuidClass*       Guid_M2;
+    GuidClass*       Guid_M3;
+    GuidClass*       Guid_M4;
+    GuidClass*       Guid_P1;
+    GuidClass*       Guid_P2;
+    GuidClass*       Guid_P3;
+    GuidClass*       Guid_P4;
     quint8          ID_Mercury_1,
                     ID_Mercury_2,
                     ID_Pulsar_1,
                     ID_Pulsar_2,
+                    ID_Mercury_3,
+                    ID_Mercury_4,
+                    ID_Pulsar_3,
+                    ID_Pulsar_4,
                     ID_Owen_1,
                     ID_Sphera24_1;
 
@@ -40,15 +52,25 @@ public:
     //------------------Mercury MODULES---------------------------------------//
     MercuryClass*    Mercury_1;
     MercuryClass*    Mercury_2;
+    MercuryClass*    Mercury_3;
+    MercuryClass*    Mercury_4;
     //------------------Pulsar---------------------------------------//
     PulsarClass*     Pulsar_1;
     PulsarClass*     Pulsar_2;
+    PulsarClass*     Pulsar_3;
+    PulsarClass*     Pulsar_4;
     //------------------Sphera MODULES-------------------------------//
     Sphera_24CI*     Sphera24_1;
     //------------------SQL---------------------------//
     SqlDriver       sqlDriver;
+    SqlDriver       sqlDriverTEST, sqlDriverTEST3;
     //------------------HTTPS-------------------------//
     HttpsDriver     httpsDriver;
+    //------------TIMERS-----------//
+    QTimer timer1;
+    QTimer timer2;
+    QTimer timer3;
+    QTimer timer4;
 
 private:
     QThread *thread_mercury_1;
@@ -62,6 +84,21 @@ private:
 
     QThread *thread_pulsar_2;
     void pulsar_2_thread();
+
+    QThread *thread_mercury_3;
+    void mercury_3_thread();
+
+    QThread *thread_mercury_4;
+    void mercury_4_thread();
+
+    QThread *thread_pulsar_3;
+    void pulsar_3_thread();
+
+    QThread *thread_pulsar_4;
+    void pulsar_4_thread();
+
+    QThread *thread_read_all_sensors;
+    void read_all_sensors();
 
     QThread *thread2;
     QThread *thread4;
@@ -79,8 +116,6 @@ private:
     void sphera_thread();
     void QueueReqFromServer_thread();
     void cmdline_thread();
-
-
 
     qint64 _sensorTimeout;
     QMutex*  _sensorTimeout_mutex;
@@ -103,6 +138,23 @@ public slots:
         doEvery(std::bind(&ThreadManager::pulsar_2_thread, this)/*, 5000*/);
     }
 
+    void mercury_3_slot() {
+        doEvery(std::bind(&ThreadManager::mercury_3_thread, this)/*, 5000*/);
+    }
+    void mercury_4_slot() {
+        doEvery(std::bind(&ThreadManager::mercury_4_thread, this)/*, 5000*/);
+    }
+
+    void pulsar_3_slot() {
+        doEvery(std::bind(&ThreadManager::pulsar_3_thread, this)/*, 5000*/);
+    }
+    void pulsar_4_slot() {
+        doEvery(std::bind(&ThreadManager::pulsar_4_thread, this)/*, 5000*/);
+    }
+    void read_all_sensors_slot() {
+        doEvery(std::bind(&ThreadManager::read_all_sensors, this)/*, 5000*/);
+    }
+
     void owen_slot() {
         doEvery(std::bind(&ThreadManager::owen_thread, this), 30000);
     }
@@ -122,6 +174,9 @@ public slots:
     void cmdline_slot() {
             doEvery(std::bind(&ThreadManager::cmdline_thread, this), 1000);
     }
+
+    void slot1();
+    void slot2();
 };
 
 #endif // THREADMANAGER_H_INCLUDED

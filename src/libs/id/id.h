@@ -47,7 +47,7 @@ public:
     GuidClass();
     ~GuidClass ();
 
-    void init(SqlDriver *sqlDriver, const QString& table, quint8 * id, quint8 type = GUID_TYPE_ONE_TABLE);
+    int init(SqlDriver *sqlDriver, const QString& table, quint8 * id, quint8 type = GUID_TYPE_ONE_TABLE);
     bool hasNext(quint8 vector_index);
     QString get_address(quint8 vector_index);
     QString get_guid(quint8 vector_index);
@@ -64,7 +64,10 @@ private:
     QVector<QQueue<GuidStructDevice>>   GuidQueueVector;
     QVector<bool>                       GuidActiveStateVector;
     QStringList                         AllGuid;
+//    QVector<QVectorIterator<QStringList>> MainItVector;
+//    QVector<QVectorIterator<QMap<QString, QString>>> SubItVector;
     QMutex*                             mutex;
+    QMutex*                             mutex2;
     QMutex*                             mutex_queue;
 
 

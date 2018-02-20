@@ -180,11 +180,14 @@ int MercuryClass::checkChannel(int address)
 //    len = write((byte*)&testCmd, sizeof(testCmd), buf);
 //    qDebug() << "Mercury write checkChannel";
 //    emit write((byte*)&testCmd, sizeof(testCmd));
-    ioDriver.write((byte*)&testCmd, sizeof(testCmd));
-    while (!receivedData) {
-    };
-    receivedData = false;
 
+//    ioDriver.write((byte*)&testCmd, sizeof(testCmd));
+//    while (!receivedData) {
+//    };
+//    receivedData = false;
+
+    QByteArray response = ioDriver.writes((byte*)&testCmd, sizeof(testCmd));
+    received(response);
     if (len == 0)
         return CHECK_CHANNEL_TIME_OUT;
 
@@ -209,11 +212,14 @@ int MercuryClass::initConnection(int address)
 //    int len = 0;
 //    len = can->write((byte*)&initCmd, sizeof(initCmd), buf);
 //    emit write((byte*)&initCmd, sizeof(initCmd));
-    ioDriver.write((byte*)&initCmd, sizeof(initCmd));
-    while (!receivedData) {
-    };
-    receivedData = false;
 
+//    ioDriver.write((byte*)&initCmd, sizeof(initCmd));
+//    while (!receivedData) {
+//    };
+//    receivedData = false;
+
+    QByteArray response = ioDriver.writes((byte*)&initCmd, sizeof(initCmd));
+    received(response);
     if (len == 0)
         return CHECK_CHANNEL_TIME_OUT;
 
@@ -230,11 +236,14 @@ int MercuryClass::closeConnection(int address)
 //    int len = 0;
 //    len = can->write((byte*)&byeCmd, sizeof(byeCmd), buf);
 //    emit write((byte*)&byeCmd, sizeof(byeCmd));
-    ioDriver.write((byte*)&byeCmd, sizeof(byeCmd));
-    while (!receivedData) {
-    };
-    receivedData = false;
 
+//    ioDriver.write((byte*)&byeCmd, sizeof(byeCmd));
+//    while (!receivedData) {
+//    };
+//    receivedData = false;
+
+    QByteArray response = ioDriver.writes((byte*)&byeCmd, sizeof(byeCmd));
+    received(response);
     if (len == 0)
         return CHECK_CHANNEL_TIME_OUT;
 
@@ -262,11 +271,14 @@ int MercuryClass::getW(int address, PWV* W, int periodId, int month, int tariffN
 //    int len = 0;
 //    len = can->write((byte*)&getWCmd, sizeof(getWCmd), buf);
 //    emit write((byte*)&getWCmd, sizeof(getWCmd));
-    ioDriver.write((byte*)&getWCmd, sizeof(getWCmd));
-    while (!receivedData) {
-    };
-    receivedData = false;
 
+//    ioDriver.write((byte*)&getWCmd, sizeof(getWCmd));
+//    while (!receivedData) {
+//    };
+//    receivedData = false;
+
+    QByteArray response = ioDriver.writes((byte*)&getWCmd, sizeof(getWCmd));
+    received(response);
     if (len == 0)
         return CHECK_CHANNEL_TIME_OUT;
 
@@ -597,17 +609,23 @@ void MercuryClass::printOutput(int format, OutputBlock o, int header)
 MercuryClass::MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout/* = 1000*/) :
     ioDriver(Type, server_com, port_props, timeout)
 {
-//    mutex = new QMutex();
+    mutex = new QMutex();
 
 //    connect(this, SIGNAL(write(unsigned char *, int )), &ioDriver, SLOT(write(unsigned char *, int )));
     connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
     connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
+
+//    ioDriver.moveToThread(this);
 
     header = 0;
     bzero(&o, sizeof(o));
     format = OF_HUMAN;
 
     receivedData = false;
+}
+MercuryClass::~MercuryClass()
+{
+    delete mutex;
 }
 
 void MercuryClass::received(QByteArray buf_)
@@ -629,7 +647,7 @@ void MercuryClass::timeout()
 
 Data MercuryClass::read_data(GuidClass* guid, quint8 id)
 {
-    QMutexLocker locker(&mutex);
+    QMutexLocker locker(mutex);
 
     QStringList qsl1, qsl2;
     Data retData;

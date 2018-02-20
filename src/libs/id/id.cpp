@@ -29,19 +29,51 @@ void GuidClass::next_iterators(quint8 vector_index)
 
         GuidStructDevice local_guid = GuidQueueVector[vector_index].dequeue();
 
-        GuidVector[vector_index].current_guid = local_guid.main_guid;
-        GuidVector[vector_index].current_subguid = local_guid.sub_guid;
+        GuidVector[vector_index].current_guid       = local_guid.main_guid;
+        GuidVector[vector_index].current_subguid    = local_guid.sub_guid;
 
         mutex_queue->unlock();
 
     }
+
+//    if (GuidQueueVector.at(vector_index).isEmpty())
+//    {
+////        qDebug() << "Queue is Empty! Read NORMAL!";
+
+//        if (!MainItVector.at(vector_index).hasNext())
+//            MainItVector.at(vector_index).toFront();
+//        GuidVector[vector_index].current_guid = MainItVector.at(vector_index).next();
+////TODO
+//        if (GuidVector.at(vector_index).type == GUID_TYPE_SUBTABLE)
+//        {
+//            if (!GuidVector.at(vector_index).sub_it->hasNext())
+//                GuidVector.at(vector_index).sub_it->toFront();
+//            GuidVector[vector_index].current_subguid = GuidVector.at(vector_index).sub_it->next();
+
+//        }
+
+//    }
+//    else
+//    {
+////TODO
+//        mutex_queue->lock();
+
+//        qDebug() << "Queue is NOT Empty! Read from QUEUE with size" << GuidQueueVector.at(vector_index).size();
+
+//        GuidStructDevice local_guid = GuidQueueVector[vector_index].dequeue();
+
+//        GuidVector[vector_index].current_guid       = local_guid.main_guid;
+//        GuidVector[vector_index].current_subguid    = local_guid.sub_guid;
+
+//        mutex_queue->unlock();
+
+//    }
 }
 
 bool GuidClass::hasNext(quint8 vector_index)
 {
-    bool ret = false;
-//    QThread::msleep(2500);
     mutex->lock();
+    bool ret = false;
 
     if (GuidVector.at(vector_index).main_it->hasNext())
     {
@@ -49,20 +81,38 @@ bool GuidClass::hasNext(quint8 vector_index)
         ret = true;
     }
     else
-    {        
+    {
         GuidActiveStateVector[vector_index] = false;
         GuidVector.at(vector_index).main_it->toFront();
         ret = false;
     }
     mutex->unlock();
     return ret;
+//    mutex->lock();
+//    bool ret = false;
+
+//    if (MainItVector.at(vector_index).hasNext())
+//    {
+//        GuidActiveStateVector[vector_index] = true;
+//        ret = true;
+//    }
+//    else
+//    {
+//        GuidActiveStateVector[vector_index] = false;
+//        GuidVector.at(vector_index).main_it->toFront();
+//        ret = false;
+//    }
+//    mutex->unlock();
+//    return ret;
 }
 
 //  get address of device (uniq address in RS485 line for example)
 //  and shift iterators
 QString GuidClass::get_address(quint8 vector_index)
 {
+    mutex2->lock();
     next_iterators(vector_index);
+    mutex2->unlock();
     return GuidVector.at(vector_index).current_guid.at(POS_ADDRESS);
 }
 
@@ -80,51 +130,101 @@ QString GuidClass::get_subguid(const QString& addr, bool* ok, quint8 vector_inde
 }
 
 // init guid from table and init id
-void GuidClass::init(SqlDriver *sqlDriver, const QString& table, quint8 * id, quint8 type)
+int GuidClass::init(SqlDriver *sqlDriver, const QString& table, quint8 * id, quint8 type)
 {
-    GuidStruct  local_guid;
-    local_guid.type = GUID_TYPE_ONE_TABLE;
+    GuidStruct * local_guid = new GuidStruct;
+    local_guid->type = GUID_TYPE_ONE_TABLE;
 
-    Data data = sqlDriver->fromGuidTable(table);
+//    Data data = sqlDriver->fromGuidTable(table);
+    Data data;
+    sqlDriver->fromGuidTable(&data, table);
 
-    for (quint16 i = 0; i < data.size(); i++) {
+    uint i = 0;
+    foreach ( QStringList qsl, data )
+    {
+        local_guid->main_guid.append(qsl);
+//        qDebug() << "Guid Table :" << table << " : " << local_guid.main_guid[i];
 
-        local_guid.main_guid.append(data[i]);
-        qDebug() << "Guid Table :" << table << " : " << local_guid.main_guid[i];
+        qDebug() << "Guid Table :" << table << " : " << qsl;
+//        qDebug() << "Hello!" << endl;
 
         if (type == GUID_TYPE_ONE_TABLE)
         {
-            AllGuid.append(data[i].at(POS_GUID));
+            AllGuid.append(qsl.at(POS_GUID));
         }
+        //TODO
         else if (type == GUID_TYPE_SUBTABLE) {
 
-            local_guid.type = GUID_TYPE_SUBTABLE;
+            local_guid->type = GUID_TYPE_SUBTABLE;
 
             const QString subtable = table + "_subguid";
 
-            Data subdata = sqlDriver->fromGuidTable(subtable, data[i].at(POS_KEY));
+            Data subdata;
+            sqlDriver->fromGuidTable(&subdata, subtable, qsl.at(POS_KEY));
             QMap<QString, QString> qmap;
 
             for (quint16 j = 0; j < subdata.size(); j++) {
                 qmap.insert(subdata[j].at(POS_ADDRESS), subdata[j].at(POS_GUID));
                 AllGuid.append(subdata[j].at(POS_GUID));
             }
-            local_guid.sub_guid.append(qmap);
-            qDebug() << "   SubGuid Table :" << subtable << " : "<< local_guid.sub_guid[i] << endl;
+            local_guid->sub_guid.append(qmap);
+            qDebug() << "   SubGuid Table :" << subtable << " : "<< local_guid->sub_guid[i] << endl;
         }
+
+        i++;
     }
+//    for (quint16 i = 0; i < data.size(); i++) {
+
+//        local_guid.main_guid.append(data[i]);
+//        qDebug() << "Guid Table :" << table << " : " << local_guid.main_guid[i];
+
+//        if (type == GUID_TYPE_ONE_TABLE)
+//        {
+//            AllGuid.append(data[i].at(POS_GUID));
+//        }
+//        else if (type == GUID_TYPE_SUBTABLE) {
+
+//            local_guid.type = GUID_TYPE_SUBTABLE;
+
+//            const QString subtable = table + "_subguid";
+
+//            Data subdata = sqlDriver->fromGuidTable(subtable, data[i].at(POS_KEY));
+//            QMap<QString, QString> qmap;
+
+//            for (quint16 j = 0; j < subdata.size(); j++) {
+//                qmap.insert(subdata[j].at(POS_ADDRESS), subdata[j].at(POS_GUID));
+//                AllGuid.append(subdata[j].at(POS_GUID));
+//            }
+//            local_guid.sub_guid.append(qmap);
+//            qDebug() << "   SubGuid Table :" << subtable << " : "<< local_guid.sub_guid[i] << endl;
+//        }
+//    }
 
     //test
-    local_guid.id = count;
-    local_guid.main_it = new QVectorIterator<QStringList>(local_guid.main_guid);
-    local_guid.sub_it = new QVectorIterator<QMap<QString, QString>>(local_guid.sub_guid);
+    data.clear();
 
-    GuidVector.append(local_guid);
+    local_guid->id = count;
+
+//    QVectorIterator<QStringList> main_it = new QVectorIterator<QStringList>(local_guid->main_guid);
+//    QVectorIterator<QMap<QString, QString>> sub_it = new QVectorIterator<QMap<QString, QString>>(local_guid->sub_guid);
+//    MainItVector.append(local_guid->main_guid);
+//    SubItVector.append(local_guid->sub_guid);
+
+    local_guid->main_it = new QVectorIterator<QStringList>(local_guid->main_guid);
+    local_guid->sub_it = new QVectorIterator<QMap<QString, QString>>(local_guid->sub_guid);
+
+    GuidVector.append(*local_guid);
     GuidQueueVector.append(GuidQueue);//create vector of GuidQueue
     GuidActiveStateVector.append(false);
-
     *id = count;
     count++;
+    delete local_guid;
+//    delete local_guid.main_it;
+//    delete local_guid.sub_it;
+
+//    qDebug() << "   GOOD " ;
+
+    return 1;
 }
 
 bool GuidClass::find_guid(const QString& guid, GuidStructDevice* local_guid)
@@ -289,6 +389,7 @@ QStringList GuidClass::getAllGuid()
 GuidClass::GuidClass()
 {
     mutex = new QMutex;
+    mutex2 = new QMutex;
     mutex_queue = new QMutex;
     count = 0;
 }
@@ -296,6 +397,7 @@ GuidClass::GuidClass()
 GuidClass::~GuidClass ()
 {
     delete mutex;
+    delete mutex2;
     delete mutex_queue;
 //    delete it;
 //    delete it_sub;

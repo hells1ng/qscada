@@ -11,12 +11,19 @@ QT       -= gui
 TARGET = qscada
 CONFIG   += console
 CONFIG   -= app_bundle
+#QMAKE_LFLAGS += --sysroot
 
-TEMPLATE = app
+#TEMPLATE = app
+#arm-linux: {
+#    QMAKE_LFLAGS += --sysroot
+#}
 
 #CONFIG += warn_off
 #QMAKE_CXXFLAGS += -Wno-unused-parameter
 #CXXFLAGS += -Wno-unused-parameter
+
+QMAKE_CXXFLAGS += -fno-stack-protector -Wall -Wextra -O0
+#CXXFLAGS += -fno-stack-protector
 
 SOURCES += \
     ../../src/main.cpp \
@@ -35,7 +42,7 @@ SOURCES += \
     ../../src/libs/sqldriver/sqldriver.cpp \
     ../../src/libs/iodriver/iodriver.cpp
 INSTALLS        = target
-target.path     = /home/pi/rw
+target.path     = /home/pi
 
 HEADERS += \
     ../../src/defines.h \
@@ -60,6 +67,8 @@ HEADERS += \
     ../../src/libs/pulsar/pulsarclass.h \
     ../../src/libs/sqldriver/sqldriver.h \
     ../../src/libs/iodriver/iodriver.h
-INCLUDEPATH += ~/raspi/sysroot/usr/local/include/
-LIBS += -lcurl -lssl -lcrypto
-
+#INCLUDEPATH += /home/hells1ng/raspi/sysroot/usr/include/
+#DEPENDPATH += /home/hells1ng/raspi/sysroot/usr/lib/
+LIBS += -lcurl
+#LIBS += -lcurl -lssl -lcrypto
+#LIBS += -lcurl -lcrypto

@@ -11,25 +11,26 @@
 IODriver::IODriver(quint8 type, QString server_com, quint16 port_props, quint16 timeout/* = 1000*/) :
     Type(type), ServerCom(server_com), PortProps(port_props), Timeout(timeout)
 {
-    mutex = new QMutex();
+//    mutex = new QMutex();
     debug = false;
 
     if (Type == RTU) {
-        com = new QSerialPort();
-        com->moveToThread(this);
+//        com = new QSerialPort();
+//        com->moveToThread(this);
+//        com.moveToThread(this);
 
         switch (port_props) {
 
         case Com9600_8N1:
-            com->setBaudRate(9600);
-            com->setParity(QSerialPort::Parity::NoParity);
-            com->setStopBits(QSerialPort::StopBits::OneStop);
+            com.setBaudRate(9600);
+            com.setParity(QSerialPort::Parity::NoParity);
+            com.setStopBits(QSerialPort::StopBits::OneStop);
             break;
 
         case COM600_8N1:
-            com->setBaudRate(600);
-            com->setParity(QSerialPort::Parity::NoParity);
-            com->setStopBits(QSerialPort::StopBits::OneStop);
+            com.setBaudRate(600);
+            com.setParity(QSerialPort::Parity::NoParity);
+            com.setStopBits(QSerialPort::StopBits::OneStop);
             break;
 
         default:
@@ -38,21 +39,177 @@ IODriver::IODriver(quint8 type, QString server_com, quint16 port_props, quint16 
         }
     }
     else if (Type == TCP){
-        tcp = new QTcpSocket();
-        tcp->moveToThread(this);
+//        tcp = new QTcpSocket();
+//        tcp->moveToThread(this);
+
+//                tcp.moveToThread(this);
     }
     else qFatal("Wrong Type for IODriver");
 }
 
 IODriver::~IODriver()
 {
-    delete mutex;
+//    delete mutex;
 }
+QByteArray IODriver::writes(unsigned char *cmd, int cmdsize)
+{
+    Request = QByteArray((char*)cmd, cmdsize);
 
+    QByteArray responseData;
 
+    if (debug)
+        qDebug() << "Request = " << Request.toHex();
+
+    if (Type == TCP)
+    {
+        tcp.connectToHost(ServerCom, PortProps);
+
+        if (!tcp.waitForConnected(Timeout + TCP_ADD_TIMEOUT * 5))
+        {
+            qDebug() << "Can't connect to " << ServerCom << " error code " << tcp.error();
+        }
+        else
+        {
+            tcp.write(Request);
+            Request.clear();
+
+            if (tcp.waitForBytesWritten(Timeout + TCP_ADD_TIMEOUT)) {
+
+                // read response
+                if (tcp.waitForReadyRead(Timeout + TCP_ADD_TIMEOUT))//Если получен ответ в течение зад.времени
+                {
+                    responseData = tcp.readAll();
+
+                    if (debug)
+                        qDebug() << "Response = " << responseData.toHex();
+
+                }
+                else    //а если ничего не пришло
+                {
+                }
+            } else {
+            }
+
+            tcp.disconnectFromHost();
+        }
+    }
+    //TODO
+    else if (Type == RTU)
+    {
+        com.setPortName(ServerCom);
+
+        if (!com.open(QIODevice::ReadWrite)) {
+            qDebug() << "Can't open " << ServerCom << " error code " << com.error();
+        }
+        else //if opened
+        {
+            com.write(Request);
+            Request.clear();
+
+            if (com.waitForBytesWritten(Timeout)) {
+                // read response
+                if (com.waitForReadyRead(Timeout)) {
+                    responseData = com.readAll();
+                    while (com.waitForReadyRead(50)) // was 10
+                        responseData += com.readAll();
+
+                    if (debug)
+                        qDebug() << "Response = " << responseData.toHex();
+
+                } else {
+                    //                emit timeout(tr("Wait read response timeout %1")
+                    //                             .arg(QTime::currentTime().toString()));
+                }
+            } else {
+                //            emit timeout(tr("Wait write request timeout %1")
+                //                         .arg(QTime::currentTime().toString()));
+            }
+//            if (com->isOpen())
+                com.close();
+        }
+    }
+    return responseData;
+}
+QByteArray IODriver::writes(QByteArray Request)
+{
+    QByteArray responseData;
+
+    if (debug)
+        qDebug() << "Request = " << Request.toHex();
+
+    if (Type == TCP)
+    {
+        tcp.connectToHost(ServerCom, PortProps);
+
+        if (!tcp.waitForConnected(Timeout + TCP_ADD_TIMEOUT * 5))
+        {
+            qDebug() << "Can't connect to " << ServerCom << " error code " << tcp.error();
+        }
+        else
+        {
+            tcp.write(Request);
+            Request.clear();
+
+            if (tcp.waitForBytesWritten(Timeout + TCP_ADD_TIMEOUT)) {
+
+                // read response
+                if (tcp.waitForReadyRead(Timeout + TCP_ADD_TIMEOUT))//Если получен ответ в течение зад.времени
+                {
+                    responseData = tcp.readAll();
+
+                    if (debug)
+                        qDebug() << "Response = " << responseData.toHex();
+
+                }
+                else    //а если ничего не пришло
+                {
+                }
+            } else {
+            }
+
+            tcp.disconnectFromHost();
+        }
+    }
+    //TODO
+    else if (Type == RTU)
+    {
+        com.setPortName(ServerCom);
+
+        if (!com.open(QIODevice::ReadWrite)) {
+            qDebug() << "Can't open " << ServerCom << " error code " << com.error();
+        }
+        else //if opened
+        {
+            com.write(Request);
+            Request.clear();
+
+            if (com.waitForBytesWritten(Timeout)) {
+                // read response
+                if (com.waitForReadyRead(Timeout)) {
+                    responseData = com.readAll();
+                    while (com.waitForReadyRead(50)) // was 10
+                        responseData += com.readAll();
+
+                    if (debug)
+                        qDebug() << "Response = " << responseData.toHex();
+
+                } else {
+                    //                emit timeout(tr("Wait read response timeout %1")
+                    //                             .arg(QTime::currentTime().toString()));
+                }
+            } else {
+                //            emit timeout(tr("Wait write request timeout %1")
+                //                         .arg(QTime::currentTime().toString()));
+            }
+//            if (com->isOpen())
+                com.close();
+        }
+    }
+    return responseData;
+}
 void IODriver::write(unsigned char * cmd, int cmdsize)
 {
-    QMutexLocker locker(mutex);
+//    QMutexLocker locker(mutex);
     Request = QByteArray((char*)cmd, cmdsize);
     while (isRunning());
     start();
@@ -60,10 +217,11 @@ void IODriver::write(unsigned char * cmd, int cmdsize)
 
 void IODriver::write(QByteArray request)
 {
-    QMutexLocker locker(mutex);
+//    QMutexLocker locker(mutex);
     Request.append(request);
+    Request = QByteArray(request);
     while (isRunning());
-        start();
+    start();
 }
 
 void IODriver::run()
@@ -75,24 +233,24 @@ void IODriver::run()
 
     if (Type == TCP)
     {
-        tcp->connectToHost(ServerCom, PortProps);
+        tcp.connectToHost(ServerCom, PortProps);
 
-        if (!tcp->waitForConnected(Timeout + TCP_ADD_TIMEOUT * 5))
+        if (!tcp.waitForConnected(Timeout + TCP_ADD_TIMEOUT * 5))
         {
             emit timeout();
-            qDebug() << "Can't connect to " << ServerCom << " error code " << tcp->error();
+            qDebug() << "Can't connect to " << ServerCom << " error code " << tcp.error();
         }
         else
         {
-            tcp->write(Request);
+            tcp.write(Request);
             Request.clear();
 
-            if (tcp->waitForBytesWritten(Timeout + TCP_ADD_TIMEOUT)) {
+            if (tcp.waitForBytesWritten(Timeout + TCP_ADD_TIMEOUT)) {
 
                 // read response
-                if (tcp->waitForReadyRead(Timeout + TCP_ADD_TIMEOUT))//Если получен ответ в течение зад.времени
+                if (tcp.waitForReadyRead(Timeout + TCP_ADD_TIMEOUT))//Если получен ответ в течение зад.времени
                 {
-                    responseData = tcp->readAll();
+                    responseData = tcp.readAll();
 
                     if (debug)
                         qDebug() << "Response = " << responseData.toHex();
@@ -107,28 +265,28 @@ void IODriver::run()
                 emit timeout();
             }
 
-            tcp->disconnectFromHost();
+            tcp.disconnectFromHost();
         }
     }
     else if (Type == RTU)
     {
-        com->setPortName(ServerCom);
+        com.setPortName(ServerCom);
 
-        if (!com->open(QIODevice::ReadWrite)) {
-            qDebug() << "Can't open " << ServerCom << " error code " << com->error();
+        if (!com.open(QIODevice::ReadWrite)) {
+            qDebug() << "Can't open " << ServerCom << " error code " << com.error();
             emit timeout();
         }
         else //if opened
         {
-            com->write(Request);
+            com.write(Request);
             Request.clear();
 
-            if (com->waitForBytesWritten(Timeout)) {
+            if (com.waitForBytesWritten(Timeout)) {
                 // read response
-                if (com->waitForReadyRead(Timeout)) {
-                    responseData = com->readAll();
-                    while (com->waitForReadyRead(50)) // was 10
-                        responseData += com->readAll();
+                if (com.waitForReadyRead(Timeout)) {
+                    responseData = com.readAll();
+                    while (com.waitForReadyRead(50)) // was 10
+                        responseData += com.readAll();
 
                     if (debug)
                         qDebug() << "Response = " << responseData.toHex();
@@ -146,9 +304,9 @@ void IODriver::run()
                 //                         .arg(QTime::currentTime().toString()));
             }
 //            if (com->isOpen())
-                com->close();
+                com.close();
         }
     }
-    quit();
+//    quit();
 }
 

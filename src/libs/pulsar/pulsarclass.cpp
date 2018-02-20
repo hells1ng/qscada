@@ -67,8 +67,8 @@ PulsarClass::PulsarClass(quint8 Type, QString server_com, quint16 port_props, qu
 //    mutex = new QMutex();
 
 //    connect(this, SIGNAL(write(QByteArray )), &ioDriver, SLOT(write(QByteArray)));
-    connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
-    connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
+//    connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
+//    connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
 
     receivedData = false;
 
@@ -193,7 +193,7 @@ bool PulsarClass::check_crc()
 float PulsarClass::convert_data()
 {
     QByteArray val;
-    float ret;
+    float ret = 0;
 
     if (Cmd == READ_CHANNEL) {
 
@@ -202,7 +202,7 @@ float PulsarClass::convert_data()
         val.append(Response.at(POS_D + 2));
         val.append(Response.at(POS_D + 3));
 
-         ret = qFromLittleEndian<float>(val.data());
+        ret = qFromLittleEndian<float>(val.data());
     }
     return ret;
 }
@@ -220,14 +220,16 @@ bool PulsarClass::getP()
     // clear flag
     receivedData = false;
 
-    Response.clear();
+    if (Response.size())
+        Response.clear();
 
 //    emit write(Request);
-    ioDriver.write(Request);
+//    ioDriver.write(Request);
 
     // wait flag in slots: timeout() or received()
-    while (!receivedData) {};
+//    while (!receivedData) {};
 
+    Response = ioDriver.writes(Request);
 
     if (check_crc()) {
         energy = convert_data();
@@ -243,7 +245,9 @@ bool PulsarClass::getP()
 
 Data PulsarClass::read_data(GuidClass* guid, quint8 id)
 {
-    QMutexLocker locker(&mutex);
+//    QMutexLocker locker(&mutex);
+//    mutex.lock();
+
     Data retData;
     QStringList qsl;
     bool ok;
@@ -274,5 +278,6 @@ Data PulsarClass::read_data(GuidClass* guid, quint8 id)
         qDebug() << "Pulsar with Address = " << address_str << "and Guid = " << pulsar_guid
                  << " Cannot read values "   << endl;
 
+//    mutex.unlock();
     return retData;
 }

@@ -27,7 +27,8 @@ const char *HttpsDriver::pHeaderFile = "dumpit";
 const char *HttpsDriver::pKeyName = "/etc/apache2/ssl/converted/NUC_ASVSPROJECT.key";
 const char *HttpsDriver::pCAType = "PEM";
 
-const char *HttpsDriver::SERVERADDR = "https://tomatto.ddns.net:444";
+//const char *HttpsDriver::SERVERADDR = "https://tomatto.ddns.net:444";
+const char *HttpsDriver::SERVERADDR = "https://uk-flagman.ddns.net:444";
 
 
 /*--------------------------------------*/
@@ -369,7 +370,7 @@ string HttpsDriver::curl_send(string const &str) {
         if (res == CURLE_OK) //если соединение успешно
         {
             retstr = retFromServer;
-//            qDebug() << "cURL returns : " << QString::fromStdString(retFromServer) << endl;;
+            qDebug() << "cURL returns : " << QString::fromStdString(retFromServer) << endl;;
         }
         else // если не было соединения
         {

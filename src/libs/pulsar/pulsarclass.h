@@ -74,7 +74,7 @@ private:
     float       energy;
     bool        receivedData;
 
-    QMutex      mutex;
+//    QMutex      mutex;
 
     void create_request(quint32 channelMask);
     quint16 make_crc(QByteArray *buf, int size);

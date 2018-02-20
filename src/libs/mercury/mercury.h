@@ -215,11 +215,11 @@ typedef enum			// Output formatting
 
 
 //--MERCURY CLASS
-class MercuryClass  : public QObject
+class MercuryClass  : public QObject/*QThread*/
 {
     Q_OBJECT
 public:
-    explicit MercuryClass(QObject *parent = nullptr);
+    explicit MercuryClass(QObject/*QThread*/ *parent = nullptr);
 
     int address;
     int format, header;
@@ -231,7 +231,7 @@ public:
     };
 
     MercuryClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout = TIMEOUT);
-    ~MercuryClass() {}
+    ~MercuryClass();
 
     Data read_data(GuidClass* guid, quint8 id);
 
@@ -243,7 +243,7 @@ public slots:
     void timeout();
 
 private:
-    QMutex mutex;
+    QMutex* mutex;
     //buf and lenght for receive data from Mercury
     byte buf[BSZ];
     int len;

@@ -27,8 +27,8 @@ public:
     };
     quint8      Type;
     QString     ServerCom; //name of server ip / name of com-port
-    QTcpSocket  *tcp;
-    QSerialPort *com;
+    QTcpSocket  tcp;
+    QSerialPort com;
     quint16     PortProps; //port number / properties of com-port
     QByteArray  Request;
     quint16     Timeout;
@@ -37,14 +37,20 @@ public:
     ~IODriver();
     void run() Q_DECL_OVERRIDE;
     void write(unsigned char * cmd, int cmdsize);
-    void write(QByteArray request);
+//    void write(QByteArray request);
 
+    //func for mercury
+    QByteArray writes(unsigned char * cmd, int cmdsize);
+    //func for pulsar
+    QByteArray writes(QByteArray Request);
 signals:
     void response(QByteArray buf);
     void timeout();
 
+public slots:
+    void write(QByteArray request);
 private:
-    QMutex* mutex;
+//    QMutex* mutex;
     bool debug;
     QWaitCondition cond;
 

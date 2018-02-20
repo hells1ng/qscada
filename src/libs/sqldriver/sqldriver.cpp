@@ -10,7 +10,7 @@ qint64 SqlDriver::numOfConnections = 0;
 SqlDriver::SqlDriver(QObject *parent) :
     QObject(parent)
 {
-    mutex = new QMutex();
+//    mutex = new QMutex();
 
 //    numOfConnections++;
     if(QSqlDatabase::contains(QSqlDatabase::defaultConnection)) {
@@ -20,9 +20,14 @@ SqlDriver::SqlDriver(QObject *parent) :
 //        db = QSqlDatabase::database(QString::number(numOfConnections));
 //        db = QSqlDatabase::addDatabase("QMYSQL");
 //        db.setDatabaseName("Safe");
+
         db = QSqlDatabase::addDatabase("QSQLITE");
-//        db.setDatabaseName("/home/pi/rw/qscada_db");
-        db.setDatabaseName("qscada_db");
+//        db.setDatabaseName("/home/pi/qscada_db");
+        db.setDatabaseName("/home/pi/qscada_db");
+//        QStringList tables = db.tables();
+//        qDebug() << "Tables: " << tables;
+//        db.setDatabaseName("qscada_db");
+
     }
 //    db.setHostName("localhost");
 //    db.setUserName("root");
@@ -53,9 +58,9 @@ void SqlDriver::push(Data data)
             data[i].append(get_systime());
             data[i].append(QString::number(DATA_ERROR_FLAG0));
         }
-        mutex->lock();
+//        mutex->lock();
         queue.enqueue(data[i]);
-        mutex->unlock();
+//        mutex->unlock();
     }
 }
 
@@ -198,44 +203,61 @@ Data SqlDriver::fromDataTable(quint16 data_size)
     return retData;
 }
 
-Data SqlDriver::fromGuidTable(const QString& table, const QString& key)
+int SqlDriver::fromGuidTable(Data* retData, const QString& table, const QString& key)
 {
-    Data retData;
+//    Data retData;
+    QString query_str;
+    QSqlQuery query;
+    QStringList qsl;
+    //TODO : без этой строчки крашатся гуайдишники на малине, WTF?????
+    //с первой крашатся на малине, со второй крашатся в куте
 
-    bool ok = db.open();
+    bool ok = false;
+         ok = db.open();
+
     if (!ok) {
         qWarning() << "fromGuidTable: Cannot connect to " << db.databaseName() << endl;
+        qFatal("Exit");
     } else {
 
-        QString query_str = "SELECT * FROM " + table;
+
+        query_str = "SELECT * FROM " + table;
         if (key != "")
             query_str = "SELECT * FROM " + table + " WHERE key=" + key;
-
-        QSqlQuery query;
 
         bool b = query.exec(query_str);
         if (!b) {
             qWarning() << "fromGuidTable: Cannot read from DB:" << db.databaseName()
                        << " and Table: " << table << endl;
-            qFatal("Exit");
+//            qFatal("Exit");
         }
-
-        else if (query.size()) {
-
+        else
+        {
             while (query.next()) {
-
-                QStringList qsl;
 
                 qsl.append(query.value(GuidClass::POS_KEY).toString());
                 qsl.append(query.value(GuidClass::POS_GUID).toString());
                 qsl.append(query.value(GuidClass::POS_ADDRESS).toString());
 
-                retData.append(qsl);
+                retData->append(qsl);
+                qsl.clear();
             }
         }
+        query.clear();
         db.close();
     }
-    return retData;
+
+//    for (int i = 0; i < 5; i++)
+//    {
+//        qsl.append(QString::number(i));
+//        QString a("P");
+//        a = a + QString::number(i);
+//        qsl.append(a);
+//        qsl.append(QString::number(i));
+//        retData->append(qsl);
+//        qsl.clear();
+//    }
+    return 1;
 }
 
 /*
