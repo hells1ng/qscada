@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.5.1, 2018-02-20T16:29:36. -->
+<!-- Written by QtCreator 4.5.1, 2018-02-21T12:18:45. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -283,7 +283,7 @@
        <value type="QString">/home/hells1ng/raspi/sysroot</value>
       </valuelist>
       <valuelist type="QVariantList" key="ProjectExplorer.RunConfiguration.LastDeployedTimes">
-       <value type="QDateTime">2018-02-20T15:48:15</value>
+       <value type="QDateTime">2018-02-21T12:02:15</value>
        <value type="QDateTime">2018-02-19T20:27:39</value>
       </valuelist>
       <value type="bool" key="RemoteLinux.GenericDirectUploadStep.IgnoreMissingFiles">false</value>

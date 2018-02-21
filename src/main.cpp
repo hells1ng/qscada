@@ -36,15 +36,16 @@ void sendToServer()
     /* Get data from queue*/
 //    while (1)
 //    {
-        Data sendData = sqlDriver.pop(100);
-        qDebug()<<"Size of sensors for sending = " << sendData.size();
+        Data sendData = sqlDriver.pop(200);
+        qDebug()<<"Size of sensors for sending from queue = " << sendData.size();
 
         httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &sendData);
 
         sqlDriver.toDataTable(sendData);
 
         /* Get data from sqlite*/
-        Data dataFromTable = sqlDriver.fromDataTable(200);
+        Data dataFromTable = sqlDriver.fromDataTable(500);
+        qDebug()<<"Size of sensors for sending from base = " << dataFromTable.size();
 
         httpsDriver.Send(HttpsDriver::HTTPS_CMD_POST_SENSOR_VALUE, &dataFromTable);
 
@@ -56,8 +57,13 @@ void sendToServer()
 
 void read_all_sensors()
 {
+    QElapsedTimer timer;
+    qint64 interval = 60*1000*15; //15 min
     while (1)
     {
+        timer.restart();
+
+        sendToServer();
         while (Guid.hasNext(ID_Mercury_1))
             sqlDriver.push(Mercury_1.read_data(&Guid, ID_Mercury_1));
         sendToServer();
@@ -83,6 +89,15 @@ void read_all_sensors()
         while (Guid.hasNext(ID_Pulsar_4))
             sqlDriver.push(Pulsar_1.read_data(&Guid, ID_Pulsar_4));
         sendToServer();
+
+
+        qint64 time = timer.elapsed();
+
+        if ( interval > time)
+        {
+            qDebug()<<"Waiting for " << interval - time << " msec" << endl;
+            QThread::msleep(interval - time);
+        }
     }
 }
 
