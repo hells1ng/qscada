@@ -15,7 +15,7 @@ CXX           = /home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnuea
 DEFINES       = -DQT_NETWORK_LIB -DQT_SQL_LIB -DQT_SERIALPORT_LIB -DQT_CORE_LIB
 CFLAGS        = -march=armv8-a -mtune=cortex-a53 -mfpu=crypto-neon-fp-armv8 -mfloat-abi=hard --sysroot=/home/hells1ng/raspi/sysroot -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -march=armv8-a -mtune=cortex-a53 -mfpu=crypto-neon-fp-armv8 -mfloat-abi=hard --sysroot=/home/hells1ng/raspi/sysroot -fno-stack-protector -Wall -Wextra -O0 -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../qscada -I. -I../../../raspi/build/qt5.8/include -I../../../raspi/build/qt5.8/include/QtNetwork -I../../../raspi/build/qt5.8/include/QtSql -I../../../raspi/build/qt5.8/include/QtSerialPort -I../../../raspi/build/qt5.8/include/QtCore -I. -I../../../raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++
+INCPATH       = -I../qscada -I. -I../../../raspi/sysroot/usr/include -I../../../raspi/build/qt5.8/include -I../../../raspi/build/qt5.8/include/QtNetwork -I../../../raspi/build/qt5.8/include/QtSql -I../../../raspi/build/qt5.8/include/QtSerialPort -I../../../raspi/build/qt5.8/include/QtCore -I. -I../../../raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++
 QMAKE         = /home/hells1ng/raspi/build/qt5.8-host/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -463,7 +463,28 @@ moc_predefs.h: ../../../raspi/build/qt5.8-host/mkspecs/features/data/dummy.cpp
 compiler_moc_header_make_all: moc_mercury.cpp moc_threadmanager.cpp moc_pulsarclass.cpp moc_sqldriver.cpp moc_iodriver.cpp
 compiler_moc_header_clean:
 	-$(DEL_FILE) moc_mercury.cpp moc_threadmanager.cpp moc_pulsarclass.cpp moc_sqldriver.cpp moc_iodriver.cpp
-moc_mercury.cpp: ../../src/defines.h \
+moc_mercury.cpp: ../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/inttypes.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
+		../../../raspi/sysroot/usr/include/fcntl.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/termios.h \
+		../../src/defines.h \
 		../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QtCoreDepends \
 		../../../raspi/build/qt5.8/include/QtCore/qglobal.h \
@@ -504,6 +525,7 @@ moc_mercury.cpp: ../../src/defines.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -673,7 +695,7 @@ moc_mercury.cpp: ../../src/defines.h \
 		../../src/libs/mercury/mercury.h \
 		moc_predefs.h \
 		../../../raspi/build/qt5.8-host/bin/moc
-	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/mercury/mercury.h -o moc_mercury.cpp
+	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/sysroot/usr/include -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/mercury/mercury.h -o moc_mercury.cpp
 
 moc_threadmanager.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QtCoreDepends \
@@ -709,12 +731,19 @@ moc_threadmanager.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -736,6 +765,15 @@ moc_threadmanager.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/qiodevice.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -862,11 +900,17 @@ moc_threadmanager.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../src/includes.h \
 		../../src/libs/modbus/ModbusClass.h \
 		../../src/libs/modbus/modbus.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
 		../../src/libs/modbus/modbus-version.h \
 		../../src/libs/modbus/modbus-tcp.h \
 		../../src/libs/modbus/modbus-rtu.h \
 		../../../raspi/build/qt5.8/include/QtCore/QMutex \
 		../../src/libs/owen/owen.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/inttypes.h \
+		../../../raspi/sysroot/usr/include/fcntl.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/termios.h \
 		../../src/libs/sqldriver/sqldriver.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
@@ -894,13 +938,20 @@ moc_threadmanager.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../src/libs/pulsar/pulsarclass.h \
 		../../src/libs/threadmanager/threadmanager.h \
 		../../src/libs/https/https.h \
+		../../../raspi/sysroot/usr/include/curl/curl.h \
+		../../../raspi/sysroot/usr/include/curl/curlver.h \
+		../../../raspi/sysroot/usr/include/curl/curlbuild.h \
+		../../../raspi/sysroot/usr/include/curl/curlrules.h \
+		../../../raspi/sysroot/usr/include/curl/easy.h \
+		../../../raspi/sysroot/usr/include/curl/multi.h \
+		../../../raspi/sysroot/usr/include/curl/typecheck-gcc.h \
 		../../src/libs/json/json.h \
 		../../../raspi/build/qt5.8/include/QtCore/QVariant \
 		../../../raspi/build/qt5.8/include/QtCore/QString \
 		../../src/libs/threadmanager/threadmanager.h \
 		moc_predefs.h \
 		../../../raspi/build/qt5.8-host/bin/moc
-	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/threadmanager/threadmanager.h -o moc_threadmanager.cpp
+	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/sysroot/usr/include -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/threadmanager/threadmanager.h -o moc_threadmanager.cpp
 
 moc_pulsarclass.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QtCoreDepends \
@@ -936,12 +987,19 @@ moc_pulsarclass.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -963,6 +1021,15 @@ moc_pulsarclass.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/qiodevice.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -1112,7 +1179,7 @@ moc_pulsarclass.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../src/libs/pulsar/pulsarclass.h \
 		moc_predefs.h \
 		../../../raspi/build/qt5.8-host/bin/moc
-	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/pulsar/pulsarclass.h -o moc_pulsarclass.cpp
+	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/sysroot/usr/include -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/pulsar/pulsarclass.h -o moc_pulsarclass.cpp
 
 moc_sqldriver.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QtCoreDepends \
@@ -1148,12 +1215,19 @@ moc_sqldriver.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -1175,6 +1249,15 @@ moc_sqldriver.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/qiodevice.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -1310,7 +1393,7 @@ moc_sqldriver.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../src/libs/sqldriver/sqldriver.h \
 		moc_predefs.h \
 		../../../raspi/build/qt5.8-host/bin/moc
-	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/sqldriver/sqldriver.h -o moc_sqldriver.cpp
+	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/sysroot/usr/include -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/sqldriver/sqldriver.h -o moc_sqldriver.cpp
 
 moc_iodriver.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QtCoreDepends \
@@ -1346,12 +1429,19 @@ moc_iodriver.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -1373,6 +1463,15 @@ moc_iodriver.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/qiodevice.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -1510,7 +1609,7 @@ moc_iodriver.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../src/libs/iodriver/iodriver.h \
 		moc_predefs.h \
 		../../../raspi/build/qt5.8-host/bin/moc
-	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/iodriver/iodriver.h -o moc_iodriver.cpp
+	/home/hells1ng/raspi/build/qt5.8-host/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/hells1ng/raspi/build/qt5.8-host/mkspecs/devices/linux-rpi3-g++ -I/home/hells1ng/qscada/qtpro/qscada -I/home/hells1ng/raspi/sysroot/usr/include -I/home/hells1ng/raspi/build/qt5.8/include -I/home/hells1ng/raspi/build/qt5.8/include/QtNetwork -I/home/hells1ng/raspi/build/qt5.8/include/QtSql -I/home/hells1ng/raspi/build/qt5.8/include/QtSerialPort -I/home/hells1ng/raspi/build/qt5.8/include/QtCore -I. -I/home/hells1ng/raspi/sysroot/usr/include/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3 -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/arm-linux-gnueabihf -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include/c++/4.9.3/backward -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/4.9.3/include-fixed -I/home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/arm-linux-gnueabihf/include -I/home/hells1ng/raspi/sysroot/usr/include ../../src/libs/iodriver/iodriver.h -o moc_iodriver.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -1528,6 +1627,9 @@ main.o: ../../src/main.cpp ../../src/main.h \
 		../../src/includes.h \
 		../../src/libs/modbus/ModbusClass.h \
 		../../src/libs/modbus/modbus.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
 		../../src/libs/modbus/modbus-version.h \
 		../../src/libs/modbus/modbus-tcp.h \
 		../../src/libs/modbus/modbus-rtu.h \
@@ -1555,6 +1657,24 @@ main.o: ../../src/main.cpp ../../src/main.h \
 		../../../raspi/build/qt5.8/include/QtCore/qnumeric.h \
 		../../../raspi/build/qt5.8/include/QtCore/qversiontagging.h \
 		../../src/libs/owen/owen.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/inttypes.h \
+		../../../raspi/sysroot/usr/include/fcntl.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/termios.h \
 		../../src/libs/sqldriver/sqldriver.h \
 		../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QtCoreDepends \
@@ -1574,6 +1694,7 @@ main.o: ../../src/main.cpp ../../src/main.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -1744,6 +1865,13 @@ main.o: ../../src/main.cpp ../../src/main.h \
 		../../src/libs/threadmanager/threadmanager.h \
 		../../../raspi/build/qt5.8/include/QtCore/QTimer \
 		../../src/libs/https/https.h \
+		../../../raspi/sysroot/usr/include/curl/curl.h \
+		../../../raspi/sysroot/usr/include/curl/curlver.h \
+		../../../raspi/sysroot/usr/include/curl/curlbuild.h \
+		../../../raspi/sysroot/usr/include/curl/curlrules.h \
+		../../../raspi/sysroot/usr/include/curl/easy.h \
+		../../../raspi/sysroot/usr/include/curl/multi.h \
+		../../../raspi/sysroot/usr/include/curl/typecheck-gcc.h \
 		../../src/libs/json/json.h \
 		../../../raspi/build/qt5.8/include/QtCore/QVariant \
 		../../../raspi/build/qt5.8/include/QtCore/QString \
@@ -1768,6 +1896,33 @@ main.o: ../../src/main.cpp ../../src/main.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../src/main.cpp
 
 https.o: ../../src/libs/https/https.cpp ../../src/libs/https/https.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/inttypes.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
+		../../../raspi/sysroot/usr/include/curl/curl.h \
+		../../../raspi/sysroot/usr/include/curl/curlver.h \
+		../../../raspi/sysroot/usr/include/curl/curlbuild.h \
+		../../../raspi/sysroot/usr/include/curl/curlrules.h \
+		../../../raspi/sysroot/usr/include/limits.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/curl/easy.h \
+		../../../raspi/sysroot/usr/include/curl/multi.h \
+		../../../raspi/sysroot/usr/include/curl/typecheck-gcc.h \
 		../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QtCoreDepends \
 		../../../raspi/build/qt5.8/include/QtCore/qglobal.h \
@@ -2001,12 +2156,19 @@ id.o: ../../src/libs/id/id.cpp ../../src/libs/id/id.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -2028,6 +2190,15 @@ id.o: ../../src/libs/id/id.cpp ../../src/libs/id/id.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiodevice.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -2162,6 +2333,27 @@ id.o: ../../src/libs/id/id.cpp ../../src/libs/id/id.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o id.o ../../src/libs/id/id.cpp
 
 mercury.o: ../../src/libs/mercury/mercury.cpp ../../src/libs/mercury/mercury.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/inttypes.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
+		../../../raspi/sysroot/usr/include/fcntl.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/termios.h \
 		../../src/defines.h \
 		../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QtCoreDepends \
@@ -2203,6 +2395,7 @@ mercury.o: ../../src/libs/mercury/mercury.cpp ../../src/libs/mercury/mercury.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -2373,6 +2566,9 @@ mercury.o: ../../src/libs/mercury/mercury.cpp ../../src/libs/mercury/mercury.h \
 
 ModbusClass.o: ../../src/libs/modbus/ModbusClass.cpp ../../src/libs/modbus/ModbusClass.h \
 		../../src/libs/modbus/modbus.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
 		../../src/libs/modbus/modbus-version.h \
 		../../src/libs/modbus/modbus-tcp.h \
 		../../src/libs/modbus/modbus-rtu.h \
@@ -2408,8 +2604,13 @@ ModbusClass.o: ../../src/libs/modbus/ModbusClass.cpp ../../src/libs/modbus/Modbu
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qnamespace.h \
@@ -2433,6 +2634,15 @@ ModbusClass.o: ../../src/libs/modbus/ModbusClass.cpp ../../src/libs/modbus/Modbu
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvariant.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -2441,22 +2651,85 @@ ModbusClass.o: ../../src/libs/modbus/ModbusClass.cpp ../../src/libs/modbus/Modbu
 		../../../raspi/build/qt5.8/include/QtCore/qsharedpointer_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ModbusClass.o ../../src/libs/modbus/ModbusClass.cpp
 
-modbus-data.o: ../../src/libs/modbus/modbus-data.c ../../src/libs/modbus/modbus.h \
+modbus-data.o: ../../src/libs/modbus/modbus-data.c ../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/assert.h \
+		../../src/libs/modbus/modbus.h \
 		../../src/libs/modbus/modbus-version.h \
 		../../src/libs/modbus/modbus-tcp.h \
-		../../src/libs/modbus/modbus-rtu.h
+		../../src/libs/modbus/modbus-rtu.h \
+		../../../raspi/sysroot/usr/include/byteswap.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o modbus-data.o ../../src/libs/modbus/modbus-data.c
 
-modbus-rtu.o: ../../src/libs/modbus/modbus-rtu.c ../../src/libs/modbus/modbus-private.h \
+modbus-rtu.o: ../../src/libs/modbus/modbus-rtu.c ../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/errno.h \
+		../../../raspi/sysroot/usr/include/fcntl.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/assert.h \
+		../../src/libs/modbus/modbus-private.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
 		../../src/libs/modbus/config.h \
 		../../src/libs/modbus/modbus.h \
 		../../src/libs/modbus/modbus-version.h \
 		../../src/libs/modbus/modbus-tcp.h \
 		../../src/libs/modbus/modbus-rtu.h \
-		../../src/libs/modbus/modbus-rtu-private.h
+		../../src/libs/modbus/modbus-rtu-private.h \
+		../../../raspi/sysroot/usr/include/termios.h \
+		../../../raspi/sysroot/usr/include/linux/serial.h \
+		../../../raspi/sysroot/usr/include/linux/types.h \
+		../../../raspi/sysroot/usr/include/linux/posix_types.h \
+		../../../raspi/sysroot/usr/include/linux/stddef.h \
+		../../../raspi/sysroot/usr/include/linux/tty_flags.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o modbus-rtu.o ../../src/libs/modbus/modbus-rtu.c
 
-modbus-tcp.o: ../../src/libs/modbus/modbus-tcp.c ../../src/libs/modbus/modbus-private.h \
+modbus-tcp.o: ../../src/libs/modbus/modbus-tcp.c ../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/errno.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/signal.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/netinet/in_systm.h \
+		../../../raspi/sysroot/usr/include/netinet/in.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
+		../../../raspi/sysroot/usr/include/netinet/ip.h \
+		../../../raspi/sysroot/usr/include/netinet/tcp.h \
+		../../../raspi/sysroot/usr/include/arpa/inet.h \
+		../../../raspi/sysroot/usr/include/netdb.h \
+		../../../raspi/sysroot/usr/include/rpc/netdb.h \
+		../../src/libs/modbus/modbus-private.h \
 		../../src/libs/modbus/config.h \
 		../../src/libs/modbus/modbus.h \
 		../../src/libs/modbus/modbus-version.h \
@@ -2465,8 +2738,28 @@ modbus-tcp.o: ../../src/libs/modbus/modbus-tcp.c ../../src/libs/modbus/modbus-pr
 		../../src/libs/modbus/modbus-tcp-private.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o modbus-tcp.o ../../src/libs/modbus/modbus-tcp.c
 
-modbus.o: ../../src/libs/modbus/modbus.c ../../src/libs/modbus/config.h \
+modbus.o: ../../src/libs/modbus/modbus.c ../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/errno.h \
+		../../../raspi/sysroot/usr/include/limits.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../src/libs/modbus/config.h \
 		../../src/libs/modbus/modbus.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
 		../../src/libs/modbus/modbus-version.h \
 		../../src/libs/modbus/modbus-tcp.h \
 		../../src/libs/modbus/modbus-rtu.h \
@@ -2474,6 +2767,27 @@ modbus.o: ../../src/libs/modbus/modbus.c ../../src/libs/modbus/config.h \
 	$(CC) -c $(CFLAGS) $(INCPATH) -o modbus.o ../../src/libs/modbus/modbus.c
 
 owen.o: ../../src/libs/owen/owen.cpp ../../src/libs/owen/owen.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/inttypes.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
+		../../../raspi/sysroot/usr/include/fcntl.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/termios.h \
 		../../src/libs/sqldriver/sqldriver.h \
 		../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QtCoreDepends \
@@ -2515,6 +2829,7 @@ owen.o: ../../src/libs/owen/owen.cpp ../../src/libs/owen/owen.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -2710,12 +3025,19 @@ threadmanager.o: ../../src/libs/threadmanager/threadmanager.cpp ../../src/libs/t
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -2737,6 +3059,15 @@ threadmanager.o: ../../src/libs/threadmanager/threadmanager.cpp ../../src/libs/t
 		../../../raspi/build/qt5.8/include/QtCore/qiodevice.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -2863,11 +3194,17 @@ threadmanager.o: ../../src/libs/threadmanager/threadmanager.cpp ../../src/libs/t
 		../../src/includes.h \
 		../../src/libs/modbus/ModbusClass.h \
 		../../src/libs/modbus/modbus.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
 		../../src/libs/modbus/modbus-version.h \
 		../../src/libs/modbus/modbus-tcp.h \
 		../../src/libs/modbus/modbus-rtu.h \
 		../../../raspi/build/qt5.8/include/QtCore/QMutex \
 		../../src/libs/owen/owen.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/inttypes.h \
+		../../../raspi/sysroot/usr/include/fcntl.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/termios.h \
 		../../src/libs/sqldriver/sqldriver.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
@@ -2893,6 +3230,13 @@ threadmanager.o: ../../src/libs/threadmanager/threadmanager.cpp ../../src/libs/t
 		../../../raspi/build/qt5.8/include/QtSerialPort/qserialportglobal.h \
 		../../../raspi/build/qt5.8/include/QtCore/QWaitCondition \
 		../../src/libs/pulsar/pulsarclass.h \
+		../../../raspi/sysroot/usr/include/curl/curl.h \
+		../../../raspi/sysroot/usr/include/curl/curlver.h \
+		../../../raspi/sysroot/usr/include/curl/curlbuild.h \
+		../../../raspi/sysroot/usr/include/curl/curlrules.h \
+		../../../raspi/sysroot/usr/include/curl/easy.h \
+		../../../raspi/sysroot/usr/include/curl/multi.h \
+		../../../raspi/sysroot/usr/include/curl/typecheck-gcc.h \
 		../../src/libs/https/https.h \
 		../../src/libs/json/json.h \
 		../../../raspi/build/qt5.8/include/QtCore/QVariant \
@@ -2930,6 +3274,12 @@ json.o: ../../src/libs/json/json.cpp ../../../raspi/build/qt5.8/include/QtCore/Q
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qnamespace.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhash.h \
@@ -2938,6 +3288,7 @@ json.o: ../../src/libs/json/json.cpp ../../../raspi/build/qt5.8/include/QtCore/Q
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -2960,6 +3311,15 @@ json.o: ../../src/libs/json/json.cpp ../../../raspi/build/qt5.8/include/QtCore/Q
 		../../../raspi/build/qt5.8/include/QtCore/qscopedpointer.h \
 		../../../raspi/build/qt5.8/include/QtCore/qobject_impl.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -3004,12 +3364,19 @@ pulsarclass.o: ../../src/libs/pulsar/pulsarclass.cpp ../../src/libs/pulsar/pulsa
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -3031,6 +3398,15 @@ pulsarclass.o: ../../src/libs/pulsar/pulsarclass.cpp ../../src/libs/pulsar/pulsa
 		../../../raspi/build/qt5.8/include/QtCore/qiodevice.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -3215,12 +3591,19 @@ sqldriver.o: ../../src/libs/sqldriver/sqldriver.cpp ../../src/libs/sqldriver/sql
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -3242,6 +3625,15 @@ sqldriver.o: ../../src/libs/sqldriver/sqldriver.cpp ../../src/libs/sqldriver/sql
 		../../../raspi/build/qt5.8/include/QtCore/qiodevice.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \
@@ -3374,6 +3766,17 @@ sqldriver.o: ../../src/libs/sqldriver/sqldriver.cpp ../../src/libs/sqldriver/sql
 		../../src/libs/id/id.h \
 		../../../raspi/build/qt5.8/include/QtCore/QDebug \
 		../../src/libs/https/https.h \
+		../../../raspi/sysroot/usr/include/unistd.h \
+		../../../raspi/sysroot/usr/include/inttypes.h \
+		../../../raspi/sysroot/usr/include/stdint.h \
+		../../../raspi/sysroot/usr/include/curl/curl.h \
+		../../../raspi/sysroot/usr/include/curl/curlver.h \
+		../../../raspi/sysroot/usr/include/curl/curlbuild.h \
+		../../../raspi/sysroot/usr/include/curl/curlrules.h \
+		../../../raspi/sysroot/usr/include/time.h \
+		../../../raspi/sysroot/usr/include/curl/easy.h \
+		../../../raspi/sysroot/usr/include/curl/multi.h \
+		../../../raspi/sysroot/usr/include/curl/typecheck-gcc.h \
 		../../src/libs/json/json.h \
 		../../../raspi/build/qt5.8/include/QtCore/QVariant \
 		../../../raspi/build/qt5.8/include/QtCore/QString
@@ -3414,12 +3817,19 @@ iodriver.o: ../../src/libs/iodriver/iodriver.cpp ../../src/libs/iodriver/iodrive
 		../../../raspi/build/qt5.8/include/QtCore/qbytearray.h \
 		../../../raspi/build/qt5.8/include/QtCore/qrefcount.h \
 		../../../raspi/build/qt5.8/include/QtCore/qarraydata.h \
+		../../../raspi/sysroot/usr/include/string.h \
+		../../../raspi/sysroot/usr/include/features.h \
+		../../../raspi/sysroot/usr/include/stdc-predef.h \
+		../../../raspi/sysroot/usr/include/xlocale.h \
+		../../../raspi/sysroot/usr/include/stdlib.h \
+		../../../raspi/sysroot/usr/include/alloca.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringbuilder.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qalgorithms.h \
 		../../../raspi/build/qt5.8/include/QtCore/qiterator.h \
 		../../../raspi/build/qt5.8/include/QtCore/qhashfunctions.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpair.h \
+		../../../raspi/sysroot/usr/include/limits.h \
 		../../../raspi/build/qt5.8/include/QtCore/qbytearraylist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qstringlist.h \
 		../../../raspi/build/qt5.8/include/QtCore/qregexp.h \
@@ -3441,6 +3851,15 @@ iodriver.o: ../../src/libs/iodriver/iodriver.cpp ../../src/libs/iodriver/iodrive
 		../../../raspi/build/qt5.8/include/QtCore/qiodevice.h \
 		../../../raspi/build/qt5.8/include/QtCore/qlocale.h \
 		../../../raspi/build/qt5.8/include/QtCore/qshareddata.h \
+		../../../raspi/sysroot/usr/include/stdio.h \
+		../../../raspi/sysroot/usr/include/libio.h \
+		../../../raspi/sysroot/usr/include/_G_config.h \
+		../../../raspi/sysroot/usr/include/wchar.h \
+		../../../raspi/sysroot/usr/include/wctype.h \
+		../../../raspi/sysroot/usr/include/endian.h \
+		../../../raspi/sysroot/usr/include/gconv.h \
+		../../../raspi/sysroot/usr/include/getopt.h \
+		../../../raspi/sysroot/usr/include/ctype.h \
 		../../../raspi/build/qt5.8/include/QtCore/qvector.h \
 		../../../raspi/build/qt5.8/include/QtCore/qpoint.h \
 		../../../raspi/build/qt5.8/include/QtCore/qset.h \

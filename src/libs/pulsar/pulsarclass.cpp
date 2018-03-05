@@ -64,11 +64,11 @@ static const uint8_t table_crc_lo[] = {
 PulsarClass::PulsarClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout/* = 200*/):
     ioDriver (Type, server_com, port_props, timeout)
 {
-//    mutex = new QMutex();
+    mutex = new QMutex();
 
 //    connect(this, SIGNAL(write(QByteArray )), &ioDriver, SLOT(write(QByteArray)));
-//    connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
-//    connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
+    connect(&ioDriver, SIGNAL(response(QByteArray)), this, SLOT(received(QByteArray)));
+    connect(&ioDriver, SIGNAL(timeout()), this, SLOT(timeout()));
 
     receivedData = false;
 
@@ -83,7 +83,7 @@ PulsarClass::PulsarClass(quint8 Type, QString server_com, quint16 port_props, qu
 
 PulsarClass::~PulsarClass()
 {
-
+    delete mutex;
 }
 
 void PulsarClass::received(QByteArray buf_)
@@ -229,12 +229,12 @@ bool PulsarClass::getP()
         Response.clear();
 
 //    emit write(Request);
-//    ioDriver.write(Request);
+    ioDriver.write(Request);
 
     // wait flag in slots: timeout() or received()
-//    while (!receivedData) {};
+    while (!receivedData) {};
 
-    Response = ioDriver.writes(Request);
+//    Response = ioDriver.writes(Request);
 
     if (check_crc()) {
         energy = convert_data();
@@ -250,7 +250,7 @@ bool PulsarClass::getP()
 
 Data PulsarClass::read_data(GuidClass* guid, quint8 id)
 {
-//    QMutexLocker locker(&mutex);
+//    QMutexLocker locker(mutex);
 //    mutex.lock();
 
     Data retData;

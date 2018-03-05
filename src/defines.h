@@ -15,6 +15,17 @@
 #define USB2 "/dev/ttyUSB1"
 
 
+#define SEND true
+
+#define READ_MERCURY1   1
+#define READ_MERCURY2   1
+#define READ_MERCURY3   1
+#define READ_MERCURY4   1
+#define READ_PULSAR1    1
+#define READ_PULSAR2    1
+#define READ_PULSAR3    1
+#define READ_PULSAR4    1
+
 #include <QtCore/QtCore>
 typedef QVector<QStringList> Data;
 enum {

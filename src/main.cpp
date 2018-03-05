@@ -22,15 +22,14 @@ PulsarClass     Pulsar_1(IODriver::TCP, "192.168.88.100", 4006),
                 Pulsar_3(IODriver::TCP, "192.168.88.100", 4004),
                 Pulsar_4(IODriver::TCP, "192.168.88.100", 4003);
 
-//IODriver        ioPulsar_1(IODriver::TCP, "192.168.88.100", 4006);
-//IODriver        ioPulsar_2(IODriver::TCP, "192.168.88.100", 4001);
-//IODriver        ioPulsar_3(IODriver::TCP, "192.168.88.100", 4004);
-//IODriver        ioPulsar_4(IODriver::TCP, "192.168.88.100", 4003);
-
 SqlDriver       sqlDriver;
 HttpsDriver     httpsDriver;
 
-#define SEND true
+qint64  interval = 60*1000*30; //30 min
+QMutex  IntervalMutex;
+QMutex  Pulsar_1_mutex, Pulsar_2_mutex, Pulsar_3_mutex, Pulsar_4_mutex;
+QMutex  Mercury_1_mutex, Mercury_2_mutex, Mercury_3_mutex, Mercury_4_mutex;
+
 
 void sendToServer()
 {
@@ -52,49 +51,61 @@ void sendToServer()
 
         sqlDriver.toDataTable(dataFromTable);
 
-        QThread::msleep(1000);
+//        QThread::msleep(1000);
     }
 }
 
 void getInfoFromServer()
 {
     Data receiveData;
-//    qint64 new_sensorTimeout;
+    qint64 new_interval;
 
     /* Get sensor interval from server*/
     if (SEND)
         httpsDriver.Send( HttpsDriver::HTTPS_CMD_GET_SENSOR_PERIOD, &receiveData );
 
-//    if (!receiveData.isEmpty()) {
+    if (!receiveData.isEmpty()) {
 
-//        QString qs = receiveData[0].at(0);
-//        new_sensorTimeout = qs.toInt() * 60 * 1000;//msec
+        QString qs = receiveData[0].at(0);
+        new_interval = qs.toInt() * 60 * 1000;//msec
 
-//        if (_sensorTimeout != new_sensorTimeout) {
-//            _sensorTimeout_mutex->lock();
-//            _sensorTimeout = new_sensorTimeout;
-////            qDebug() << "Sensor Timeout = " << _sensorTimeout << endl;
-//            _sensorTimeout_mutex->unlock();
-//        }
+        if (interval != new_interval ) {
+            IntervalMutex.lock();
+            interval = new_interval;
+            qDebug() << "Sensor new Interval  = " << interval << endl;
+            IntervalMutex.unlock();
+        }
 
-//        receiveData.clear();
-//    }
+        receiveData.clear();
+    }
 
-//    /*Get Request from server */
-//    receiveData.append(Guid->getAllGuid());
+    /*Get Request from server */
+    receiveData.append(Guid.getAllGuid());
 
-//    httpsDriver.Send(HttpsDriver::HTTPS_CMD_GET_SENSOR_REQUESTS, &receiveData);
+    httpsDriver.Send(HttpsDriver::HTTPS_CMD_GET_SENSOR_REQUESTS, &receiveData);
 
-//    //в 0 стринглисте все гуайдишники малины, в 1 - гуайдишники полученные на сервере
-//    if (receiveData.size() == 2)
-//        Guid->addQueue(receiveData.at(1));
+    //в 0 стринглисте все гуайдишники малины, в 1 - гуайдишники полученные на сервере
+    if (receiveData.size() == 2)
+        Guid.addQueue(receiveData.at(1));
 
+}
+void time_out(QString threadname, QElapsedTimer * timer,  qint64 interval_, qint64 time)
+{
+    while ( interval_ > time)
+    {
+        qDebug()<< threadname <<" thread sleep for " << interval_ - time << " msec" << endl;
+        QThread::msleep(10000);//10sec
+
+        IntervalMutex.lock();
+        interval_ = interval;
+        IntervalMutex.unlock();
+        time = timer->elapsed();
+    }
 }
 
 void read_all_sensors()
 {
     QElapsedTimer timer;
-    qint64 interval = 60*1000*30; //30 min
     while (1)
     {
         timer.restart();
@@ -131,47 +142,238 @@ void read_all_sensors()
 
         qint64 time = timer.elapsed();
 
-        if ( interval > time)
-        {
-            qDebug()<<"Waiting for " << interval - time << " msec" << endl;
-            QThread::msleep(interval - time);
-        }
+        IntervalMutex.lock();
+        qint64 interval_ = interval;
+        IntervalMutex.unlock();
+
+        time_out("Read All sensors", &timer, interval_, time);
+
+    }
+}
+void server_connection()
+{
+    while (1)
+    {
+        getInfoFromServer();
+        sendToServer();
+        QThread::msleep(5000);//wait 5 sec
+    }
+}
+void read_mercury()
+{
+    QElapsedTimer timer;
+    while (1)
+    {
+        timer.restart();
+
+        if (READ_MERCURY1)
+            while (Guid.hasNext(ID_Mercury_1)) {
+                Mercury_1_mutex.lock();
+                sqlDriver.push(Mercury_1.read_data(&Guid, ID_Mercury_1));
+                Mercury_1_mutex.unlock();
+            }
+        if (READ_MERCURY2)
+            while (Guid.hasNext(ID_Mercury_2)) {
+                Mercury_2_mutex.lock();
+                sqlDriver.push(Mercury_2.read_data(&Guid, ID_Mercury_2));
+                Mercury_2_mutex.unlock();
+            }
+        if (READ_MERCURY3)
+            while (Guid.hasNext(ID_Mercury_3)) {
+                Mercury_3_mutex.lock();
+                sqlDriver.push(Mercury_3.read_data(&Guid, ID_Mercury_3));
+                Mercury_3_mutex.unlock();
+            }
+        if (READ_MERCURY4)
+            while (Guid.hasNext(ID_Mercury_4)) {
+                Mercury_4_mutex.lock();
+                sqlDriver.push(Mercury_4.read_data(&Guid, ID_Mercury_4));
+                Mercury_4_mutex.unlock();
+            }
+
+        qint64 time = timer.elapsed();
+
+        IntervalMutex.lock();
+        qint64 interval_ = interval;
+        IntervalMutex.unlock();
+
+        time_out("Mercury", &timer, interval_, time);
     }
 }
 
-//void read_pulsar_1()
-//{
-//    while (1)
-//    {
-//        while (Guid.hasNext(ID_Pulsar_1))
-//            sqlDriver.push(Pulsar_1.read_data(&Guid, ID_Pulsar_1));
-//    }
-//}
-//void read_pulsar_2()
-//{
-//    while (1)
-//    {
-//        while (Guid.hasNext(ID_Pulsar_2))
-//            sqlDriver.push(Pulsar_2.read_data(&Guid, ID_Pulsar_2));
-//    }
-//}
+void read_pulsar()
+{
+    QElapsedTimer timer;
+    while (1)
+    {
+        timer.restart();
 
-//void read_pulsar_3()
-//{
-//    while (1)
-//    {
-//        while (Guid.hasNext(ID_Pulsar_3))
-//            sqlDriver.push(Pulsar_3.read_data(&Guid, ID_Pulsar_3));
-//    }
-//}
-//void read_pulsar_4()
-//{
-//    while (1)
-//    {
-//        while (Guid.hasNext(ID_Pulsar_4))
-//            sqlDriver.push(Pulsar_4.read_data(&Guid, ID_Pulsar_4));
-//    }
-//}
+        if (READ_PULSAR1)
+            while (Guid.hasNext(ID_Pulsar_1))
+            {
+                Pulsar_1_mutex.lock();
+                sqlDriver.push(Pulsar_1.read_data(&Guid, ID_Pulsar_1));
+                Pulsar_1_mutex.unlock();
+            }
+        if (READ_PULSAR2)
+            while (Guid.hasNext(ID_Pulsar_2))
+            {
+                Pulsar_2_mutex.lock();
+                sqlDriver.push(Pulsar_2.read_data(&Guid, ID_Pulsar_2));
+                Pulsar_2_mutex.unlock();
+            }
+        if (READ_PULSAR3)
+            while (Guid.hasNext(ID_Pulsar_3))
+            {
+                Pulsar_3_mutex.lock();
+                sqlDriver.push(Pulsar_3.read_data(&Guid, ID_Pulsar_3));
+                Pulsar_3_mutex.unlock();
+            }
+        if (READ_PULSAR4)
+            while (Guid.hasNext(ID_Pulsar_4))
+            {
+                Pulsar_4_mutex.lock();
+                sqlDriver.push(Pulsar_4.read_data(&Guid, ID_Pulsar_4));
+                Pulsar_4_mutex.unlock();
+            }
+
+        qint64 time = timer.elapsed();
+
+        IntervalMutex.lock();
+        qint64 interval_ = interval;
+        IntervalMutex.unlock();
+
+        time_out("Pulsar", &timer, interval_, time);
+    }
+}
+/*
+ * func for reading 1 line of Pulsar
+ * */
+void read_pulsar(bool enable, QString threadname, PulsarClass * Pulsar, quint8 id, QMutex * mutex)
+{
+    QElapsedTimer timer;
+    while (1)
+    {
+        timer.restart();
+
+        if (enable)
+            while (Guid.hasNext(id))
+            {
+                mutex->lock();
+                sqlDriver.push(Pulsar->read_data(&Guid, id));
+                mutex->unlock();
+            }
+        qint64 time = timer.elapsed();
+
+        IntervalMutex.lock();
+        qint64 interval_ = interval;
+        IntervalMutex.unlock();
+
+        time_out(threadname, &timer, interval_, time);
+    }
+}
+void read_mercury(bool enable, QString threadname, MercuryClass * Mercury, quint8 id, QMutex * mutex)
+{
+    QElapsedTimer timer;
+    while (1)
+    {
+        timer.restart();
+
+        if (enable)
+            while (Guid.hasNext(id))
+            {
+                mutex->lock();
+                sqlDriver.push(Mercury->read_data(&Guid, id));
+                mutex->unlock();
+            }
+        qint64 time = timer.elapsed();
+
+        IntervalMutex.lock();
+        qint64 interval_ = interval;
+        IntervalMutex.unlock();
+
+        time_out(threadname, &timer, interval_, time);
+    }
+}
+void read_queue()
+{
+    while (1)
+    {
+        if (READ_MERCURY1)
+            if (!Guid.isEmptyQueue(ID_Mercury_1)) {
+                Mercury_1_mutex.lock();
+                sqlDriver.push(Mercury_1.read_data(&Guid, ID_Mercury_1));
+                Mercury_1_mutex.unlock();
+            }
+        if (READ_MERCURY2)
+            if (!Guid.isEmptyQueue(ID_Mercury_2)) {
+                Mercury_2_mutex.lock();
+                sqlDriver.push(Mercury_2.read_data(&Guid, ID_Mercury_2));
+                Mercury_2_mutex.unlock();
+            }
+        if (READ_MERCURY3)
+            if (!Guid.isEmptyQueue(ID_Mercury_3)) {
+                Mercury_3_mutex.lock();
+                sqlDriver.push(Mercury_3.read_data(&Guid, ID_Mercury_3));
+                Mercury_3_mutex.unlock();
+            }
+        if (READ_MERCURY4)
+            if (!Guid.isEmptyQueue(ID_Mercury_4)) {
+                Mercury_4_mutex.lock();
+                sqlDriver.push(Mercury_4.read_data(&Guid, ID_Mercury_4));
+                Mercury_4_mutex.unlock();
+            }
+
+
+        if (READ_PULSAR1)
+            if (!Guid.isEmptyQueue(ID_Pulsar_1)) {
+                Pulsar_1_mutex.lock();
+                sqlDriver.push(Pulsar_1.read_data(&Guid, ID_Pulsar_1));
+                Pulsar_1_mutex.unlock();
+            }
+        if (READ_PULSAR2)
+            if (!Guid.isEmptyQueue(ID_Pulsar_2)) {
+                Pulsar_2_mutex.lock();
+                sqlDriver.push(Pulsar_2.read_data(&Guid, ID_Pulsar_2));
+                Pulsar_2_mutex.unlock();
+            }
+        if (READ_PULSAR3)
+            if (!Guid.isEmptyQueue(ID_Pulsar_3)) {
+                Pulsar_3_mutex.lock();
+                sqlDriver.push(Pulsar_3.read_data(&Guid, ID_Pulsar_3));
+                Pulsar_3_mutex.unlock();
+            }
+
+        if (READ_PULSAR4)
+            if (!Guid.isEmptyQueue(ID_Pulsar_4)) {
+                Pulsar_4_mutex.lock();
+                sqlDriver.push(Pulsar_4.read_data(&Guid, ID_Pulsar_4));
+                Pulsar_4_mutex.unlock();
+            }
+
+        QThread::msleep(1000);
+    }
+}
+
+void cmdline()
+{
+    QTextStream out(stdout);
+    QTextStream in(stdin);
+    while (1)
+    {
+        QString msg;
+
+        msg = in.readLine();
+
+        if (msg == QString("stop"))
+        {
+            out << "Exit from qScada ......."<< endl;
+//            emit finish();
+        }
+        else
+            Guid.addQueue(msg);
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -199,54 +401,49 @@ int main(int argc, char *argv[])
         Q_UNREACHABLE();
     }
 
-//    QObject::connect(&Pulsar_1, SIGNAL(write(QByteArray )), &ioPulsar_1, SLOT(write(QByteArray)));
-//    QObject::connect(&ioPulsar_1, SIGNAL(response(QByteArray)), &Pulsar_1, SLOT(received(QByteArray)));
-//    QObject::connect(&ioPulsar_1, SIGNAL(timeout()), &Pulsar_1, SLOT(timeout()));
+    if (READ_MERCURY1)
+        Guid.init(&sqlDriver, QString("mercury_1"), &ID_Mercury_1);
+    if (READ_MERCURY2)
+        Guid.init(&sqlDriver, QString("mercury_2"), &ID_Mercury_2);
+    if (READ_MERCURY3)
+        Guid.init(&sqlDriver, QString("mercury_3"), &ID_Mercury_3);
+    if (READ_MERCURY4)
+        Guid.init(&sqlDriver, QString("mercury_4"), &ID_Mercury_4);
 
-//    QObject::connect(&Pulsar_2, SIGNAL(write(QByteArray )), &ioPulsar_2, SLOT(write(QByteArray)));
-//    QObject::connect(&ioPulsar_2, SIGNAL(response(QByteArray)), &Pulsar_2, SLOT(received(QByteArray)));
-//    QObject::connect(&ioPulsar_2, SIGNAL(timeout()), &Pulsar_2, SLOT(timeout()));
-
-//    QObject::connect(&Pulsar_3, SIGNAL(write(QByteArray )), &ioPulsar_3, SLOT(write(QByteArray)));
-//    QObject::connect(&ioPulsar_3, SIGNAL(response(QByteArray)), &Pulsar_3, SLOT(received(QByteArray)));
-//    QObject::connect(&ioPulsar_3, SIGNAL(timeout()), &Pulsar_3, SLOT(timeout()));
-
-//    QObject::connect(&Pulsar_4, SIGNAL(write(QByteArray )), &ioPulsar_4, SLOT(write(QByteArray)));
-//    QObject::connect(&ioPulsar_4, SIGNAL(response(QByteArray)), &Pulsar_4, SLOT(received(QByteArray)));
-//    QObject::connect(&ioPulsar_4, SIGNAL(timeout()), &Pulsar_4, SLOT(timeout()));
-
-    Guid.init(&sqlDriver, QString("mercury_1"), &ID_Mercury_1);
-    Guid.init(&sqlDriver, QString("mercury_2"), &ID_Mercury_2);
-    Guid.init(&sqlDriver, QString("mercury_3"), &ID_Mercury_3);
-    Guid.init(&sqlDriver, QString("mercury_4"), &ID_Mercury_4);
-
-    Guid.init(&sqlDriver, QString("pulsar_1"), &ID_Pulsar_1);
-    Guid.init(&sqlDriver, QString("pulsar_2"), &ID_Pulsar_2);
-    Guid.init(&sqlDriver, QString("pulsar_3"), &ID_Pulsar_3);
-    Guid.init(&sqlDriver, QString("pulsar_4"), &ID_Pulsar_4);
-
-    read_all_sensors();
-
-//    QFuture<void> future1 = QtConcurrent::run( read_all_sensors );
-//    QFuture<void> future2 = QtConcurrent::run( sendToServer );
-//    QFuture<void> future3 = QtConcurrent::run( read_pulsar_1 );
-//    QFuture<void> future4 = QtConcurrent::run( read_pulsar_2 );
-//    QFuture<void> future5 = QtConcurrent::run( read_pulsar_3 );
-//    QFuture<void> future6 = QtConcurrent::run( read_pulsar_4 );
+    if (READ_PULSAR1)
+        Guid.init(&sqlDriver, QString("pulsar_1"), &ID_Pulsar_1);
+    if (READ_PULSAR2)
+        Guid.init(&sqlDriver, QString("pulsar_2"), &ID_Pulsar_2);
+    if (READ_PULSAR3)
+        Guid.init(&sqlDriver, QString("pulsar_3"), &ID_Pulsar_3);
+    if (READ_PULSAR4)
+        Guid.init(&sqlDriver, QString("pulsar_4"), &ID_Pulsar_4);
 
 //    read_all_sensors();
 
-//    Mercury_1               = new MercuryClass(IODriver::TCP, "192.168.88.100", 4007);
+    QFuture<void> future1 = QtConcurrent::run( read_pulsar );
+    QFuture<void> future2 = QtConcurrent::run( read_mercury );
+    QFuture<void> future_queue = QtConcurrent::run( read_queue );
+    QFuture<void> future_server = QtConcurrent::run( server_connection );
+//    QFuture<void> future5 = QtConcurrent::run( cmdline );
 
-//    ThreadManager Manager;
-//    QObject::connect(&Manager, &ThreadManager::finish, &app, &QCoreApplication::quit);
+//    if (READ_PULSAR1)
+//        QFuture<void> future_p1 = QtConcurrent::run( read_pulsar, READ_PULSAR1, QString("Pulsar1"), &Pulsar_1, ID_Pulsar_1, &Pulsar_1_mutex );
+//    if (READ_PULSAR1)
+//        QFuture<void> future_p2 = QtConcurrent::run( read_pulsar, READ_PULSAR2, QString("Pulsar2"), &Pulsar_2, ID_Pulsar_2, &Pulsar_2_mutex );
+//    if (READ_PULSAR3)
+//        QFuture<void> future_p3 = QtConcurrent::run( read_pulsar, READ_PULSAR3, QString("Pulsar3"), &Pulsar_3, ID_Pulsar_3, &Pulsar_3_mutex );
+//    if (READ_PULSAR4)
+//        QFuture<void> future_p4 = QtConcurrent::run( read_pulsar, READ_PULSAR4, QString("Pulsar4"), &Pulsar_4, ID_Pulsar_4, &Pulsar_4_mutex );
 
-//    ThreadManager * Manager = new ThreadManager;
-//    QObject::connect(Manager, &ThreadManager::finish, &app, &QCoreApplication::quit);
-
-//    qDebug() << parser.values(targetDirectoryOption);
-
-//    app.exec();
+//    if (READ_MERCURY1)
+//        QFuture<void> future_m1 = QtConcurrent::run( read_mercury, READ_MERCURY1, QString("Mercury1"), &Mercury_1, ID_Mercury_1, &Mercury_1_mutex );
+//    if (READ_MERCURY2)
+//        QFuture<void> future_m2 = QtConcurrent::run( read_mercury, READ_MERCURY2, QString("Mercury2"), &Mercury_2, ID_Mercury_2, &Mercury_2_mutex );
+//    if (READ_MERCURY3)
+//        QFuture<void> future_m3 = QtConcurrent::run( read_mercury, READ_MERCURY3, QString("Mercury3"), &Mercury_3, ID_Mercury_3, &Mercury_3_mutex );
+//    if (READ_MERCURY4)
+//        QFuture<void> future_m4 = QtConcurrent::run( read_mercury, READ_MERCURY4, QString("Mercury4"), &Mercury_4, ID_Mercury_4, &Mercury_4_mutex );
 
 
     return app.exec();

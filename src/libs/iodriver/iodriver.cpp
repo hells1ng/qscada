@@ -17,7 +17,7 @@ IODriver::IODriver(quint8 type, QString server_com, quint16 port_props, quint16 
     if (Type == RTU) {
 //        com = new QSerialPort();
 //        com->moveToThread(this);
-//        com.moveToThread(this);
+        com.moveToThread(this);
 
         switch (port_props) {
 
@@ -42,7 +42,7 @@ IODriver::IODriver(quint8 type, QString server_com, quint16 port_props, quint16 
 //        tcp = new QTcpSocket();
 //        tcp->moveToThread(this);
 
-//                tcp.moveToThread(this);
+                tcp.moveToThread(this);
     }
     else qFatal("Wrong Type for IODriver");
 }
@@ -218,8 +218,9 @@ void IODriver::write(unsigned char * cmd, int cmdsize)
 void IODriver::write(QByteArray request)
 {
 //    QMutexLocker locker(mutex);
+    Request.clear();
     Request.append(request);
-    Request = QByteArray(request);
+//    Request = QByteArray(request);
     while (isRunning());
     start();
 }

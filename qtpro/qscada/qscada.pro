@@ -67,7 +67,7 @@ HEADERS += \
     ../../src/libs/pulsar/pulsarclass.h \
     ../../src/libs/sqldriver/sqldriver.h \
     ../../src/libs/iodriver/iodriver.h
-#INCLUDEPATH += /home/hells1ng/raspi/sysroot/usr/include/
+INCLUDEPATH += /home/hells1ng/raspi/sysroot/usr/include/
 #DEPENDPATH += /home/hells1ng/raspi/sysroot/usr/lib/
 #LIBS += -lcurl
 LIBS += -lcurl -lssl -lcrypto

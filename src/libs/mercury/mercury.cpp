@@ -181,13 +181,13 @@ int MercuryClass::checkChannel(int address)
 //    qDebug() << "Mercury write checkChannel";
 //    emit write((byte*)&testCmd, sizeof(testCmd));
 
-//    ioDriver.write((byte*)&testCmd, sizeof(testCmd));
-//    while (!receivedData) {
-//    };
-//    receivedData = false;
+    ioDriver.write((byte*)&testCmd, sizeof(testCmd));
+    while (!receivedData) {
+    };
+    receivedData = false;
 
-    QByteArray response = ioDriver.writes((byte*)&testCmd, sizeof(testCmd));
-    received(response);
+//    QByteArray response = ioDriver.writes((byte*)&testCmd, sizeof(testCmd));
+//    received(response);
     if (len == 0)
         return CHECK_CHANNEL_TIME_OUT;
 
@@ -213,13 +213,13 @@ int MercuryClass::initConnection(int address)
 //    len = can->write((byte*)&initCmd, sizeof(initCmd), buf);
 //    emit write((byte*)&initCmd, sizeof(initCmd));
 
-//    ioDriver.write((byte*)&initCmd, sizeof(initCmd));
-//    while (!receivedData) {
-//    };
-//    receivedData = false;
+    ioDriver.write((byte*)&initCmd, sizeof(initCmd));
+    while (!receivedData) {
+    };
+    receivedData = false;
 
-    QByteArray response = ioDriver.writes((byte*)&initCmd, sizeof(initCmd));
-    received(response);
+//    QByteArray response = ioDriver.writes((byte*)&initCmd, sizeof(initCmd));
+//    received(response);
     if (len == 0)
         return CHECK_CHANNEL_TIME_OUT;
 
@@ -237,13 +237,13 @@ int MercuryClass::closeConnection(int address)
 //    len = can->write((byte*)&byeCmd, sizeof(byeCmd), buf);
 //    emit write((byte*)&byeCmd, sizeof(byeCmd));
 
-//    ioDriver.write((byte*)&byeCmd, sizeof(byeCmd));
-//    while (!receivedData) {
-//    };
-//    receivedData = false;
+    ioDriver.write((byte*)&byeCmd, sizeof(byeCmd));
+    while (!receivedData) {
+    };
+    receivedData = false;
 
-    QByteArray response = ioDriver.writes((byte*)&byeCmd, sizeof(byeCmd));
-    received(response);
+//    QByteArray response = ioDriver.writes((byte*)&byeCmd, sizeof(byeCmd));
+//    received(response);
     if (len == 0)
         return CHECK_CHANNEL_TIME_OUT;
 
@@ -272,13 +272,13 @@ int MercuryClass::getW(int address, PWV* W, int periodId, int month, int tariffN
 //    len = can->write((byte*)&getWCmd, sizeof(getWCmd), buf);
 //    emit write((byte*)&getWCmd, sizeof(getWCmd));
 
-//    ioDriver.write((byte*)&getWCmd, sizeof(getWCmd));
-//    while (!receivedData) {
-//    };
-//    receivedData = false;
+    ioDriver.write((byte*)&getWCmd, sizeof(getWCmd));
+    while (!receivedData) {
+    };
+    receivedData = false;
 
-    QByteArray response = ioDriver.writes((byte*)&getWCmd, sizeof(getWCmd));
-    received(response);
+//    QByteArray response = ioDriver.writes((byte*)&getWCmd, sizeof(getWCmd));
+//    received(response);
     if (len == 0)
         return CHECK_CHANNEL_TIME_OUT;
 
