@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.5.1, 2018-03-05T11:18:36. -->
+<!-- Written by QtCreator 4.5.1, 2018-03-05T11:27:28. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -268,21 +268,26 @@
       <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">RemoteLinux.DirectUploadStep</value>
       <valuelist type="QVariantList" key="ProjectExplorer.RunConfiguration.LastDeployedFiles">
        <value type="QString">/home/hells1ng/qscada/qtpro/build-qscada-Raspberry_Pi-Debug/qscada</value>
+       <value type="QString">/home/hells1ng/qscada/qtpro/build-qscada-Raspberry_Pi-Debug/qscada</value>
        <value type="QString">/home/hells1ng/qscada/qtpro/build-qscada-Raspberry_Pi-Profile/qscada</value>
       </valuelist>
       <valuelist type="QVariantList" key="ProjectExplorer.RunConfiguration.LastDeployedHosts">
+       <value type="QString">192.168.2.15</value>
        <value type="QString">192.168.88.115</value>
        <value type="QString">192.168.88.115</value>
       </valuelist>
       <valuelist type="QVariantList" key="ProjectExplorer.RunConfiguration.LastDeployedRemotePaths">
        <value type="QString">/home/pi</value>
        <value type="QString">/home/pi</value>
+       <value type="QString">/home/pi</value>
       </valuelist>
       <valuelist type="QVariantList" key="ProjectExplorer.RunConfiguration.LastDeployedSysroots">
        <value type="QString">/home/hells1ng/raspi/sysroot</value>
        <value type="QString">/home/hells1ng/raspi/sysroot</value>
+       <value type="QString">/home/hells1ng/raspi/sysroot</value>
       </valuelist>
       <valuelist type="QVariantList" key="ProjectExplorer.RunConfiguration.LastDeployedTimes">
+       <value type="QDateTime">2018-03-05T11:25:51</value>
        <value type="QDateTime">2018-02-28T18:13:02</value>
        <value type="QDateTime">2018-02-19T20:27:39</value>
       </valuelist>
