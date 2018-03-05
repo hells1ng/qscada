@@ -50,7 +50,7 @@ protected:
     static const char *pKeyName;
     static const char *pCAType;
     static const char* SERVERADDR;
-//    const char *pKeyType="PEM";
+    const char *pKeyType="PEM";
 
 private:
     QtJson::JsonObject  get_interval_json();

@@ -2,7 +2,7 @@
 #define SQLDRIVER_H
 
 #include <QtCore/QtCore>
-#include <QtSql/QSql>
+//#include <QtSql/QSql>
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>

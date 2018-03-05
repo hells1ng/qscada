@@ -36,7 +36,7 @@ DISTNAME      = qscada1.0.0
 DISTDIR = /home/hells1ng/qscada/qtpro/build-qscada-Raspberry_Pi-Debug/.tmp/qscada1.0.0
 LINK          = /home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-g++
 LFLAGS        = -Wl,-rpath-link,/home/hells1ng/raspi/sysroot/opt/vc/lib -Wl,-rpath-link,/home/hells1ng/raspi/sysroot/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,/home/hells1ng/raspi/sysroot/lib/arm-linux-gnueabihf -mfloat-abi=hard --sysroot=/home/hells1ng/raspi/sysroot -Wl,-rpath,/usr/local/qt5.8/lib
-LIBS          = $(SUBLIBS) -lcurl -L/home/hells1ng/raspi/build/qt5.8/lib -lQt5Network -lQt5Sql -lQt5SerialPort -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -lcurl -lssl -lcrypto -L/home/hells1ng/raspi/build/qt5.8/lib -lQt5Network -lQt5Sql -lQt5SerialPort -lQt5Core -lpthread 
 AR            = /home/hells1ng/raspi/tools/arm-bcm2708/arm-rpi-4.9.3-linux-gnueabihf/bin/arm-linux-gnueabihf-ar cqs
 RANLIB        = 
 SED           = sed
@@ -649,10 +649,9 @@ moc_mercury.cpp: ../../src/defines.h \
 		../../src/libs/id/id.h \
 		../../../raspi/build/qt5.8/include/QtCore/QDebug \
 		../../src/libs/sqldriver/sqldriver.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -869,10 +868,9 @@ moc_threadmanager.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/QMutex \
 		../../src/libs/owen/owen.h \
 		../../src/libs/sqldriver/sqldriver.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -1104,10 +1102,9 @@ moc_pulsarclass.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../src/defines.h \
 		../../src/libs/id/id.h \
 		../../src/libs/sqldriver/sqldriver.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -1299,10 +1296,9 @@ moc_sqldriver.cpp: ../../../raspi/build/qt5.8/include/QtCore/QtCore \
 		../../../raspi/build/qt5.8/include/QtCore/qwineventnotifier.h \
 		../../../raspi/build/qt5.8/include/QtCore/qxmlstream.h \
 		../../../raspi/build/qt5.8/include/QtCore/qtcoreversion.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -1528,7 +1524,8 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 
 ####### Compile
 
-main.o: ../../src/main.cpp ../../src/includes.h \
+main.o: ../../src/main.cpp ../../src/main.h \
+		../../src/includes.h \
 		../../src/libs/modbus/ModbusClass.h \
 		../../src/libs/modbus/modbus.h \
 		../../src/libs/modbus/modbus-version.h \
@@ -1719,10 +1716,9 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		../../../raspi/build/qt5.8/include/QtCore/qwineventnotifier.h \
 		../../../raspi/build/qt5.8/include/QtCore/qxmlstream.h \
 		../../../raspi/build/qt5.8/include/QtCore/qtcoreversion.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -1751,7 +1747,24 @@ main.o: ../../src/main.cpp ../../src/includes.h \
 		../../src/libs/json/json.h \
 		../../../raspi/build/qt5.8/include/QtCore/QVariant \
 		../../../raspi/build/qt5.8/include/QtCore/QString \
-		../../src/main.h
+		../../../raspi/build/qt5.8/include/QtConcurrent/QtConcurrent \
+		../../../raspi/build/qt5.8/include/QtConcurrent/QtConcurrentDepends \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentcompilertest.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrent_global.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentexception.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentfilter.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentfilterkernel.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentiteratekernel.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentmedian.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentthreadengine.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentmapkernel.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentreducekernel.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentfunctionwrappers.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentmap.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentrun.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentrunbase.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentstoredfunctioncall.h \
+		../../../raspi/build/qt5.8/include/QtConcurrent/qtconcurrentversion.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../../src/main.cpp
 
 https.o: ../../src/libs/https/https.cpp ../../src/libs/https/https.h \
@@ -1942,10 +1955,9 @@ https.o: ../../src/libs/https/https.cpp ../../src/libs/https/https.h \
 		../../../raspi/build/qt5.8/include/QtCore/QVariant \
 		../../../raspi/build/qt5.8/include/QtCore/QString \
 		../../src/libs/sqldriver/sqldriver.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -2140,10 +2152,9 @@ id.o: ../../src/libs/id/id.cpp ../../src/libs/id/id.h \
 		../../../raspi/build/qt5.8/include/QtCore/QDebug \
 		../../src/defines.h \
 		../../src/libs/sqldriver/sqldriver.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -2337,10 +2348,9 @@ mercury.o: ../../src/libs/mercury/mercury.cpp ../../src/libs/mercury/mercury.h \
 		../../src/libs/id/id.h \
 		../../../raspi/build/qt5.8/include/QtCore/QDebug \
 		../../src/libs/sqldriver/sqldriver.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -2647,10 +2657,9 @@ owen.o: ../../src/libs/owen/owen.cpp ../../src/libs/owen/owen.h \
 		../../../raspi/build/qt5.8/include/QtCore/qwineventnotifier.h \
 		../../../raspi/build/qt5.8/include/QtCore/qxmlstream.h \
 		../../../raspi/build/qt5.8/include/QtCore/qtcoreversion.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -2860,10 +2869,9 @@ threadmanager.o: ../../src/libs/threadmanager/threadmanager.cpp ../../src/libs/t
 		../../../raspi/build/qt5.8/include/QtCore/QMutex \
 		../../src/libs/owen/owen.h \
 		../../src/libs/sqldriver/sqldriver.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -3162,10 +3170,9 @@ pulsarclass.o: ../../src/libs/pulsar/pulsarclass.cpp ../../src/libs/pulsar/pulsa
 		../../src/defines.h \
 		../../src/libs/id/id.h \
 		../../src/libs/sqldriver/sqldriver.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \
@@ -3356,10 +3363,9 @@ sqldriver.o: ../../src/libs/sqldriver/sqldriver.cpp ../../src/libs/sqldriver/sql
 		../../../raspi/build/qt5.8/include/QtCore/qwineventnotifier.h \
 		../../../raspi/build/qt5.8/include/QtCore/qxmlstream.h \
 		../../../raspi/build/qt5.8/include/QtCore/qtcoreversion.h \
-		../../../raspi/build/qt5.8/include/QtSql/QSql \
-		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlDatabase \
 		../../../raspi/build/qt5.8/include/QtSql/qsqldatabase.h \
+		../../../raspi/build/qt5.8/include/QtSql/qtsqlglobal.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlQuery \
 		../../../raspi/build/qt5.8/include/QtSql/qsqlquery.h \
 		../../../raspi/build/qt5.8/include/QtSql/QSqlError \

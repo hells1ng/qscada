@@ -18,16 +18,25 @@ HttpsDriver::~HttpsDriver()
     //dtor
 }
 
+//const char *HttpsDriver::pPassphrase = "myveryownca";
+//const char *HttpsDriver::pCertFile = "/etc/apache2/ssl/converted/NUC_ASVSPROJECT.pem";
+//const char *HttpsDriver::pCACertFile = "/etc/apache2/ssl/converted/rootCA.pem";
+//const char *HttpsDriver::pCAPath = "/etc/apache2/ssl/converted/";
+//const char *HttpsDriver::pHeaderFile = "dumpit";
+
+//const char *HttpsDriver::pKeyName = "/etc/apache2/ssl/converted/NUC_ASVSPROJECT.key";
+//const char *HttpsDriver::pCAType = "PEM";
+
 const char *HttpsDriver::pPassphrase = "myveryownca";
-const char *HttpsDriver::pCertFile = "/etc/apache2/ssl/converted/NUC_ASVSPROJECT.pem";
-const char *HttpsDriver::pCACertFile = "/etc/apache2/ssl/converted/rootCA.pem";
-const char *HttpsDriver::pCAPath = "/etc/apache2/ssl/converted/";
+const char *HttpsDriver::pCertFile = "/home/pi/certs/raspberry_tomatto.pem";
+const char *HttpsDriver::pCACertFile = "/home/pi/certs/rootCA.pem";
+const char *HttpsDriver::pCAPath = "/home/pi/certs/";
 const char *HttpsDriver::pHeaderFile = "dumpit";
 
-const char *HttpsDriver::pKeyName = "/etc/apache2/ssl/converted/NUC_ASVSPROJECT.key";
+const char *HttpsDriver::pKeyName = "/home/pi/certs/raspberry_tomatto.key";
 const char *HttpsDriver::pCAType = "PEM";
 
-//const char *HttpsDriver::SERVERADDR = "https://tomatto.ddns.net:444";
+//const char *HttpsDriver::SERVERADDR = "https://tomatto.ddns.net:4444";
 const char *HttpsDriver::SERVERADDR = "https://uk-flagman.ddns.net:444";
 
 
@@ -304,7 +313,76 @@ void HttpsDriver::process_response(const quint8 cmd, Data *data, string const &r
         }
     }
 }
+static
+void dump(const char *text,
+          FILE *stream, unsigned char *ptr, size_t size)
+{
+  size_t i;
+  size_t c;
+  unsigned int width=0x10;
 
+  fprintf(stream, "%s, %10.10ld bytes (0x%8.8lx)\n",
+          text, (long)size, (long)size);
+
+  for(i=0; i<size; i+= width) {
+    fprintf(stream, "%4.4lx: ", (long)i);
+
+    /* show hex to the left */
+    for(c = 0; c < width; c++) {
+      if(i+c < size)
+        fprintf(stream, "%02x ", ptr[i+c]);
+      else
+        fputs("   ", stream);
+    }
+
+    /* show data on the right */
+    for(c = 0; (c < width) && (i+c < size); c++) {
+      char x = (ptr[i+c] >= 0x20 && ptr[i+c] < 0x80) ? ptr[i+c] : '.';
+      fputc(x, stream);
+    }
+
+    fputc('\n', stream); /* newline */
+  }
+}
+
+static
+int my_trace(CURL *handle, curl_infotype type,
+             char *data, size_t size,
+             void *userp)
+{
+  const char *text;
+  (void)handle; /* prevent compiler warning */
+  (void)userp;
+
+  switch (type) {
+  case CURLINFO_TEXT:
+    fprintf(stderr, "== Info: %s", data);
+  default: /* in case a new one is introduced to shock us */
+    return 0;
+
+  case CURLINFO_HEADER_OUT:
+    text = "=> Send header";
+    break;
+  case CURLINFO_DATA_OUT:
+    text = "=> Send data";
+    break;
+  case CURLINFO_SSL_DATA_OUT:
+    text = "=> Send SSL data";
+    break;
+  case CURLINFO_HEADER_IN:
+    text = "<= Recv header";
+    break;
+  case CURLINFO_DATA_IN:
+    text = "<= Recv data";
+    break;
+  case CURLINFO_SSL_DATA_IN:
+    text = "<= Recv SSL data";
+    break;
+  }
+
+  dump(text, stderr, (unsigned char *)data, size);
+  return 0;
+}
 string HttpsDriver::curl_send(string const &str) {
 
 //    qDebug() << QString::fromStdString(str);
@@ -312,6 +390,7 @@ string HttpsDriver::curl_send(string const &str) {
     struct MemoryStruct chunk;
     string retstr;
     CURL *curl;
+    CURLcode res;
 
     chunk.memory = (char *)malloc(1);  /* will be grown as needed by the realloc above */
     chunk.size = 0;                     /* no data at this point */
@@ -332,17 +411,22 @@ string HttpsDriver::curl_send(string const &str) {
        // curl_easy_setopt(curl, CURLOPT_HEADERDATA, headerfile);
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);        //VEBOSE is the DEBUG MODE write 1L instead to swith ON DEBUG MODE
 
-        /*
-        curl_easy_setopt(curl, CURLOPT_CAPATH, pCAPath);        //pCAPath is the folder where certificates are stored
-        curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");     //CertType .pem for Linux .crt for Win
-        curl_easy_setopt(curl, CURLOPT_SSLCERT, pCertFile);     // SSL cert path
-        curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, pKeyType);
-        curl_easy_setopt(curl, CURLOPT_SSLKEY, pKeyName);         //Key to cert path
-        curl_easy_setopt(curl, CURLOPT_CAINFO, pCACertFile) ;      //ROOT Cert, use it when u need vise verce authority
-        //curl_easy_setopt(curl, CURLOPT_WRITEDATA, retcurl);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);         //Enable to verify yourself cert with rootCA
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1L);         //Enable to veryfy host(servert) cert
-        */
+        curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, my_trace);//for debug
+
+        //path
+//        curl_easy_setopt(curl, CURLOPT_CAPATH, pCAPath);        //pCAPath is the folder where certificates are stored
+//        //pem cert
+//        curl_easy_setopt(curl, CURLOPT_SSLCERTTYPE, "PEM");     //CertType .pem for Linux .crt for Win
+//        curl_easy_setopt(curl, CURLOPT_SSLCERT, pCertFile);     // SSL cert path
+//        //key cert
+//        curl_easy_setopt(curl, CURLOPT_SSLKEYTYPE, "PEM");
+//        curl_easy_setopt(curl, CURLOPT_SSLKEY, pKeyName);         //Key to cert path
+
+//        curl_easy_setopt(curl, CURLOPT_CAINFO, pCACertFile) ;      //ROOT Cert, use it when u need vise verce authority
+//        //curl_easy_setopt(curl, CURLOPT_WRITEDATA, retcurl);
+//        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);         //Enable to verify yourself cert with rootCA
+//        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 2L);         //Enable to veryfy host(servert) cert
+
 
 //        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, buffer);         //Buffer is the POST MESSAGE
         struct curl_slist *headers = NULL;
@@ -376,6 +460,7 @@ string HttpsDriver::curl_send(string const &str) {
         {
             retstr = "";
             qDebug() << "cURL connection Failed!" << endl;
+            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
         }
     }
     curl_easy_cleanup(curl);

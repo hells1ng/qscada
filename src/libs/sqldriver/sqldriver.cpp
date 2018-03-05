@@ -22,7 +22,7 @@ SqlDriver::SqlDriver(QObject *parent) :
 //        db.setDatabaseName("Safe");
 
         db = QSqlDatabase::addDatabase("QSQLITE");
-//        db.setDatabaseName("/home/pi/qscada_db");
+//        db.setDatabaseName("qscada_db");
         db.setDatabaseName("/home/pi/qscada_db");
 //        QStringList tables = db.tables();
 //        qDebug() << "Tables: " << tables;

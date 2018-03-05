@@ -56,12 +56,12 @@ public:
     enum
     {
         ID       = 0x55,
-        TIMEOUT  = 1500
+        TIMEOUT  = 5000
     };
 
     IODriver ioDriver;
     PulsarClass(quint8 Type, QString server_com, quint16 port_props, quint16 timeout = TIMEOUT);
-    ~PulsarClass(){}
+    ~PulsarClass();
 
     Data read_data(GuidClass* guid, quint8 id);
 

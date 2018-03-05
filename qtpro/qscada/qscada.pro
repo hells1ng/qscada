@@ -69,6 +69,6 @@ HEADERS += \
     ../../src/libs/iodriver/iodriver.h
 #INCLUDEPATH += /home/hells1ng/raspi/sysroot/usr/include/
 #DEPENDPATH += /home/hells1ng/raspi/sysroot/usr/lib/
-LIBS += -lcurl
-#LIBS += -lcurl -lssl -lcrypto
+#LIBS += -lcurl
+LIBS += -lcurl -lssl -lcrypto
 #LIBS += -lcurl -lcrypto

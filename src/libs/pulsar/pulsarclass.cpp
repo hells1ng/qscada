@@ -81,6 +81,11 @@ PulsarClass::PulsarClass(quint8 Type, QString server_com, quint16 port_props, qu
 
 }
 
+PulsarClass::~PulsarClass()
+{
+
+}
+
 void PulsarClass::received(QByteArray buf_)
 {
     Response = buf_;
@@ -165,7 +170,7 @@ bool PulsarClass::check_crc()
 {
     bool flag = false;
 
-    if (!Response.size()) {
+    if (Response.size() < 2) {
 
     }
     else {
