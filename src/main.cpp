@@ -1,7 +1,7 @@
 #include "main.h"
 #include <QtConcurrent/QtConcurrent>
 
-GuidClass       Guid, Guid_P1,Guid_P2,Guid_P3,Guid_P4;
+GuidClass       Guid;
 
 quint8          ID_Mercury_1,
                 ID_Mercury_2,
